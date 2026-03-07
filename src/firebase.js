@@ -17,12 +17,13 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'YOUR_API_KEY',
-  authDomain: 'YOUR_AUTH_DOMAIN',
-  projectId: 'YOUR_PROJECT_ID',
-  storageBucket: 'YOUR_STORAGE_BUCKET',
-  messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-  appId: 'YOUR_APP_ID',
+ apiKey: "AIzaSyAyLPqPSgnNltR-eIWqvCTANgF00qHCYPA",
+  authDomain: "life-built-app.firebaseapp.com",
+  projectId: "life-built-app",
+  storageBucket: "life-built-app.firebasestorage.app",
+  messagingSenderId: "113594088373",
+  appId: "1:113594088373:web:9d1d00f34ca8b467fcb7fc",
+  measurementId: "G-6N3813KNJJ"
 };
 
 const app = initializeApp(firebaseConfig);
