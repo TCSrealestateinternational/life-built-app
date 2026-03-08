@@ -1,72 +1,221 @@
 import { useState } from 'react';
-import { Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, Image, Link2, FileText } from 'lucide-react';
+import { ROOM_DEFAULTS, ORDERED_ROOMS } from '../data/roomDefaults';
 
-const DEFAULT_ROOMS = [
-  'Kitchen', 'Primary Bedroom', 'Primary Bath', 'Living Room',
-  'Dining Room', 'Guest Bedroom', 'Guest Bath', 'Laundry',
-  'Garage', 'Outdoor / Porch',
-];
+function newItem(text = '', options = []) {
+  return {
+    id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
+    text,
+    options,
+    selected: '',
+    custom: '',
+    photo: '',
+    link: '',
+    notes: '',
+    done: false,
+  };
+}
 
-function newItem(text = '') {
-  return { id: Date.now() + Math.random(), text, done: false };
+function DesignItem({ item, onUpdate, onRemove }) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const safe = { options: [], selected: '', custom: '', photo: '', link: '', notes: '', ...item };
+  const hasDetails = safe.photo || safe.link || safe.notes;
+  const displayValue = safe.selected || safe.custom;
+
+  return (
+    <div className={`border rounded-lg overflow-hidden ${safe.done ? 'border-forest/20 bg-forest/5' : 'border-linen bg-white'}`}>
+      <div className="flex items-start gap-2 p-3">
+        {/* Checkbox */}
+        <input
+          type="checkbox"
+          checked={safe.done}
+          onChange={(e) => onUpdate({ done: e.target.checked })}
+          className="accent-forest mt-1 shrink-0"
+        />
+
+        <div className="flex-1 min-w-0">
+          {/* Item name */}
+          <div className="flex items-start gap-2">
+            <input
+              type="text"
+              value={safe.text}
+              onChange={(e) => onUpdate({ text: e.target.value })}
+              className={`flex-1 text-sm font-medium bg-transparent border-b border-transparent hover:border-linen focus:border-forest focus:outline-none py-0.5 ${safe.done ? 'line-through text-mist' : 'text-ink'}`}
+            />
+            {displayValue && (
+              <span className="text-xs bg-forest/10 text-forest px-2 py-0.5 rounded-full shrink-0">
+                {displayValue}
+              </span>
+            )}
+          </div>
+
+          {/* Option chips */}
+          {safe.options.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {safe.options.map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => onUpdate({ selected: safe.selected === opt ? '' : opt, custom: '' })}
+                  className={`text-xs px-2.5 py-0.5 rounded-full border transition-colors ${
+                    safe.selected === opt
+                      ? 'bg-forest text-white border-forest'
+                      : 'border-linen text-mist hover:border-sage hover:text-ink'
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Custom value input */}
+          <input
+            type="text"
+            value={safe.custom}
+            onChange={(e) => onUpdate({ custom: e.target.value, selected: '' })}
+            placeholder={safe.options.length > 0 ? 'Or type a custom value…' : 'Your selection…'}
+            className="mt-1.5 w-full text-xs bg-cream border border-linen rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-forest/40 text-ink placeholder:text-mist"
+          />
+
+          {/* Details toggle */}
+          <button
+            onClick={() => setDetailsOpen(!detailsOpen)}
+            className={`flex items-center gap-1 text-xs mt-2 transition-colors ${hasDetails ? 'text-forest' : 'text-mist hover:text-forest'}`}
+          >
+            <FileText size={11} />
+            {detailsOpen ? 'Hide details' : hasDetails ? 'View details ●' : 'Add photo / link / notes'}
+          </button>
+
+          {/* Details panel */}
+          {detailsOpen && (
+            <div className="mt-2 pt-2 border-t border-linen space-y-3">
+              {/* Photo URL */}
+              <div>
+                <label className="flex items-center gap-1 text-xs font-medium text-ink mb-1">
+                  <Image size={11} /> Inspiration Photo URL
+                </label>
+                <input
+                  type="url"
+                  value={safe.photo}
+                  onChange={(e) => onUpdate({ photo: e.target.value })}
+                  placeholder="Paste image URL from Pinterest, Houzz, etc."
+                  className="w-full text-xs border border-linen rounded px-2 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                />
+                {safe.photo && (
+                  <img
+                    src={safe.photo}
+                    alt="inspiration"
+                    className="mt-1.5 rounded-lg max-h-40 object-cover"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                )}
+              </div>
+
+              {/* Link */}
+              <div>
+                <label className="flex items-center gap-1 text-xs font-medium text-ink mb-1">
+                  <Link2 size={11} /> Product / Reference Link
+                </label>
+                <div className="flex gap-1">
+                  <input
+                    type="url"
+                    value={safe.link}
+                    onChange={(e) => onUpdate({ link: e.target.value })}
+                    placeholder="Paste a product or inspiration link"
+                    className="flex-1 text-xs border border-linen rounded px-2 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                  />
+                  {safe.link && (
+                    <a
+                      href={safe.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs text-forest border border-linen rounded px-2 py-1.5 hover:bg-cream shrink-0"
+                    >
+                      Open
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="flex items-center gap-1 text-xs font-medium text-ink mb-1">
+                  <FileText size={11} /> Notes
+                </label>
+                <textarea
+                  value={safe.notes}
+                  onChange={(e) => onUpdate({ notes: e.target.value })}
+                  placeholder="Colors, dimensions, model numbers, preferences…"
+                  rows={2}
+                  className="w-full text-xs border border-linen rounded px-2 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40 resize-none"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Remove */}
+        <button
+          onClick={onRemove}
+          className="text-red-300 hover:text-red-500 transition-colors shrink-0 mt-0.5"
+        >
+          <Trash2 size={13} />
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default function Design({ project, updateProject }) {
-  const [expanded, setExpanded] = useState(null);
+  const [expandedRoom, setExpandedRoom] = useState(null);
   const [newRoom, setNewRoom] = useState('');
   const design = project?.homeDesign ?? {};
 
-  function ensureRoom(room) {
-    if (!design[room]) {
-      updateProject({ homeDesign: { ...design, [room]: { items: [] } } });
-    }
-  }
+  const activeRooms = Object.keys(design);
+  const suggestedRooms = ORDERED_ROOMS.filter((r) => !design[r]);
 
-  function addRoom() {
-    const r = newRoom.trim();
+  function addRoom(roomName) {
+    const r = roomName.trim();
     if (!r || design[r]) return;
     updateProject({ homeDesign: { ...design, [r]: { items: [] } } });
     setNewRoom('');
-    setExpanded(r);
-  }
-
-  function addItem(room) {
-    const updated = {
-      ...design,
-      [room]: { items: [...(design[room]?.items ?? []), newItem()] },
-    };
-    updateProject({ homeDesign: updated });
-  }
-
-  function updateItem(room, id, patch) {
-    const updated = {
-      ...design,
-      [room]: {
-        items: design[room].items.map((item) => (item.id === id ? { ...item, ...patch } : item)),
-      },
-    };
-    updateProject({ homeDesign: updated });
-  }
-
-  function removeItem(room, id) {
-    const updated = {
-      ...design,
-      [room]: { items: design[room].items.filter((item) => item.id !== id) },
-    };
-    updateProject({ homeDesign: updated });
+    setExpandedRoom(r);
   }
 
   function removeRoom(room) {
-    if (!confirm(`Remove room "${room}"?`)) return;
+    if (!confirm(`Remove "${room}" and all its items?`)) return;
     const updated = { ...design };
     delete updated[room];
     updateProject({ homeDesign: updated });
-    if (expanded === room) setExpanded(null);
+    if (expandedRoom === room) setExpandedRoom(null);
   }
 
-  const allRooms = [...new Set([...DEFAULT_ROOMS, ...Object.keys(design)])];
-  const activeRooms = allRooms.filter((r) => design[r]);
-  const suggestedRooms = DEFAULT_ROOMS.filter((r) => !design[r]);
+  function loadDefaults(room) {
+    const defaults = (ROOM_DEFAULTS[room] ?? []).map((d) => newItem(d.text, d.options));
+    const existing = design[room]?.items ?? [];
+    updateProject({
+      homeDesign: { ...design, [room]: { items: [...existing, ...defaults] } },
+    });
+  }
+
+  function addItem(room) {
+    const items = design[room]?.items ?? [];
+    updateProject({ homeDesign: { ...design, [room]: { items: [...items, newItem()] } } });
+  }
+
+  function updateItem(room, id, patch) {
+    const items = design[room]?.items ?? [];
+    updateProject({
+      homeDesign: { ...design, [room]: { items: items.map((it) => (it.id === id ? { ...it, ...patch } : it)) } },
+    });
+  }
+
+  function removeItem(room, id) {
+    const items = design[room]?.items ?? [];
+    updateProject({
+      homeDesign: { ...design, [room]: { items: items.filter((it) => it.id !== id) } },
+    });
+  }
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
@@ -74,24 +223,29 @@ export default function Design({ project, updateProject }) {
         <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
           Home Design
         </h1>
-        <p className="text-sage text-sm mt-0.5">Build a room-by-room wish list for your build.</p>
+        <p className="text-sage text-sm mt-0.5">
+          Room-by-room selections — pick options, add inspiration photos, links, and notes.
+        </p>
       </div>
 
-      {/* Room cards */}
+      {/* Active rooms */}
       <div className="space-y-3 mb-6">
         {activeRooms.map((room) => {
           const items = design[room]?.items ?? [];
           const doneCount = items.filter((i) => i.done).length;
+          const hasPresets = !!ROOM_DEFAULTS[room];
+
           return (
             <div key={room} className="bg-white rounded-xl border border-linen overflow-hidden">
+              {/* Room header */}
               <div
                 className="flex items-center gap-3 p-4 cursor-pointer hover:bg-cream/50 transition-colors"
-                onClick={() => setExpanded(expanded === room ? null : room)}
+                onClick={() => setExpandedRoom(expandedRoom === room ? null : room)}
               >
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-ink">{room}</div>
                   <div className="text-xs text-mist mt-0.5">
-                    {items.length === 0 ? 'No items yet' : `${doneCount}/${items.length} done`}
+                    {items.length === 0 ? 'No items yet' : `${doneCount} of ${items.length} decided`}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
@@ -101,41 +255,57 @@ export default function Design({ project, updateProject }) {
                   >
                     <Trash2 size={15} />
                   </button>
-                  {expanded === room ? <ChevronUp size={16} className="text-mist" /> : <ChevronDown size={16} className="text-mist" />}
+                  {expandedRoom === room
+                    ? <ChevronUp size={16} className="text-mist" />
+                    : <ChevronDown size={16} className="text-mist" />}
                 </div>
               </div>
 
-              {expanded === room && (
-                <div className="border-t border-linen p-4 space-y-2">
-                  {items.map((item) => (
-                    <div key={item.id} className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={item.done}
-                        onChange={(e) => updateItem(room, item.id, { done: e.target.checked })}
-                        className="accent-forest shrink-0"
-                      />
-                      <input
-                        type="text"
-                        value={item.text}
-                        onChange={(e) => updateItem(room, item.id, { text: e.target.value })}
-                        placeholder="e.g. Quartz countertops, island seating"
-                        className={`flex-1 text-sm bg-transparent border-b border-linen focus:outline-none focus:border-forest py-0.5 ${item.done ? 'line-through text-mist' : 'text-ink'}`}
-                      />
+              {/* Room body */}
+              {expandedRoom === room && (
+                <div className="border-t border-linen p-4">
+                  {/* Load defaults banner */}
+                  {hasPresets && items.length === 0 && (
+                    <div className="mb-4 flex items-center justify-between bg-forest/5 border border-forest/20 rounded-lg px-3 py-2.5">
+                      <span className="text-xs text-forest">Standard items are available for this room</span>
                       <button
-                        onClick={() => removeItem(room, item.id)}
-                        className="text-red-300 hover:text-red-500 transition-colors shrink-0"
+                        onClick={() => loadDefaults(room)}
+                        className="text-xs bg-forest text-white px-3 py-1.5 rounded-lg hover:bg-deep transition-colors ml-3 shrink-0"
                       >
-                        <Trash2 size={13} />
+                        Load items
                       </button>
                     </div>
-                  ))}
-                  <button
-                    onClick={() => addItem(room)}
-                    className="flex items-center gap-1 text-xs text-forest mt-2 hover:underline"
-                  >
-                    <Plus size={13} /> Add item
-                  </button>
+                  )}
+
+                  {/* Items list */}
+                  <div className="space-y-2">
+                    {items.map((item) => (
+                      <DesignItem
+                        key={item.id}
+                        item={item}
+                        onUpdate={(patch) => updateItem(room, item.id, patch)}
+                        onRemove={() => removeItem(room, item.id)}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Footer actions */}
+                  <div className="flex items-center gap-4 mt-3">
+                    <button
+                      onClick={() => addItem(room)}
+                      className="flex items-center gap-1 text-xs text-forest hover:underline"
+                    >
+                      <Plus size={13} /> Add custom item
+                    </button>
+                    {hasPresets && items.length > 0 && (
+                      <button
+                        onClick={() => loadDefaults(room)}
+                        className="text-xs text-mist hover:text-forest transition-colors"
+                      >
+                        + Reload standard items
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -143,20 +313,20 @@ export default function Design({ project, updateProject }) {
         })}
       </div>
 
-      {/* Add rooms */}
+      {/* Customize section */}
       <div className="bg-white rounded-xl border border-linen p-4">
-        <h2 className="text-sm font-semibold text-ink mb-3">Add a Room</h2>
+        <h2 className="text-sm font-semibold text-ink mb-3">Customize</h2>
         <div className="flex gap-2 mb-3">
           <input
             type="text"
             value={newRoom}
             onChange={(e) => setNewRoom(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && addRoom()}
-            placeholder="Custom room name…"
+            onKeyDown={(e) => e.key === 'Enter' && addRoom(newRoom)}
+            placeholder="Add a custom room or space…"
             className="flex-1 border border-linen rounded-lg px-3 py-2 text-sm bg-cream focus:outline-none focus:ring-2 focus:ring-forest/40"
           />
           <button
-            onClick={addRoom}
+            onClick={() => addRoom(newRoom)}
             className="bg-forest text-white text-sm px-4 py-2 rounded-lg hover:bg-deep transition-colors"
           >
             Add
@@ -167,7 +337,7 @@ export default function Design({ project, updateProject }) {
             {suggestedRooms.map((r) => (
               <button
                 key={r}
-                onClick={() => { ensureRoom(r); setExpanded(r); }}
+                onClick={() => addRoom(r)}
                 className="text-xs text-forest border border-forest/30 px-2.5 py-1 rounded-full hover:bg-forest hover:text-white transition-colors"
               >
                 + {r}
