@@ -1,15 +1,43 @@
 import { useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
-
-const CATEGORIES = [
-  'Land', 'Site Prep', 'Foundation', 'Framing', 'Roofing',
-  'Electrical', 'Plumbing', 'HVAC', 'Insulation', 'Drywall',
-  'Flooring', 'Cabinets & Counters', 'Appliances', 'Exterior',
-  'Landscaping', 'Permits & Fees', 'Contingency', 'Other',
-];
+import { Plus, Trash2, Download, BookOpen } from 'lucide-react';
+import { BUDGET_CATEGORIES, BUDGET_DEFAULTS } from '../data/budgetDefaults';
 
 function newItem() {
-  return { id: Date.now(), category: 'Other', description: '', planned: '', actual: '' };
+  return {
+    id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
+    category: 'Other',
+    description: '',
+    planned: '',
+    actual: '',
+  };
+}
+
+function exportCSV(items) {
+  const headers = ['Category', 'Description', 'Planned ($)', 'Actual ($)', 'Variance ($)'];
+  const rows = items.map((item) => {
+    const planned = parseFloat(item.planned) || 0;
+    const actual = parseFloat(item.actual) || 0;
+    const variance = actual - planned;
+    return [
+      `"${item.category}"`,
+      `"${item.description.replace(/"/g, '""')}"`,
+      planned || '',
+      actual || '',
+      variance !== 0 ? variance : '',
+    ];
+  });
+  const totalPlanned = items.reduce((s, i) => s + (parseFloat(i.planned) || 0), 0);
+  const totalActual = items.reduce((s, i) => s + (parseFloat(i.actual) || 0), 0);
+  rows.push(['', '"TOTAL"', totalPlanned, totalActual, totalActual - totalPlanned]);
+
+  const csv = [headers, ...rows].map((r) => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'life-built-budget.csv';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 export default function Budget({ project, updateProject }) {
@@ -18,6 +46,21 @@ export default function Budget({ project, updateProject }) {
 
   function addItem() {
     updateProject({ budget: { ...project.budget, items: [...items, newItem()] } });
+  }
+
+  function loadStandardBudget() {
+    if (
+      items.length > 0 &&
+      !confirm('Load the standard budget? Your existing items will be kept — standard items will be added alongside them.')
+    ) return;
+    const defaults = BUDGET_DEFAULTS.map((d) => ({
+      id: `${Date.now()}_${Math.random().toString(36).slice(2)}_${Math.random().toString(36).slice(2)}`,
+      category: d.category,
+      description: d.description,
+      planned: '',
+      actual: '',
+    }));
+    updateProject({ budget: { ...project.budget, items: [...items, ...defaults] } });
   }
 
   function updateItem(id, patch) {
@@ -37,25 +80,41 @@ export default function Budget({ project, updateProject }) {
   const totalActual = items.reduce((s, i) => s + (parseFloat(i.actual) || 0), 0);
   const diff = totalActual - totalPlanned;
 
-  const categories = ['All', ...CATEGORIES.filter((c) => items.some((i) => i.category === c)), 'Other'];
-  const uniqueCategories = [...new Set(categories)];
+  const presentCategories = BUDGET_CATEGORIES.filter((c) => items.some((i) => i.category === c));
+  const filterTabs = ['All', ...presentCategories];
   const filtered = filter === 'All' ? items : items.filter((i) => i.category === filter);
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-start justify-between mb-6 gap-4">
         <div>
           <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
             Budget Tracker
           </h1>
           <p className="text-sage text-sm mt-0.5">Plan vs. actual costs across your build.</p>
         </div>
-        <button
-          onClick={addItem}
-          className="flex items-center gap-1.5 bg-forest text-white text-sm px-4 py-2 rounded-lg hover:bg-deep transition-colors"
-        >
-          <Plus size={16} /> Add Line
-        </button>
+        <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+          {items.length > 0 && (
+            <button
+              onClick={() => exportCSV(items)}
+              className="flex items-center gap-1.5 border border-linen text-sage text-sm px-3 py-2 rounded-lg hover:border-forest hover:text-forest transition-colors"
+            >
+              <Download size={15} /> Export CSV
+            </button>
+          )}
+          <button
+            onClick={loadStandardBudget}
+            className="flex items-center gap-1.5 border border-forest text-forest text-sm px-3 py-2 rounded-lg hover:bg-forest hover:text-white transition-colors"
+          >
+            <BookOpen size={15} /> Load Standard Budget
+          </button>
+          <button
+            onClick={addItem}
+            className="flex items-center gap-1.5 bg-forest text-white text-sm px-4 py-2 rounded-lg hover:bg-deep transition-colors"
+          >
+            <Plus size={16} /> Add Line
+          </button>
+        </div>
       </div>
 
       {/* Summary cards */}
@@ -79,7 +138,7 @@ export default function Budget({ project, updateProject }) {
       {/* Category filter */}
       {items.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-4">
-          {uniqueCategories.map((c) => (
+          {filterTabs.map((c) => (
             <button
               key={c}
               onClick={() => setFilter(c)}
@@ -97,7 +156,7 @@ export default function Budget({ project, updateProject }) {
         <div className="text-center py-16 text-mist">
           <div className="text-4xl mb-3">💰</div>
           <p className="font-medium">No budget items yet</p>
-          <p className="text-sm mt-1">Add line items to track your land and build costs.</p>
+          <p className="text-sm mt-1">Click <strong>Load Standard Budget</strong> to pre-fill 460+ line items, or add your own.</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-linen overflow-hidden">
@@ -118,7 +177,7 @@ export default function Budget({ project, updateProject }) {
                   onChange={(e) => updateItem(item.id, { category: e.target.value })}
                   className="w-full text-xs border border-linen rounded px-1.5 py-1 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
                 >
-                  {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                  {BUDGET_CATEGORIES.map((c) => <option key={c}>{c}</option>)}
                 </select>
               </div>
               <div className="col-span-4">
