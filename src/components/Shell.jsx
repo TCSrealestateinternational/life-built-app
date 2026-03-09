@@ -9,6 +9,7 @@ import {
   Calendar,
   CheckSquare,
   Users,
+  FolderOpen,
   LogOut,
   Menu,
   X,
@@ -22,6 +23,7 @@ const NAV_ITEMS = [
   { id: 'budget', label: 'Budget', icon: DollarSign },
   { id: 'timeline', label: 'Timeline', icon: Calendar },
   { id: 'checklists', label: 'Checklists', icon: CheckSquare },
+  { id: 'documents', label: 'Documents', icon: FolderOpen },
   { id: 'team', label: 'Team', icon: Users },
 ];
 

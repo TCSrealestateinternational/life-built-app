@@ -10,6 +10,7 @@ import Budget from './components/Budget';
 import Timeline from './components/Timeline';
 import Checklists from './components/Checklists';
 import Team from './components/Team';
+import Documents from './components/Documents';
 import ShareView from './components/ShareView';
 
 function getShareUid() {
@@ -53,6 +54,7 @@ export default function App() {
       {section === 'budget' && <Budget {...sectionProps} />}
       {section === 'timeline' && <Timeline {...sectionProps} />}
       {section === 'checklists' && <Checklists {...sectionProps} />}
+      {section === 'documents' && <Documents {...sectionProps} uid={user.uid} />}
       {section === 'team' && <Team {...sectionProps} uid={user.uid} />}
     </Shell>
   );
