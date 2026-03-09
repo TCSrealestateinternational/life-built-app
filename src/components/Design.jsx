@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Plus, Trash2, ChevronDown, ChevronUp, Image, Link2, FileText } from 'lucide-react';
-import { ROOM_DEFAULTS, ORDERED_ROOMS } from '../data/roomDefaults';
+import { ROOM_DEFAULTS, ORDERED_ROOMS, BASEMENT_DEFAULTS } from '../data/roomDefaults';
 
 function newItem(text = '', options = []) {
   return {
@@ -182,6 +182,16 @@ export default function Design({ project, updateProject }) {
     setExpandedRoom(r);
   }
 
+  function handleBasementMode(mode) {
+    const room = 'Basement';
+    const currentMode = design[room]?.mode;
+    if (currentMode === mode) return;
+    const hasItems = (design[room]?.items ?? []).length > 0;
+    if (hasItems && !confirm(`Switch to ${mode === 'finished' ? 'Finished' : 'Unfinished'} basement? Your current items will be replaced.`)) return;
+    const defaults = (BASEMENT_DEFAULTS[mode] ?? []).map((d) => newItem(d.text, d.options));
+    updateProject({ homeDesign: { ...design, Basement: { mode, items: defaults } } });
+  }
+
   function removeRoom(room) {
     if (!confirm(`Remove "${room}" and all its items?`)) return;
     const updated = { ...design };
@@ -264,8 +274,37 @@ export default function Design({ project, updateProject }) {
               {/* Room body */}
               {expandedRoom === room && (
                 <div className="border-t border-linen p-4">
+                  {/* Basement toggle */}
+                  {room === 'Basement' && (
+                    <div className="mb-4">
+                      <p className="text-xs text-mist mb-2 font-medium">What type of basement are you planning?</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          { key: 'unfinished', label: '🏗️ Unfinished', desc: 'Utilities, storage, rough-in' },
+                          { key: 'finished', label: '🏠 Finished', desc: 'Living space, rooms, wet bar' },
+                        ].map(({ key, label, desc }) => (
+                          <button
+                            key={key}
+                            onClick={() => handleBasementMode(key)}
+                            className={`p-3 rounded-lg border text-left transition-colors ${
+                              design[room]?.mode === key
+                                ? 'border-forest bg-forest/10'
+                                : 'border-linen hover:border-sage'
+                            }`}
+                          >
+                            <div className={`text-sm font-medium ${design[room]?.mode === key ? 'text-forest' : 'text-ink'}`}>{label}</div>
+                            <div className="text-xs text-mist mt-0.5">{desc}</div>
+                          </button>
+                        ))}
+                      </div>
+                      {!design[room]?.mode && (
+                        <p className="text-xs text-mist text-center mt-2">Select a type above to load items</p>
+                      )}
+                    </div>
+                  )}
+
                   {/* Load defaults banner */}
-                  {hasPresets && items.length === 0 && (
+                  {hasPresets && items.length === 0 && room !== 'Basement' && (
                     <div className="mb-4 flex items-center justify-between bg-forest/5 border border-forest/20 rounded-lg px-3 py-2.5">
                       <span className="text-xs text-forest">Standard items are available for this room</span>
                       <button
@@ -297,7 +336,7 @@ export default function Design({ project, updateProject }) {
                     >
                       <Plus size={13} /> Add custom item
                     </button>
-                    {hasPresets && items.length > 0 && (
+                    {hasPresets && items.length > 0 && room !== 'Basement' && (
                       <button
                         onClick={() => loadDefaults(room)}
                         className="text-xs text-mist hover:text-forest transition-colors"
