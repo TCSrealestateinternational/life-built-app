@@ -13,19 +13,27 @@ import Team from './components/Team';
 import Profile from './components/Profile';
 import Documents from './components/Documents';
 import ShareView from './components/ShareView';
+import SharedPortal from './components/SharedPortal';
 
 function getShareUid() {
   const match = window.location.pathname.match(/^\/share\/([^/]+)$/);
   return match ? match[1] : null;
 }
 
+function getTeamToken() {
+  const match = window.location.pathname.match(/^\/t\/([^/]+)$/);
+  return match ? match[1] : null;
+}
+
 export default function App() {
   const shareUid = getShareUid();
+  const teamToken = getTeamToken();
   const user = useAuth();
   const [section, setSection] = useState('dashboard');
   const { project, loading, updateProject } = useProject(user?.uid ?? null);
 
   if (shareUid) return <ShareView uid={shareUid} />;
+  if (teamToken) return <SharedPortal token={teamToken} />;
 
   if (user === undefined) {
     return (
