@@ -1,7 +1,11 @@
 import { useState, useMemo } from 'react';
-import { Plus, Trash2, BarChart2, List, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  Plus, Trash2, BarChart2, List, RefreshCw,
+  ChevronDown, ChevronUp, Printer, Image, Paperclip, X,
+} from 'lucide-react';
 import GanttChart from './GanttChart';
 import { TEMPLATES, buildMilestonesFromTemplate } from '../data/timelineTemplates';
+import { printTimeline } from '../utils/printTimeline';
 
 const TODAY = new Date().toISOString().slice(0, 10);
 
@@ -11,16 +15,19 @@ function addDays(dateStr, n) {
   return d.toISOString().slice(0, 10);
 }
 
-// Migrate old milestone format ({ targetDate }) to new ({ start, end, progress })
+// Migrate old milestone format ({ targetDate }) to new ({ start, end, progress, photos, linkedDocs })
 function normalize(m) {
-  if (m.start && m.end) return m;
-  const start = m.targetDate || TODAY;
-  return {
+  const base = m.start && m.end ? m : {
     ...m,
-    start,
-    end: m.end || addDays(start, 13),
+    start: m.start || m.targetDate || TODAY,
+    end: m.end || addDays(m.start || m.targetDate || TODAY, 13),
     progress: m.progress ?? (m.done ? 100 : 0),
     dependencies: m.dependencies || '',
+  };
+  return {
+    ...base,
+    photos: base.photos || [],
+    linkedDocs: base.linkedDocs || [],
   };
 }
 
@@ -49,7 +56,6 @@ function TemplatePicker({ startDate, onStartDateChange, onSelect, onSkip, hasExi
         </p>
       </div>
 
-      {/* Warning if replacing existing milestones */}
       {hasExisting && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-xs text-amber-700">
           ⚠️ Applying a template will replace your existing milestones. This cannot be undone.
@@ -109,9 +115,48 @@ function TemplatePicker({ startDate, onStartDateChange, onSelect, onSkip, hasExi
 
 // ─── Milestone row (List view) ────────────────────────────────────────────────
 
-function MilestoneRow({ milestone: m, onUpdate, onDelete }) {
+function MilestoneRow({ milestone: m, onUpdate, onDelete, projectDocs }) {
   const [expanded, setExpanded] = useState(false);
   const pct = typeof m.progress === 'number' ? m.progress : (m.done ? 100 : 0);
+
+  // ── Photos helpers ────────────────────────────────────────────────────────
+  function addPhoto() {
+    onUpdate({
+      photos: [
+        ...(m.photos || []),
+        { id: `ph_${Date.now()}`, url: '', caption: '' },
+      ],
+    });
+  }
+  function updatePhoto(id, patch) {
+    onUpdate({ photos: (m.photos || []).map((p) => (p.id === id ? { ...p, ...patch } : p)) });
+  }
+  function removePhoto(id) {
+    onUpdate({ photos: (m.photos || []).filter((p) => p.id !== id) });
+  }
+
+  // ── Doc link helpers ──────────────────────────────────────────────────────
+  function addDocFromDropdown(docId) {
+    if (!docId) return;
+    const doc = (projectDocs || []).find((d) => d.id === docId);
+    if (!doc) return;
+    if ((m.linkedDocs || []).some((d) => d.id === doc.id)) return; // no dupe
+    onUpdate({ linkedDocs: [...(m.linkedDocs || []), { id: doc.id, name: doc.name, url: doc.url }] });
+  }
+  function addCustomDoc() {
+    onUpdate({
+      linkedDocs: [
+        ...(m.linkedDocs || []),
+        { id: `doc_${Date.now()}`, name: '', url: '' },
+      ],
+    });
+  }
+  function updateDoc(id, patch) {
+    onUpdate({ linkedDocs: (m.linkedDocs || []).map((d) => (d.id === id ? { ...d, ...patch } : d)) });
+  }
+  function removeDoc(id) {
+    onUpdate({ linkedDocs: (m.linkedDocs || []).filter((d) => d.id !== id) });
+  }
 
   return (
     <div
@@ -119,8 +164,8 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete }) {
         m.done ? 'border-forest/20 bg-forest/5' : 'border-linen bg-white'
       }`}
     >
+      {/* Main row */}
       <div className="flex items-center gap-3 px-4 py-3">
-        {/* Done */}
         <input
           type="checkbox"
           checked={!!m.done}
@@ -129,8 +174,6 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete }) {
           }
           className="accent-forest shrink-0"
         />
-
-        {/* Title */}
         <input
           type="text"
           value={m.title}
@@ -140,7 +183,6 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete }) {
             m.done ? 'line-through text-mist' : 'text-ink font-medium'
           }`}
         />
-
         {/* Dates (desktop) */}
         <div className="hidden sm:flex items-center gap-1.5 text-xs shrink-0">
           <input
@@ -157,16 +199,20 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete }) {
             className="border border-linen rounded px-2 py-1 text-ink focus:outline-none focus:border-forest"
           />
         </div>
-
-        {/* Progress bar (desktop) */}
+        {/* Progress (desktop) */}
         <div className="hidden md:flex items-center gap-1.5 shrink-0">
           <div className="w-16 h-1.5 bg-linen rounded-full overflow-hidden">
             <div className="h-full bg-forest rounded-full" style={{ width: `${pct}%` }} />
           </div>
           <span className="text-xs text-mist w-8">{pct}%</span>
         </div>
-
-        {/* Expand + Delete */}
+        {/* Indicators */}
+        {(m.photos || []).length > 0 && (
+          <Image size={12} className="text-mist shrink-0" title={`${m.photos.length} photo(s)`} />
+        )}
+        {(m.linkedDocs || []).length > 0 && (
+          <Paperclip size={12} className="text-mist shrink-0" title={`${m.linkedDocs.length} doc(s)`} />
+        )}
         <button
           onClick={() => setExpanded(!expanded)}
           className="text-mist hover:text-ink transition-colors shrink-0"
@@ -181,27 +227,20 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete }) {
         </button>
       </div>
 
+      {/* Expanded detail */}
       {expanded && (
-        <div className="px-4 pb-4 pt-3 border-t border-linen bg-cream/20 space-y-3">
+        <div className="px-4 pb-4 pt-3 border-t border-linen bg-cream/20 space-y-4">
           {/* Mobile dates */}
-          <div className="sm:hidden space-y-2">
+          <div className="sm:hidden flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <label className="text-xs text-mist w-10 shrink-0">Start</label>
-              <input
-                type="date"
-                value={m.start}
-                onChange={(e) => onUpdate({ start: e.target.value })}
-                className="text-sm border border-linen rounded px-2 py-1 focus:outline-none focus:border-forest text-ink"
-              />
+              <input type="date" value={m.start} onChange={(e) => onUpdate({ start: e.target.value })}
+                className="text-sm border border-linen rounded px-2 py-1 focus:outline-none focus:border-forest text-ink" />
             </div>
             <div className="flex items-center gap-2">
               <label className="text-xs text-mist w-10 shrink-0">End</label>
-              <input
-                type="date"
-                value={m.end}
-                onChange={(e) => onUpdate({ end: e.target.value })}
-                className="text-sm border border-linen rounded px-2 py-1 focus:outline-none focus:border-forest text-ink"
-              />
+              <input type="date" value={m.end} onChange={(e) => onUpdate({ end: e.target.value })}
+                className="text-sm border border-linen rounded px-2 py-1 focus:outline-none focus:border-forest text-ink" />
             </div>
           </div>
 
@@ -209,11 +248,7 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete }) {
           <div className="flex items-center gap-3">
             <label className="text-xs text-mist w-16 shrink-0">Progress</label>
             <input
-              type="range"
-              min={0}
-              max={100}
-              step={5}
-              value={pct}
+              type="range" min={0} max={100} step={5} value={pct}
               onChange={(e) => onUpdate({ progress: Number(e.target.value) })}
               className="flex-1 accent-forest"
             />
@@ -231,6 +266,114 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete }) {
               className="flex-1 text-sm border border-linen rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-forest/40 resize-none"
             />
           </div>
+
+          {/* Progress Photos */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs font-medium text-mist flex items-center gap-1">
+                <Image size={12} /> Progress Photos
+              </label>
+              <button
+                onClick={addPhoto}
+                className="text-xs text-forest hover:underline flex items-center gap-0.5"
+              >
+                <Plus size={11} /> Add URL
+              </button>
+            </div>
+            {(m.photos || []).length === 0 && (
+              <p className="text-xs text-mist/60 italic">No photos linked yet. Paste a Google Drive or other image URL.</p>
+            )}
+            <div className="space-y-2">
+              {(m.photos || []).map((p) => (
+                <div key={p.id} className="flex items-center gap-2">
+                  <input
+                    type="url"
+                    value={p.url}
+                    onChange={(e) => updatePhoto(p.id, { url: e.target.value })}
+                    placeholder="Photo URL…"
+                    className="flex-1 text-xs border border-linen rounded px-2 py-1.5 bg-white focus:outline-none focus:border-forest"
+                  />
+                  <input
+                    type="text"
+                    value={p.caption}
+                    onChange={(e) => updatePhoto(p.id, { caption: e.target.value })}
+                    placeholder="Caption (optional)"
+                    className="w-32 text-xs border border-linen rounded px-2 py-1.5 bg-white focus:outline-none focus:border-forest"
+                  />
+                  {p.url && (
+                    <a href={p.url} target="_blank" rel="noreferrer"
+                      className="text-xs text-forest hover:underline whitespace-nowrap">
+                      View
+                    </a>
+                  )}
+                  <button onClick={() => removePhoto(p.id)} className="text-red-300 hover:text-red-500 shrink-0">
+                    <X size={12} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Linked Documents */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs font-medium text-mist flex items-center gap-1">
+                <Paperclip size={12} /> Attached Documents
+              </label>
+              <div className="flex items-center gap-2">
+                {(projectDocs || []).length > 0 && (
+                  <select
+                    defaultValue=""
+                    onChange={(e) => { addDocFromDropdown(e.target.value); e.target.value = ''; }}
+                    className="text-xs border border-linen rounded px-2 py-1 bg-white focus:outline-none focus:border-forest text-ink"
+                  >
+                    <option value="">Pick from your docs…</option>
+                    {(projectDocs || []).map((d) => (
+                      <option key={d.id} value={d.id}>{d.name}</option>
+                    ))}
+                  </select>
+                )}
+                <button
+                  onClick={addCustomDoc}
+                  className="text-xs text-forest hover:underline flex items-center gap-0.5"
+                >
+                  <Plus size={11} /> Custom URL
+                </button>
+              </div>
+            </div>
+            {(m.linkedDocs || []).length === 0 && (
+              <p className="text-xs text-mist/60 italic">No documents attached. Pick from your docs list or add a custom URL.</p>
+            )}
+            <div className="space-y-2">
+              {(m.linkedDocs || []).map((d) => (
+                <div key={d.id} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={d.name}
+                    onChange={(e) => updateDoc(d.id, { name: e.target.value })}
+                    placeholder="Document name…"
+                    className="w-40 text-xs border border-linen rounded px-2 py-1.5 bg-white focus:outline-none focus:border-forest"
+                  />
+                  <input
+                    type="url"
+                    value={d.url}
+                    onChange={(e) => updateDoc(d.id, { url: e.target.value })}
+                    placeholder="URL…"
+                    className="flex-1 text-xs border border-linen rounded px-2 py-1.5 bg-white focus:outline-none focus:border-forest"
+                  />
+                  {d.url && (
+                    <a href={d.url} target="_blank" rel="noreferrer"
+                      className="text-xs text-forest hover:underline whitespace-nowrap">
+                      Open
+                    </a>
+                  )}
+                  <button onClick={() => removeDoc(d.id)} className="text-red-300 hover:text-red-500 shrink-0">
+                    <X size={12} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -242,6 +385,7 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete }) {
 export default function Timeline({ project, updateProject }) {
   const raw = project?.timeline?.milestones ?? [];
   const milestones = useMemo(() => raw.map(normalize), [raw]);
+  const projectDocs = project?.documents ?? [];
 
   const [view, setView] = useState('gantt');
   const [ganttMode, setGanttMode] = useState('Month');
@@ -274,6 +418,8 @@ export default function Timeline({ project, updateProject }) {
         done: false,
         notes: '',
         dependencies: '',
+        photos: [],
+        linkedDocs: [],
       },
     ]);
   }
@@ -320,7 +466,7 @@ export default function Timeline({ project, updateProject }) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Gantt view mode (Week / Month / Quarter) */}
+          {/* Gantt view mode */}
           {view === 'gantt' && total > 0 && (
             <div className="flex bg-linen/50 rounded-lg p-0.5 text-xs">
               {['Week', 'Month', 'Quarter'].map((m) => (
@@ -359,6 +505,17 @@ export default function Timeline({ project, updateProject }) {
             </div>
           )}
 
+          {/* Print */}
+          {total > 0 && (
+            <button
+              onClick={() => printTimeline({ milestones })}
+              className="flex items-center gap-1.5 text-xs text-mist hover:text-forest transition-colors px-2 py-1"
+              title="Print / Save as PDF"
+            >
+              <Printer size={12} /> Print
+            </button>
+          )}
+
           {/* Change template */}
           <button
             onClick={() => setShowPicker(true)}
@@ -385,10 +542,7 @@ export default function Timeline({ project, updateProject }) {
           <div className="text-4xl mb-3">📅</div>
           <p className="font-medium">No milestones yet</p>
           <p className="text-sm mt-1">
-            <button
-              onClick={() => setShowPicker(true)}
-              className="text-forest hover:underline"
-            >
+            <button onClick={() => setShowPicker(true)} className="text-forest hover:underline">
               Choose a template
             </button>
             {' '}or add your own below.
@@ -410,6 +564,7 @@ export default function Timeline({ project, updateProject }) {
               milestone={m}
               onUpdate={(patch) => updateMilestone(m.id, patch)}
               onDelete={() => deleteMilestone(m.id)}
+              projectDocs={projectDocs}
             />
           ))}
         </div>

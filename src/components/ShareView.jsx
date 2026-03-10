@@ -150,38 +150,94 @@ export default function ShareView({ uid }) {
           </div>
         )}
 
-        {tab === 'timeline' && (
-          <div className="space-y-2">
-            {(project.timeline?.milestones ?? []).length === 0 ? (
-              <p className="text-mist text-sm">No milestones yet.</p>
-            ) : (project.timeline.milestones).map((m, i) => (
-              <div key={m.id} className={`bg-white rounded-xl border p-4 ${m.done ? 'border-forest/30 bg-forest/5' : 'border-linen'}`}>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-mist w-5 text-right">{i + 1}</span>
-                  <span className={`flex-1 text-sm ${m.done ? 'line-through text-mist' : 'text-ink font-medium'}`}>{m.title}</span>
-                  {m.targetDate && <span className="text-xs text-mist">{m.targetDate}</span>}
-                  {m.done && <span className="text-xs text-forest font-medium">✓</span>}
+        {tab === 'timeline' && (() => {
+          const milestones = project.timeline?.milestones ?? [];
+          const done = milestones.filter((m) => m.done).length;
+          const total = milestones.length;
+          const fmtD = (d) => {
+            if (!d) return '';
+            const [y, mo, day] = d.split('-');
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return `${months[parseInt(mo,10)-1]} ${parseInt(day,10)}, ${y}`;
+          };
+          return (
+            <div>
+              {total > 0 && (
+                <div className="bg-white rounded-xl border border-linen p-4 mb-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium text-ink">{done}/{total} milestones complete</span>
+                    <span className="text-xs text-mist">{Math.round((done/total)*100)}%</span>
+                  </div>
+                  <div className="h-2 bg-linen rounded-full overflow-hidden">
+                    <div className="h-full bg-forest rounded-full" style={{ width: `${(done/total)*100}%` }} />
+                  </div>
                 </div>
+              )}
+              <div className="space-y-2">
+                {milestones.length === 0 ? (
+                  <p className="text-mist text-sm">No milestones yet.</p>
+                ) : milestones.map((m, i) => {
+                  const start = m.start || m.targetDate;
+                  const end = m.end;
+                  const pct = typeof m.progress === 'number' ? m.progress : (m.done ? 100 : 0);
+                  return (
+                    <div key={m.id ?? i} className={`bg-white rounded-xl border p-4 ${m.done ? 'border-forest/30 bg-forest/5' : 'border-linen'}`}>
+                      <div className="flex items-start gap-3">
+                        <span className="text-xs text-mist w-5 text-right mt-0.5">{i + 1}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className={`text-sm ${m.done ? 'line-through text-mist' : 'text-ink font-medium'}`}>{m.title}</span>
+                            {m.done && <span className="text-xs text-forest font-medium">✓</span>}
+                          </div>
+                          {(start || end) && (
+                            <p className="text-xs text-mist mt-0.5">
+                              {fmtD(start)}{end && end !== start ? ` → ${fmtD(end)}` : ''}
+                            </p>
+                          )}
+                          {m.notes && <p className="text-xs text-sage mt-1 italic">{m.notes}</p>}
+                          {pct > 0 && !m.done && (
+                            <div className="mt-2 flex items-center gap-2">
+                              <div className="flex-1 h-1 bg-linen rounded-full overflow-hidden">
+                                <div className="h-full bg-forest rounded-full" style={{ width: `${pct}%` }} />
+                              </div>
+                              <span className="text-xs text-mist">{pct}%</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          );
+        })()}
 
         {tab === 'checklists' && (
           <div className="space-y-4">
-            {Object.entries(project.checklists ?? {}).map(([key, items]) => (
-              <div key={key} className="bg-white rounded-xl border border-linen p-4">
-                <h3 className="font-semibold text-ink mb-3 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
-                <div className="space-y-2">
-                  {items.map((item) => (
-                    <div key={item.id} className="flex items-center gap-2 text-sm">
-                      <span className={item.done ? 'text-forest' : 'text-linen'}>{item.done ? '✓' : '○'}</span>
-                      <span className={item.done ? 'line-through text-mist' : 'text-ink'}>{item.text}</span>
+            {Object.entries(project.checklists ?? {})
+              .filter(([k]) => k !== 'punchList' && k !== 'punchListCustom')
+              .map(([key, items]) => {
+                if (!Array.isArray(items)) return null;
+                const label = { landEvaluation: 'Land Evaluation', permits: 'Permits & Inspections', contractor: 'Hiring a Contractor' }[key] || key.replace(/([A-Z])/g, ' $1').trim();
+                const done = items.filter((i) => i.done).length;
+                return (
+                  <div key={key} className="bg-white rounded-xl border border-linen p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-semibold text-ink">{label}</h3>
+                      <span className="text-xs text-mist">{done}/{items.length}</span>
                     </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+                    <div className="space-y-2">
+                      {items.map((item) => (
+                        <div key={item.id} className="flex items-center gap-2 text-sm">
+                          <span className={item.done ? 'text-forest' : 'text-linen'}>{item.done ? '✓' : '○'}</span>
+                          <span className={item.done ? 'line-through text-mist' : 'text-ink'}>{item.text}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
           </div>
         )}
 
