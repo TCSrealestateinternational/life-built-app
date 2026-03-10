@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Printer } from 'lucide-react';
 import PunchListTab from './PunchListTab';
 import { PUNCH_LIST_TOTAL } from '../data/punchListData';
+import { printGenericChecklist, printPunchList } from '../utils/printChecklist';
 
 const CHECKLIST_META = {
   landEvaluation: { label: 'Land Evaluation', tab: 'Land Eval', emoji: '🌿', desc: 'Before you buy — due diligence essentials.' },
@@ -149,7 +150,22 @@ export default function Checklists({ project, updateProject }) {
       <div className="bg-white rounded-xl border border-linen p-5">
         <div className="flex items-center justify-between mb-1">
           <h2 className="font-semibold text-ink">{meta.emoji} {meta.label}</h2>
-          <span className="text-xs text-mist">{done}/{total} done</span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-mist">{done}/{total} done</span>
+            <button
+              onClick={() => {
+                if (isPunchList) {
+                  printPunchList({ checkedIds: punchListChecked, customItems: punchListCustom });
+                } else {
+                  printGenericChecklist({ label: meta.label, emoji: meta.emoji, desc: meta.desc, items: currentList });
+                }
+              }}
+              className="flex items-center gap-1.5 text-xs text-mist hover:text-forest transition-colors"
+              title="Print / Save as PDF"
+            >
+              <Printer size={13} /> Print
+            </button>
+          </div>
         </div>
         <p className="text-xs text-mist mb-4">{meta.desc}</p>
 
