@@ -14,7 +14,6 @@ import {
   LogOut,
   Menu,
   X,
-  Share2,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -31,11 +30,6 @@ const NAV_ITEMS = [
 
 export default function Shell({ user, section, onSection, children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  function handleShare() {
-    const url = `${window.location.origin}/share/${user.uid}`;
-    navigator.clipboard.writeText(url).then(() => alert('Share link copied!\n\n' + url));
-  }
 
   return (
     <div className="min-h-screen flex bg-cream">
@@ -66,13 +60,6 @@ export default function Shell({ user, section, onSection, children }) {
         </nav>
 
         <div className="px-2 pb-4 space-y-0.5">
-          <button
-            onClick={handleShare}
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-mist hover:bg-white/5 hover:text-white transition-colors"
-          >
-            <Share2 size={16} />
-            Share with Builder
-          </button>
           <button
             onClick={() => signOut(auth)}
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-mist hover:bg-white/5 hover:text-white transition-colors"
@@ -114,13 +101,6 @@ export default function Shell({ user, section, onSection, children }) {
               ))}
             </nav>
             <div className="px-2 pb-6 space-y-0.5">
-              <button
-                onClick={() => { handleShare(); setMobileOpen(false); }}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-mist hover:bg-white/5 hover:text-white transition-colors"
-              >
-                <Share2 size={16} />
-                Share with Builder
-              </button>
               <button
                 onClick={() => signOut(auth)}
                 className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-mist hover:bg-white/5 hover:text-white transition-colors"
