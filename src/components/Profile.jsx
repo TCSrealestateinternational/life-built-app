@@ -9,9 +9,10 @@ import {
   signOut,
 } from 'firebase/auth';
 import { auth } from '../firebase';
+import FAQ from './FAQ';
 import {
   User, Mail, Phone, Lock, MapPin, FileText, Bell, Shield,
-  CreditCard, HelpCircle, LogOut, Trash2, ChevronRight,
+  CreditCard, LogOut, Trash2, ChevronRight,
   Check, X, Edit2, Building, DollarSign, CheckSquare, FolderOpen,
   Home,
 } from 'lucide-react';
@@ -548,12 +549,6 @@ export default function Profile({ project, updateProject, user }) {
       {/* Support & Legal */}
       <SectionCard title="Support & Legal">
         <ActionRow
-          icon={HelpCircle}
-          label="Help & FAQ"
-          sublabel="Common questions about using the app"
-          onClick={() => alert('Help center coming soon!')}
-        />
-        <ActionRow
           icon={Mail}
           label="Contact Support"
           sublabel="home@lifebuiltinkentucky.com"
@@ -570,6 +565,9 @@ export default function Profile({ project, updateProject, user }) {
           href="https://www.lifebuiltinkentucky.com/privacy.html"
         />
       </SectionCard>
+
+      {/* FAQ */}
+      <FAQ />
 
       {/* Account actions */}
       <SectionCard title="Account Actions">
