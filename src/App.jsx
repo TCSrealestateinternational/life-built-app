@@ -10,6 +10,7 @@ import Budget from './components/Budget';
 import Timeline from './components/Timeline';
 import Checklists from './components/Checklists';
 import Team from './components/Team';
+import Profile from './components/Profile';
 import Documents from './components/Documents';
 import ShareView from './components/ShareView';
 
@@ -49,6 +50,7 @@ export default function App() {
   return (
     <Shell user={user} section={section} onSection={setSection}>
       {section === 'dashboard' && <Dashboard {...sectionProps} user={user} onSection={setSection} />}
+      {section === 'profile' && <Profile {...sectionProps} user={user} />}
       {section === 'properties' && <Properties {...sectionProps} />}
       {section === 'design' && <Design {...sectionProps} />}
       {section === 'budget' && <Budget {...sectionProps} />}

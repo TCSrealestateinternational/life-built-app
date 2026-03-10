@@ -3,6 +3,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import {
   LayoutDashboard,
+  UserCircle,
   MapPin,
   Palette,
   DollarSign,
@@ -18,6 +19,7 @@ import {
 
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { id: 'profile', label: 'Profile', icon: UserCircle },
   { id: 'properties', label: 'Properties', icon: MapPin },
   { id: 'design', label: 'Home Design', icon: Palette },
   { id: 'budget', label: 'Budget', icon: DollarSign },
