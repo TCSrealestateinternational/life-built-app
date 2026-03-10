@@ -34,6 +34,49 @@ export default function Checklists({ project, updateProject }) {
     updateProject({ checklists: { ...checklists, punchList: updated } });
   }
 
+  // Punch list custom items — stored per section in punchListCustom
+  function addPunchListCustomItem(sectionId) {
+    const custom = checklists.punchListCustom ?? {};
+    const sectionItems = custom[sectionId] ?? [];
+    const newItem = { id: `cust_${sectionId}_${Date.now()}_${Math.random().toString(36).slice(2)}`, text: '' };
+    updateProject({
+      checklists: {
+        ...checklists,
+        punchListCustom: { ...custom, [sectionId]: [...sectionItems, newItem] },
+      },
+    });
+  }
+
+  function updatePunchListCustomItem(sectionId, itemId, text) {
+    const custom = checklists.punchListCustom ?? {};
+    const sectionItems = custom[sectionId] ?? [];
+    updateProject({
+      checklists: {
+        ...checklists,
+        punchListCustom: {
+          ...custom,
+          [sectionId]: sectionItems.map((i) => (i.id === itemId ? { ...i, text } : i)),
+        },
+      },
+    });
+  }
+
+  function removePunchListCustomItem(sectionId, itemId) {
+    const custom = checklists.punchListCustom ?? {};
+    const sectionItems = custom[sectionId] ?? [];
+    const punchChecked = checklists.punchList ?? [];
+    updateProject({
+      checklists: {
+        ...checklists,
+        punchList: punchChecked.filter((id) => id !== itemId),
+        punchListCustom: {
+          ...custom,
+          [sectionId]: sectionItems.filter((i) => i.id !== itemId),
+        },
+      },
+    });
+  }
+
   function addItem(listKey) {
     const list = checklists[listKey] ?? [];
     updateProject({
@@ -65,8 +108,10 @@ export default function Checklists({ project, updateProject }) {
   const isPunchList = activeTab === 'punchList';
   const currentList = isPunchList ? [] : (checklists[activeTab] ?? []);
   const punchListChecked = checklists.punchList ?? [];
+  const punchListCustom = checklists.punchListCustom ?? {};
+  const customTotal = Object.values(punchListCustom).reduce((s, items) => s + items.length, 0);
   const done = isPunchList ? punchListChecked.length : currentList.filter((i) => i.done).length;
-  const total = isPunchList ? PUNCH_LIST_TOTAL : currentList.length;
+  const total = isPunchList ? PUNCH_LIST_TOTAL + customTotal : currentList.length;
   const meta = CHECKLIST_META[activeTab];
 
   return (
@@ -84,7 +129,7 @@ export default function Checklists({ project, updateProject }) {
           const m = CHECKLIST_META[key];
           const list = checklists[key] ?? [];
           const d = key === 'punchList' ? (checklists.punchList ?? []).length : list.filter((i) => i.done).length;
-          const t = key === 'punchList' ? PUNCH_LIST_TOTAL : list.length;
+          const t = key === 'punchList' ? PUNCH_LIST_TOTAL + customTotal : list.length;
           return (
             <button
               key={key}
@@ -120,7 +165,14 @@ export default function Checklists({ project, updateProject }) {
 
         {/* Punch list renders its own layout */}
         {isPunchList ? (
-          <PunchListTab checkedIds={punchListChecked} onToggle={togglePunchList} />
+          <PunchListTab
+            checkedIds={punchListChecked}
+            customItems={punchListCustom}
+            onToggle={togglePunchList}
+            onAddCustom={addPunchListCustomItem}
+            onUpdateCustom={updatePunchListCustomItem}
+            onRemoveCustom={removePunchListCustomItem}
+          />
         ) : (
           <>
             <div className="space-y-2">
