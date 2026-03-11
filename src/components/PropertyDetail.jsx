@@ -1,24 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { storage } from '../firebase';
+import { useState } from 'react';
 import {
-  ArrowLeft, Star, Plus, Trash2, ExternalLink, Camera, Mic, MicOff,
-  X, ChevronDown, ChevronUp, Globe, School, Car, Droplets,
+  ArrowLeft, Star, Plus, Trash2, ExternalLink,
+  X, ChevronDown, ChevronUp, Globe, School, Car, Droplets, ImagePlus,
 } from 'lucide-react';
 import { STATUS, geocodeAddress, osmEmbedUrl } from '../data/propertyData';
 
-// ─── Shared helpers ────────────────────────────────────────────────────────────
-
-async function uploadFile(uid, propertyId, folder, fileOrBlob, filename) {
-  const name = filename || (fileOrBlob.name ? `${Date.now()}_${fileOrBlob.name}` : `${Date.now()}.webm`);
-  const path = `users/${uid}/properties/${propertyId}/${folder}/${name}`;
-  const storRef = ref(storage, path);
-  await new Promise((resolve, reject) => {
-    const task = uploadBytesResumable(storRef, fileOrBlob);
-    task.on('state_changed', null, reject, resolve);
-  });
-  return getDownloadURL(storRef);
-}
+// ─── Helpers ───────────────────────────────────────────────────────────────────
 
 function fmtDate(d) {
   if (!d) return '';
@@ -47,6 +34,35 @@ function StarRating({ value, onChange, size = 20, readonly = false }) {
   );
 }
 
+// Small reusable URL-add row for photos
+function PhotoUrlInput({ onAdd, placeholder = 'Paste image URL and press Enter…' }) {
+  const [url, setUrl] = useState('');
+  function submit() {
+    const trimmed = url.trim();
+    if (!trimmed) return;
+    onAdd(trimmed);
+    setUrl('');
+  }
+  return (
+    <div className="flex gap-2 mt-2">
+      <input
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && submit()}
+        placeholder={placeholder}
+        className="flex-1 border border-linen rounded-lg px-3 py-1.5 text-xs bg-cream focus:outline-none focus:ring-2 focus:ring-forest/40"
+      />
+      <button
+        onClick={submit}
+        disabled={!url.trim()}
+        className="text-xs px-3 py-1.5 bg-forest text-white rounded-lg hover:bg-deep disabled:opacity-40 transition-colors"
+      >
+        Add
+      </button>
+    </div>
+  );
+}
+
 const ATTENDEES = ['Self', 'Partner / Spouse', 'Builder / GC', 'Real Estate Agent', 'Family Member'];
 
 const TABS = [
@@ -60,24 +76,17 @@ const INPUT = 'w-full border border-linen rounded-lg px-3 py-2 text-sm bg-cream 
 
 // ─── Main component ─────────────────────────────────────────────────────────────
 
-export default function PropertyDetail({ property: p, uid, onChange, onBack, onDelete }) {
+export default function PropertyDetail({ property: p, uid: _uid, onChange, onBack, onDelete }) {
   const [tab, setTab] = useState('overview');
   const [geocoding, setGeocoding] = useState(false);
-  const [uploadingListing, setUploadingListing] = useState(false);
 
   // Visit form
   const [vDate, setVDate] = useState(new Date().toISOString().slice(0, 10));
   const [vAttendees, setVAttendees] = useState(['Self']);
   const [vRating, setVRating] = useState(3);
   const [vNotes, setVNotes] = useState('');
-  const [vPhotos, setVPhotos] = useState([]);        // URLs already uploaded
-  const [vMemo, setVMemo] = useState('');            // URL after upload
-  const [uploadingVisit, setUploadingVisit] = useState(false);
-  const [recording, setRecording] = useState(false);
-  const [recordSec, setRecordSec] = useState(0);
-  const mrRef = useRef(null);
-  const chunksRef = useRef([]);
-  const timerRef = useRef(null);
+  const [vPhotos, setVPhotos] = useState([]);   // array of URL strings
+  const [vMemoNote, setVMemoNote] = useState(''); // voice replaced with a quick-note field
 
   // Visit expand
   const [expandedVisit, setExpandedVisit] = useState(null);
@@ -85,8 +94,6 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
   // Pro / Con inputs
   const [newPro, setNewPro] = useState('');
   const [newCon, setNewCon] = useState('');
-
-  useEffect(() => () => { if (timerRef.current) clearInterval(timerRef.current); }, []);
 
   // ── Overview handlers ────────────────────────────────────────────────────────
 
@@ -97,26 +104,14 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
     if (coords) {
       onChange({ lat: coords.lat, lon: coords.lon });
     } else {
-      alert('Could not locate that address. Try a more specific address including city and state.');
+      alert('Could not locate that address. Try including city and state.');
     }
     setGeocoding(false);
   }
 
-  async function handleListingPhotos(e) {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
-    setUploadingListing(true);
-    try {
-      const urls = await Promise.all(
-        files.map((f) => uploadFile(uid, p.id, 'listing', f))
-      );
-      const newPhotos = [...(p.listingPhotos ?? []), ...urls];
-      onChange({ listingPhotos: newPhotos, coverPhoto: p.coverPhoto || newPhotos[0] });
-    } catch {
-      alert('Upload failed. Make sure Firebase Storage is enabled and rules allow authenticated writes.\n\nRules needed:\nallow read, write: if request.auth != null;');
-    }
-    setUploadingListing(false);
-    e.target.value = '';
+  function addListingPhoto(url) {
+    const newPhotos = [...(p.listingPhotos ?? []), url];
+    onChange({ listingPhotos: newPhotos, coverPhoto: p.coverPhoto || newPhotos[0] });
   }
 
   function removeListingPhoto(url) {
@@ -125,54 +120,6 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
   }
 
   // ── Visit handlers ───────────────────────────────────────────────────────────
-
-  async function handleVisitPhotos(e) {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
-    setUploadingVisit(true);
-    try {
-      const urls = await Promise.all(
-        files.map((f) => uploadFile(uid, p.id, 'visits', f))
-      );
-      setVPhotos((prev) => [...prev, ...urls]);
-    } catch {
-      alert('Photo upload failed. Check Firebase Storage rules.');
-    }
-    setUploadingVisit(false);
-    e.target.value = '';
-  }
-
-  async function startRecording() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      chunksRef.current = [];
-      const mr = new MediaRecorder(stream);
-      mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-      mr.onstop = async () => {
-        stream.getTracks().forEach((t) => t.stop());
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        try {
-          const url = await uploadFile(uid, p.id, 'memos', blob, `${Date.now()}.webm`);
-          setVMemo(url);
-        } catch {
-          alert('Voice memo upload failed. Check Firebase Storage rules.');
-        }
-      };
-      mr.start();
-      mrRef.current = mr;
-      setRecording(true);
-      setRecordSec(0);
-      timerRef.current = setInterval(() => setRecordSec((s) => s + 1), 1000);
-    } catch {
-      alert('Microphone access denied or unavailable.');
-    }
-  }
-
-  function stopRecording() {
-    mrRef.current?.stop();
-    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
-    setRecording(false);
-  }
 
   function saveVisit() {
     if (!vDate) { alert('Please enter a visit date.'); return; }
@@ -183,16 +130,15 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
       rating: vRating,
       notes: vNotes,
       photos: vPhotos,
-      voiceMemo: vMemo,
+      quickNote: vMemoNote,
     };
     onChange({ visits: [...(p.visits ?? []), visit] });
-    // reset form
     setVDate(new Date().toISOString().slice(0, 10));
     setVAttendees(['Self']);
     setVRating(3);
     setVNotes('');
     setVPhotos([]);
-    setVMemo('');
+    setVMemoNote('');
   }
 
   function removeVisit(id) {
@@ -241,7 +187,7 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
         </button>
       </div>
 
-      {/* Status selector (always visible) */}
+      {/* Status selector */}
       <div className="flex flex-wrap gap-1.5 mb-5">
         {Object.entries(STATUS).map(([key, s]) => (
           <button
@@ -274,7 +220,7 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
       {/* ── Overview ─────────────────────────────────────────────────────────── */}
       {tab === 'overview' && (
         <div className="space-y-5">
-          {/* Basic info fields */}
+          {/* Basic info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="sm:col-span-2">
               <label className="block text-xs font-medium text-ink mb-1">Address</label>
@@ -370,7 +316,7 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
           ) : (
             p.address && (
               <div className="bg-linen/30 rounded-xl p-5 text-center">
-                <p className="text-sm text-mist mb-3">No map loaded yet. Enter the address above first.</p>
+                <p className="text-sm text-mist mb-3">No map loaded. Enter the address above, then click Map it.</p>
                 <button
                   onClick={handleGeocode}
                   disabled={geocoding}
@@ -382,36 +328,27 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
             )
           )}
 
-          {/* Listing photos */}
+          {/* Listing photos (URL-based) */}
           <div>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2 mb-1">
               <label className="text-xs font-medium text-ink">Listing Photos</label>
-              <label className={`flex items-center gap-1.5 text-xs text-forest cursor-pointer hover:text-deep transition-colors ${uploadingListing ? 'opacity-50 pointer-events-none' : ''}`}>
-                <Camera size={14} /> {uploadingListing ? 'Uploading…' : 'Add Photos'}
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleListingPhotos}
-                />
-              </label>
+              <span className="text-xs text-mist">— paste a URL from Zillow, Google Photos, Dropbox, etc.</span>
             </div>
             {(p.listingPhotos ?? []).length > 0 ? (
-              <div className="flex gap-2 overflow-x-auto pb-1">
+              <div className="flex gap-2 overflow-x-auto pb-1 mb-2">
                 {p.listingPhotos.map((url) => (
                   <div key={url} className="relative shrink-0 group">
                     <img
                       src={url}
                       alt=""
                       onClick={() => onChange({ coverPhoto: url })}
-                      title="Click to set as cover"
+                      title="Click to set as cover photo"
                       className={`h-24 w-24 object-cover rounded-lg cursor-pointer border-2 transition-all ${
                         p.coverPhoto === url ? 'border-forest' : 'border-transparent hover:border-linen'
                       }`}
                     />
                     {p.coverPhoto === url && (
-                      <div className="absolute bottom-1 left-0 right-0 text-center text-xs bg-forest/80 text-white rounded-b-lg px-1 py-0.5">
+                      <div className="absolute bottom-0 left-0 right-0 text-center text-xs bg-forest/80 text-white rounded-b-lg py-0.5">
                         Cover
                       </div>
                     )}
@@ -425,10 +362,12 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
                 ))}
               </div>
             ) : (
-              <div className="border border-dashed border-linen rounded-xl p-6 text-center text-mist text-sm">
-                No listing photos yet — click "Add Photos" to upload
+              <div className="border border-dashed border-linen rounded-xl p-4 text-center text-mist text-xs mb-2">
+                <ImagePlus size={20} className="mx-auto mb-1 opacity-40" />
+                No photos yet — paste a URL below
               </div>
             )}
+            <PhotoUrlInput onAdd={addListingPhoto} placeholder="https://photos.zillow.com/… or any public image URL" />
           </div>
 
           {/* General notes */}
@@ -502,26 +441,24 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
               />
             </div>
 
-            {/* Visit photos */}
             <div>
-              <label className="block text-xs font-medium text-ink mb-1.5">Visit Photos</label>
-              <div className="flex items-center gap-3 flex-wrap">
-                <label className={`flex items-center gap-1.5 text-xs text-forest cursor-pointer hover:text-deep transition-colors ${uploadingVisit ? 'opacity-50 pointer-events-none' : ''}`}>
-                  <Camera size={14} /> {uploadingVisit ? 'Uploading…' : 'Add Photos'}
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleVisitPhotos}
-                  />
-                </label>
-                {vPhotos.length > 0 && (
-                  <span className="text-xs text-mist">{vPhotos.length} photo{vPhotos.length > 1 ? 's' : ''} ready</span>
-                )}
-              </div>
+              <label className="block text-xs font-medium text-ink mb-1">Quick Note / Voice Memo Summary</label>
+              <input
+                value={vMemoNote}
+                onChange={(e) => setVMemoNote(e.target.value)}
+                placeholder="Short gut-reaction note…"
+                className={INPUT}
+              />
+            </div>
+
+            {/* Visit photos (URL-based) */}
+            <div>
+              <label className="block text-xs font-medium text-ink mb-1">Visit Photos</label>
+              <p className="text-xs text-mist mb-1">
+                Take photos on your phone, upload to Google Photos or Dropbox, then paste the share URL.
+              </p>
               {vPhotos.length > 0 && (
-                <div className="flex gap-2 mt-2 overflow-x-auto pb-1">
+                <div className="flex gap-2 mb-2 overflow-x-auto pb-1">
                   {vPhotos.map((url) => (
                     <div key={url} className="relative shrink-0">
                       <img src={url} alt="" className="h-16 w-16 object-cover rounded-lg" />
@@ -535,42 +472,7 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
                   ))}
                 </div>
               )}
-            </div>
-
-            {/* Voice memo */}
-            <div>
-              <label className="block text-xs font-medium text-ink mb-1.5">Voice Memo</label>
-              {!vMemo ? (
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={recording ? stopRecording : startRecording}
-                    className={`flex items-center gap-2 text-sm px-3 py-2 rounded-lg border transition-colors ${
-                      recording
-                        ? 'bg-red-50 border-red-200 text-red-600'
-                        : 'border-linen text-mist hover:text-forest hover:border-forest'
-                    }`}
-                  >
-                    {recording ? (
-                      <><MicOff size={14} /> Stop ({recordSec}s)</>
-                    ) : (
-                      <><Mic size={14} /> Record Memo</>
-                    )}
-                  </button>
-                  {recording && (
-                    <span className="flex items-center gap-1.5 text-xs text-red-500">
-                      <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                      Recording…
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <audio src={vMemo} controls className="h-8 flex-1" />
-                  <button onClick={() => setVMemo('')} className="text-red-300 hover:text-red-500">
-                    <X size={14} />
-                  </button>
-                </div>
-              )}
+              <PhotoUrlInput onAdd={(url) => setVPhotos((prev) => [...prev, url])} />
             </div>
 
             <button
@@ -599,7 +501,7 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
                         <div className="text-xs text-mist mt-0.5">
                           {(v.attendees ?? []).join(', ')}
                           {v.photos?.length > 0 && ` · ${v.photos.length} photo${v.photos.length > 1 ? 's' : ''}`}
-                          {v.voiceMemo && ' · 🎙 memo'}
+                          {v.quickNote && ' · 📝 note'}
                         </div>
                       </div>
                       <StarRating value={v.rating || 0} size={14} readonly />
@@ -617,10 +519,9 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
                     {expandedVisit === v.id && (
                       <div className="border-t border-linen p-3 space-y-3">
                         {v.notes && <p className="text-sm text-ink">{v.notes}</p>}
-                        {v.voiceMemo && (
-                          <div>
-                            <div className="text-xs text-mist mb-1">Voice Memo</div>
-                            <audio src={v.voiceMemo} controls className="h-8 w-full" />
+                        {v.quickNote && (
+                          <div className="bg-cream rounded-lg px-3 py-2 text-sm text-mist italic">
+                            📝 {v.quickNote}
                           </div>
                         )}
                         {v.photos?.length > 0 && (
@@ -668,7 +569,6 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
 
           {/* Pros & Cons */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Pros */}
             <div className="bg-white border border-linen rounded-xl p-4">
               <h3 className="font-semibold text-emerald-700 text-sm mb-3">
                 Pros ({(p.pros ?? []).length})
@@ -704,7 +604,6 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
               </div>
             </div>
 
-            {/* Cons */}
             <div className="bg-white border border-linen rounded-xl p-4">
               <h3 className="font-semibold text-red-500 text-sm mb-3">
                 Cons ({(p.cons ?? []).length})
@@ -845,7 +744,7 @@ export default function PropertyDetail({ property: p, uid, onChange, onBack, onD
               rel="noreferrer"
               className="text-xs text-mist hover:text-forest mt-2 inline-flex items-center gap-1 transition-colors"
             >
-              <ExternalLink size={11} /> Check FEMA Flood Map Service Center
+              <ExternalLink size={11} /> FEMA Flood Map Service Center
             </a>
           </div>
 
