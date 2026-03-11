@@ -494,6 +494,14 @@ export default function Team({ project, updateProject, uid }) {
   const [showModal, setShowModal] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [activityData, setActivityData] = useState({});
+  const [rulesBannerDismissed, setRulesBannerDismissed] = useState(
+    () => localStorage.getItem('lb_rules_dismissed') === '1'
+  );
+
+  function dismissRulesBanner() {
+    localStorage.setItem('lb_rules_dismissed', '1');
+    setRulesBannerDismissed(true);
+  }
 
   // Load activity (lastViewed, viewCount) from shareTokens for each member
   useEffect(() => {
@@ -610,15 +618,25 @@ export default function Team({ project, updateProject, uid }) {
         </button>
       </div>
 
-      {/* Firestore rules reminder */}
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-xs text-amber-800">
-        <p className="font-semibold mb-1">⚠️ One-time Firestore rules update required</p>
-        <p className="mb-2">
-          For team member links to work, update your Firestore rules to allow the{' '}
-          <code className="bg-amber-100 px-1 rounded">shareTokens</code> collection. Go to{' '}
-          <strong>Firebase Console → Firestore → Rules</strong> and replace with:
-        </p>
-        <pre className="bg-white border border-amber-200 rounded p-2 text-xs overflow-x-auto whitespace-pre leading-relaxed">{`rules_version = '2';
+      {/* Firestore rules reminder — dismissible */}
+      {!rulesBannerDismissed && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-xs text-amber-800">
+          <div className="flex items-start justify-between gap-3 mb-1">
+            <p className="font-semibold">⚠️ One-time Firestore rules update required</p>
+            <button
+              onClick={dismissRulesBanner}
+              className="text-amber-500 hover:text-amber-800 shrink-0 transition-colors"
+              title="Dismiss"
+            >
+              <X size={15} />
+            </button>
+          </div>
+          <p className="mb-2">
+            For team member links to work, update your Firestore rules to allow the{' '}
+            <code className="bg-amber-100 px-1 rounded">shareTokens</code> collection. Go to{' '}
+            <strong>Firebase Console → Firestore → Rules</strong> and replace with:
+          </p>
+          <pre className="bg-white border border-amber-200 rounded p-2 text-xs overflow-x-auto whitespace-pre leading-relaxed">{`rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId}/project/{document} {
@@ -638,7 +656,14 @@ service cloud.firestore {
     }
   }
 }`}</pre>
-      </div>
+          <button
+            onClick={dismissRulesBanner}
+            className="mt-3 text-xs font-medium text-amber-700 hover:text-amber-900 underline"
+          >
+            Got it — dismiss this banner
+          </button>
+        </div>
+      )}
 
       {/* Team members (with share links) */}
       {shareMembers.length > 0 && (
