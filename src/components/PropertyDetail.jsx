@@ -115,6 +115,7 @@ export default function PropertyDetail({ property: p, uid: _uid, onChange, onBac
   }
 
   function removeListingPhoto(url) {
+    if (!confirm('Remove this photo?')) return;
     const updated = (p.listingPhotos ?? []).filter((u) => u !== url);
     onChange({ listingPhotos: updated, coverPhoto: updated[0] || '' });
   }

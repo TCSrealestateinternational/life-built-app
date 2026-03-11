@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <rect width="512" height="512" fill="#335a3a"/>
+  <!-- House outline -->
+  <path d="M96 220L256 100 416 220v208a32 32 0 0 1-32 32H128a32 32 0 0 1-32-32z"
+        stroke="white" stroke-width="24" stroke-linejoin="round" fill="none"/>
+  <!-- Door -->
+  <path d="M208 460v-120h96v120" stroke="white" stroke-width="24" stroke-linejoin="round"/>
+  <!-- Small tree/sprout left -->
+  <path d="M60 400 Q60 360 80 340 Q100 360 100 400" stroke="#8faf9a" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <line x1="80" y1="400" x2="80" y2="420" stroke="#8faf9a" stroke-width="12" stroke-linecap="round"/>
+  <!-- Small tree/sprout right -->
+  <path d="M412 400 Q412 360 432 340 Q452 360 452 400" stroke="#8faf9a" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <line x1="432" y1="400" x2="432" y2="420" stroke="#8faf9a" stroke-width="12" stroke-linecap="round"/>
+</svg>

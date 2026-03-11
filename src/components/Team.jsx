@@ -494,6 +494,12 @@ export default function Team({ project, updateProject, uid }) {
   const [showModal, setShowModal] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [activityData, setActivityData] = useState({});
+  const [toast, setToast] = useState(null);
+
+  function showToast(msg) {
+    setToast(msg);
+    setTimeout(() => setToast(null), 4000);
+  }
 
   // Load activity (lastViewed, viewCount) from shareTokens for each member
   useEffect(() => {
@@ -541,6 +547,7 @@ export default function Team({ project, updateProject, uid }) {
       ? team.map((m) => (m.id === savedMember.id ? savedMember : m))
       : [...team, savedMember];
     updateProject({ team: newTeam });
+    if (!existing) showToast(`Link copied! Send it to ${savedMember.name}.`);
     closeModal();
   }
 
@@ -686,6 +693,13 @@ export default function Team({ project, updateProject, uid }) {
           onSave={saveMember}
           onClose={closeModal}
         />
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-forest text-white text-sm px-5 py-3 rounded-full shadow-lg flex items-center gap-2 pointer-events-none">
+          <Check size={15} /> {toast}
+        </div>
       )}
     </div>
   );

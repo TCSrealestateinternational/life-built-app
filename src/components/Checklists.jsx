@@ -80,6 +80,7 @@ export default function Checklists({ project, updateProject }) {
 
   function addItem(listKey) {
     const list = checklists[listKey] ?? [];
+    if (list.length > 0 && !list[list.length - 1].text.trim()) return;
     updateProject({
       checklists: {
         ...checklists,

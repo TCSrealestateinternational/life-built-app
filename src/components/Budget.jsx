@@ -35,7 +35,7 @@ function exportCSV(items) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'life-built-budget.csv';
+  a.download = `life-built-budget-${new Date().toISOString().slice(0, 10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -159,7 +159,8 @@ export default function Budget({ project, updateProject }) {
           <p className="text-sm mt-1">Click <strong>Load Standard Budget</strong> to pre-fill 460+ line items, or add your own.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-linen overflow-hidden">
+        <div className="overflow-x-auto rounded-xl">
+        <div className="bg-white border border-linen overflow-hidden rounded-xl" style={{ minWidth: '560px' }}>
           {/* Header */}
           <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-cream border-b border-linen text-xs font-semibold text-mist uppercase tracking-wide">
             <div className="col-span-3">Category</div>
@@ -226,6 +227,7 @@ export default function Budget({ project, updateProject }) {
             </div>
             <div className="col-span-1" />
           </div>
+        </div>
         </div>
       )}
     </div>

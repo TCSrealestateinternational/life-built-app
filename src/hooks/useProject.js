@@ -39,6 +39,7 @@ const DEFAULT_PROJECT = {
 export function useProject(uid) {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const saveTimerRef = useRef(null);
 
   // Load project on mount
@@ -58,10 +59,13 @@ export function useProject(uid) {
   const saveProject = useCallback(
     (updated) => {
       if (!uid) return;
+      setSaving(true);
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
       saveTimerRef.current = setTimeout(() => {
         const ref = doc(db, 'users', uid, 'project', 'data');
-        setDoc(ref, updated, { merge: true }).catch(console.error);
+        setDoc(ref, updated, { merge: true })
+          .catch(console.error)
+          .finally(() => setSaving(false));
       }, 800);
     },
     [uid]
@@ -78,5 +82,5 @@ export function useProject(uid) {
     [saveProject]
   );
 
-  return { project, loading, updateProject };
+  return { project, loading, updateProject, saving };
 }

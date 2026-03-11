@@ -28,7 +28,7 @@ const NAV_ITEMS = [
   { id: 'team', label: 'Team', icon: Users },
 ];
 
-export default function Shell({ user, section, onSection, children }) {
+export default function Shell({ user, section, onSection, children, saving }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -118,6 +118,14 @@ export default function Shell({ user, section, onSection, children }) {
       <main className="flex-1 min-w-0 md:pt-0 pt-14 overflow-auto">
         {children}
       </main>
+
+      {/* Saving indicator */}
+      {saving && (
+        <div className="fixed bottom-4 right-4 z-50 bg-ink text-white text-xs px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 pointer-events-none">
+          <span className="w-1.5 h-1.5 bg-mist rounded-full animate-pulse" />
+          Saving…
+        </div>
+      )}
     </div>
   );
 }

@@ -14,6 +14,7 @@ import Profile from './components/Profile';
 import Documents from './components/Documents';
 import ShareView from './components/ShareView';
 import SharedPortal from './components/SharedPortal';
+import InstallPrompt from './components/InstallPrompt';
 
 function getShareUid() {
   const match = window.location.pathname.match(/^\/share\/([^/]+)$/);
@@ -30,7 +31,7 @@ export default function App() {
   const teamToken = getTeamToken();
   const user = useAuth();
   const [section, setSection] = useState('dashboard');
-  const { project, loading, updateProject } = useProject(user?.uid ?? null);
+  const { project, loading, updateProject, saving } = useProject(user?.uid ?? null);
 
   if (shareUid) return <ShareView uid={shareUid} />;
   if (teamToken) return <SharedPortal token={teamToken} />;
@@ -56,7 +57,9 @@ export default function App() {
   const sectionProps = { project, updateProject };
 
   return (
-    <Shell user={user} section={section} onSection={setSection}>
+    <>
+    <InstallPrompt />
+    <Shell user={user} section={section} onSection={setSection} saving={saving}>
       {section === 'dashboard' && <Dashboard {...sectionProps} user={user} onSection={setSection} />}
       {section === 'profile' && <Profile {...sectionProps} user={user} />}
       {section === 'properties' && <Properties {...sectionProps} uid={user.uid} />}
@@ -67,5 +70,6 @@ export default function App() {
       {section === 'documents' && <Documents {...sectionProps} uid={user.uid} />}
       {section === 'team' && <Team {...sectionProps} uid={user.uid} />}
     </Shell>
+    </>
   );
 }

@@ -188,14 +188,18 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete, projectDocs }) {
           <input
             type="date"
             value={m.start}
-            onChange={(e) => onUpdate({ start: e.target.value })}
+            onChange={(e) => {
+              const s = e.target.value;
+              onUpdate({ start: s, ...(m.end < s ? { end: addDays(s, 13) } : {}) });
+            }}
             className="border border-linen rounded px-2 py-1 text-ink focus:outline-none focus:border-forest"
           />
           <span className="text-mist">→</span>
           <input
             type="date"
             value={m.end}
-            onChange={(e) => onUpdate({ end: e.target.value })}
+            min={m.start}
+            onChange={(e) => { if (e.target.value >= m.start) onUpdate({ end: e.target.value }); }}
             className="border border-linen rounded px-2 py-1 text-ink focus:outline-none focus:border-forest"
           />
         </div>
@@ -234,12 +238,17 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete, projectDocs }) {
           <div className="sm:hidden flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <label className="text-xs text-mist w-10 shrink-0">Start</label>
-              <input type="date" value={m.start} onChange={(e) => onUpdate({ start: e.target.value })}
+              <input type="date" value={m.start}
+                onChange={(e) => {
+                  const s = e.target.value;
+                  onUpdate({ start: s, ...(m.end < s ? { end: addDays(s, 13) } : {}) });
+                }}
                 className="text-sm border border-linen rounded px-2 py-1 focus:outline-none focus:border-forest text-ink" />
             </div>
             <div className="flex items-center gap-2">
               <label className="text-xs text-mist w-10 shrink-0">End</label>
-              <input type="date" value={m.end} onChange={(e) => onUpdate({ end: e.target.value })}
+              <input type="date" value={m.end} min={m.start}
+                onChange={(e) => { if (e.target.value >= m.start) onUpdate({ end: e.target.value }); }}
                 className="text-sm border border-linen rounded px-2 py-1 focus:outline-none focus:border-forest text-ink" />
             </div>
           </div>
