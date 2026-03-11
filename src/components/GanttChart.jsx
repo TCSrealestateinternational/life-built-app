@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import Gantt from 'frappe-gantt';
-import 'frappe-gantt/dist/frappe-gantt.css';
+import '../assets/frappe-gantt.css';
 
 // frappe-gantt returns Date objects from on_date_change; normalize to 'YYYY-MM-DD'
 function fmtDate(d) {
