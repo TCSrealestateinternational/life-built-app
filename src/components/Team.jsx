@@ -247,6 +247,9 @@ function MemberModal({ member, uid, onSave, onClose }) {
               />
             </div>
           </div>
+          <p className="text-xs text-mist -mt-2">
+            ⓘ Email and phone are for your reference only — nothing is sent automatically.
+          </p>
 
           {/* Role */}
           <div>
@@ -312,17 +315,26 @@ function MemberModal({ member, uid, onSave, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="shrink-0 px-6 py-4 border-t border-linen flex gap-3">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex-1 bg-forest text-white text-sm py-2.5 rounded-lg hover:bg-deep transition-colors disabled:opacity-50"
-          >
-            {saving ? 'Saving…' : isEdit ? 'Save Changes' : 'Add & Copy Link'}
-          </button>
-          <button onClick={onClose} className="text-sm text-mist hover:text-ink px-4">
-            Cancel
-          </button>
+        <div className="shrink-0 px-6 pb-5 pt-4 border-t border-linen space-y-3">
+          {!isEdit && (
+            <div className="bg-sky-50 border border-sky-200 rounded-lg px-3 py-2.5 text-xs text-sky-700 leading-snug">
+              <strong>Next step:</strong> After saving, the portal link is copied to your clipboard.
+              You'll need to send it to {name.trim() || 'this person'} yourself — by text, email, or however you prefer.
+              No message is sent automatically.
+            </div>
+          )}
+          <div className="flex gap-3">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex-1 bg-forest text-white text-sm py-2.5 rounded-lg hover:bg-deep transition-colors disabled:opacity-50"
+            >
+              {saving ? 'Saving…' : isEdit ? 'Save Changes' : 'Save & Copy Link'}
+            </button>
+            <button onClick={onClose} className="text-sm text-mist hover:text-ink px-4">
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     </div>
