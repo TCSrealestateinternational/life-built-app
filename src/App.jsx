@@ -59,7 +59,7 @@ export default function App() {
     <Shell user={user} section={section} onSection={setSection}>
       {section === 'dashboard' && <Dashboard {...sectionProps} user={user} onSection={setSection} />}
       {section === 'profile' && <Profile {...sectionProps} user={user} />}
-      {section === 'properties' && <Properties {...sectionProps} />}
+      {section === 'properties' && <Properties {...sectionProps} uid={user.uid} />}
       {section === 'design' && <Design {...sectionProps} />}
       {section === 'budget' && <Budget {...sectionProps} />}
       {section === 'timeline' && <Timeline {...sectionProps} />}
