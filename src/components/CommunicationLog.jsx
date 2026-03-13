@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, Bell } from 'lucide-react';
 
 const ENTRY_TYPES = ['Decision', 'Communication', 'Agreement', 'Issue', 'Change Request', 'Other'];
 
@@ -147,6 +147,11 @@ function TodoItem({ todo, onUpdate, onRemove }) {
             }`}
           />
           <div className="flex items-center gap-2 mt-0.5 flex-wrap text-xs">
+            {todo.critical && (
+              <span className="flex items-center gap-0.5 text-red-500 font-semibold">
+                <Bell size={10} fill="currentColor" /> Critical
+              </span>
+            )}
             {todo.assignedTo && <span className="text-mist">{todo.assignedTo}</span>}
             {todo.dueDate && (
               <span className={overdue ? 'text-red-500 font-medium' : 'text-mist'}>
@@ -156,6 +161,13 @@ function TodoItem({ todo, onUpdate, onRemove }) {
           </div>
         </div>
         <div className="flex items-center gap-1 shrink-0">
+          <button
+            onClick={() => onUpdate({ critical: !todo.critical })}
+            title={todo.critical ? 'Remove critical flag' : 'Mark as critical'}
+            className={`p-1 transition-colors ${todo.critical ? 'text-red-500' : 'text-mist hover:text-red-400'}`}
+          >
+            <Bell size={15} fill={todo.critical ? 'currentColor' : 'none'} />
+          </button>
           <button onClick={() => setExpanded(!expanded)} className="text-mist hover:text-ink transition-colors p-1">
             {expanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
           </button>

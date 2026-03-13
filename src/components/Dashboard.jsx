@@ -1,4 +1,5 @@
-import { MapPin, DollarSign, Calendar, CheckSquare, Palette, Users, TrendingUp, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import { MapPin, DollarSign, Calendar, CheckSquare, Palette, Users, TrendingUp, ArrowRight, Bell, X } from 'lucide-react';
 
 const TODAY = new Date().toISOString().slice(0, 10);
 
@@ -15,8 +16,16 @@ function normalizeMilestone(m) {
   return { ...m, start, end: m.end || start };
 }
 
+function formatDate(d) {
+  if (!d) return '';
+  return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
 export default function Dashboard({ project, user, onSection }) {
+  const [bellOpen, setBellOpen] = useState(false);
   if (!project) return null;
+
+  const criticalTodos = (project.todos ?? []).filter((t) => t.critical && !t.done);
 
   // ── Checklists (skip punch list entries which are arrays of IDs) ───────────
   const checklistEntries = Object.entries(project.checklists ?? {}).filter(
@@ -92,17 +101,87 @@ export default function Dashboard({ project, user, onSection }) {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1
-          className="text-2xl font-bold text-ink"
-          style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}
+      {/* Header row with bell */}
+      <div className="flex items-start justify-between mb-8 gap-4">
+        <div>
+          <h1
+            className="text-2xl font-bold text-ink"
+            style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}
+          >
+            Your Planning Dashboard
+          </h1>
+          <p className="text-sage text-sm mt-1">
+            Welcome back{user?.email ? `, ${user.email.split('@')[0]}` : ''}. Here's where your project stands.
+          </p>
+        </div>
+
+        {/* Critical bell */}
+        <button
+          onClick={() => setBellOpen(!bellOpen)}
+          title="Critical To-Dos"
+          className="relative shrink-0 mt-1 p-2 rounded-xl border transition-colors hover:bg-red-50"
+          style={{ borderColor: criticalTodos.length > 0 ? '#fca5a5' : '#d8d2c8' }}
         >
-          Your Planning Dashboard
-        </h1>
-        <p className="text-sage text-sm mt-1">
-          Welcome back{user?.email ? `, ${user.email.split('@')[0]}` : ''}. Here's where your project stands.
-        </p>
+          <Bell
+            size={22}
+            fill={criticalTodos.length > 0 ? '#ef4444' : 'none'}
+            className={criticalTodos.length > 0 ? 'text-red-500' : 'text-mist'}
+          />
+          {criticalTodos.length > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center leading-none">
+              {criticalTodos.length}
+            </span>
+          )}
+        </button>
       </div>
+
+      {/* Critical To-Dos panel */}
+      {bellOpen && (
+        <div className="bg-white border border-red-200 rounded-xl p-4 mb-6 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Bell size={15} fill="#ef4444" className="text-red-500" />
+              <span className="font-semibold text-sm text-ink">Critical To-Dos</span>
+            </div>
+            <button onClick={() => setBellOpen(false)} className="text-mist hover:text-ink transition-colors">
+              <X size={15} />
+            </button>
+          </div>
+
+          {criticalTodos.length === 0 ? (
+            <p className="text-sm text-mist text-center py-3">No critical to-dos right now. 🎉</p>
+          ) : (
+            <div className="space-y-2">
+              {criticalTodos.map((todo) => {
+                const overdue = todo.dueDate && todo.dueDate < TODAY;
+                return (
+                  <div key={todo.id} className="flex items-start gap-3 bg-red-50 border border-red-100 rounded-lg px-3 py-2.5">
+                    <Bell size={13} fill="#ef4444" className="text-red-500 shrink-0 mt-0.5" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-ink">{todo.text || <em className="text-mist">Untitled</em>}</p>
+                      <div className="flex flex-wrap gap-2 mt-0.5 text-xs">
+                        {todo.assignedTo && <span className="text-mist">{todo.assignedTo}</span>}
+                        {todo.dueDate && (
+                          <span className={overdue ? 'text-red-600 font-semibold' : 'text-mist'}>
+                            {overdue ? '⚠ Overdue · ' : 'Due '}
+                            {formatDate(todo.dueDate)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              <button
+                onClick={() => { setBellOpen(false); onSection('commslog'); }}
+                className="w-full text-xs text-center text-forest hover:underline pt-1"
+              >
+                Go to To-Dos →
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
