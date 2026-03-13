@@ -54,6 +54,9 @@ function exportCSV(items) {
 
 export default function Budget({ project, updateProject }) {
   const items = project?.budget?.items ?? [];
+  const changeOrders = project?.changeOrders ?? [];
+  const approvedCOs = changeOrders.filter((co) => co.status === 'approved');
+  const coApprovedTotal = approvedCOs.reduce((sum, co) => sum + (parseFloat(co.amount) || 0), 0);
   const [filter, setFilter] = useState('All');
 
   function addItem() {
@@ -131,7 +134,7 @@ export default function Budget({ project, updateProject }) {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-3 gap-4 mb-4">
         <div className="bg-white rounded-xl border border-linen p-4 text-center">
           <div className="text-xs text-mist mb-1">Planned Total</div>
           <div className="text-xl font-bold text-ink">${totalPlanned.toLocaleString()}</div>
@@ -145,6 +148,29 @@ export default function Budget({ project, updateProject }) {
           <div className={`text-xl font-bold ${diff > 0 ? 'text-red-600' : 'text-green-700'}`}>
             {diff !== 0 ? `${diff > 0 ? '+' : ''}$${Math.abs(diff).toLocaleString()}` : '—'}
           </div>
+        </div>
+      </div>
+
+      {/* Change Orders summary card */}
+      <div className="bg-white rounded-xl border border-amber-200 p-4 mb-6 flex items-center gap-4">
+        <div className="flex-1">
+          <div className="text-xs font-semibold text-amber-700 uppercase tracking-wide mb-0.5">Approved Change Orders</div>
+          <div className={`text-xl font-bold ${coApprovedTotal < 0 ? 'text-green-700' : coApprovedTotal > 0 ? 'text-red-600' : 'text-ink'}`}>
+            {coApprovedTotal !== 0
+              ? `${coApprovedTotal < 0 ? '−' : '+'}$${Math.abs(coApprovedTotal).toLocaleString()}`
+              : '—'}
+          </div>
+          <div className="text-xs text-mist mt-0.5">
+            {approvedCOs.length} approved order{approvedCOs.length !== 1 ? 's' : ''}
+            {changeOrders.filter((co) => co.status === 'pending').length > 0 && (
+              <span className="ml-2 text-amber-600">
+                · {changeOrders.filter((co) => co.status === 'pending').length} pending
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="text-xs text-mist text-right shrink-0">
+          See Change Orders<br />for full detail
         </div>
       </div>
 

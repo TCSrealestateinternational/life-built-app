@@ -7,6 +7,7 @@ const DEFAULT_PROJECT = {
   homeDesign: {},
   budget: { items: [], total: 0 },
   timeline: { milestones: [] },
+  changeOrders: [],
   team: [],
   checklists: {
     landEvaluation: [

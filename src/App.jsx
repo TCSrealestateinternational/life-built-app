@@ -12,6 +12,7 @@ import Checklists from './components/Checklists';
 import Team from './components/Team';
 import Profile from './components/Profile';
 import Documents from './components/Documents';
+import ChangeOrders from './components/ChangeOrders';
 import ShareView from './components/ShareView';
 import SharedPortal from './components/SharedPortal';
 import InstallPrompt from './components/InstallPrompt';
@@ -66,6 +67,7 @@ export default function App() {
       {section === 'design' && <Design {...sectionProps} />}
       {section === 'budget' && <Budget {...sectionProps} />}
       {section === 'timeline' && <Timeline {...sectionProps} />}
+      {section === 'changeorders' && <ChangeOrders {...sectionProps} />}
       {section === 'checklists' && <Checklists {...sectionProps} />}
       {section === 'documents' && <Documents {...sectionProps} uid={user.uid} />}
       {section === 'team' && <Team {...sectionProps} uid={user.uid} />}
