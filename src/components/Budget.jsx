@@ -21,7 +21,7 @@ function itemTotal(item) {
 }
 
 function exportCSV(items) {
-  const headers = ['Category', 'Description', 'Qty', 'Unit Price ($)', 'Total Planned ($)', 'Actual ($)', 'Variance ($)'];
+  const headers = ['Category', 'Description', 'Qty', 'Unit Price ($)', 'Planned Total ($)', 'Actual ($)', 'Variance ($)'];
   const rows = items.map((item) => {
     const qty = parseInt(item.qty) || 1;
     const unit = parseFloat(item.planned) || 0;
@@ -229,15 +229,16 @@ export default function Budget({ project, updateProject }) {
         </div>
       ) : (
         <div className="overflow-x-auto rounded-xl">
-          <div className="bg-white border border-linen overflow-hidden rounded-xl" style={{ minWidth: '700px' }}>
+          <div className="bg-white border border-linen overflow-hidden rounded-xl" style={{ minWidth: '780px' }}>
 
-            {/* Header — Category | Description | Qty | Unit Price | Actual | ∅ */}
+            {/* Header — Category | Description | Qty | Unit Price | Planned Total | Actual | ∅ */}
             <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-cream border-b border-linen text-xs font-semibold text-mist uppercase tracking-wide">
               <div className="col-span-2">Category</div>
-              <div className="col-span-4">Description</div>
+              <div className="col-span-3">Description</div>
               <div className="col-span-1 text-center">Qty</div>
               <div className="col-span-2 text-right">Unit Price</div>
-              <div className="col-span-2 text-right">Actual ($)</div>
+              <div className="col-span-2 text-right">Planned Total</div>
+              <div className="col-span-1 text-right">Actual ($)</div>
               <div className="col-span-1" />
             </div>
 
@@ -249,9 +250,9 @@ export default function Budget({ project, updateProject }) {
               const overBudget = item.actual && actual > lineTotal;
 
               return (
-                <div key={item.id} className="grid grid-cols-12 gap-2 px-4 py-2 border-b border-linen last:border-0 items-start hover:bg-cream/40">
+                <div key={item.id} className="grid grid-cols-12 gap-2 px-4 py-2 border-b border-linen last:border-0 items-center hover:bg-cream/40">
                   {/* Category */}
-                  <div className="col-span-2 pt-0.5">
+                  <div className="col-span-2">
                     <select
                       value={item.category}
                       onChange={(e) => updateItem(item.id, { category: e.target.value })}
@@ -262,7 +263,7 @@ export default function Budget({ project, updateProject }) {
                   </div>
 
                   {/* Description */}
-                  <div className="col-span-4">
+                  <div className="col-span-3">
                     <input
                       type="text"
                       value={item.description}
@@ -284,7 +285,7 @@ export default function Budget({ project, updateProject }) {
                     />
                   </div>
 
-                  {/* Unit Price + line total */}
+                  {/* Unit Price */}
                   <div className="col-span-2">
                     <input
                       type="number"
@@ -293,15 +294,15 @@ export default function Budget({ project, updateProject }) {
                       placeholder="0"
                       className="w-full text-sm text-right bg-transparent border-b border-transparent hover:border-linen focus:border-forest focus:outline-none py-0.5"
                     />
-                    {qty > 1 && unit > 0 && (
-                      <div className="text-xs text-mist text-right mt-0.5">
-                        = ${lineTotal.toLocaleString()}
-                      </div>
-                    )}
+                  </div>
+
+                  {/* Planned Total (qty × unit price, read-only) */}
+                  <div className="col-span-2 text-sm text-right text-ink">
+                    {lineTotal > 0 ? `$${lineTotal.toLocaleString()}` : <span className="text-mist">—</span>}
                   </div>
 
                   {/* Actual */}
-                  <div className="col-span-2">
+                  <div className="col-span-1">
                     <input
                       type="number"
                       value={item.actual}
@@ -314,7 +315,7 @@ export default function Budget({ project, updateProject }) {
                   </div>
 
                   {/* Delete */}
-                  <div className="col-span-1 flex justify-end pt-0.5">
+                  <div className="col-span-1 flex justify-end">
                     <button onClick={() => removeItem(item.id)} className="text-red-300 hover:text-red-500 transition-colors">
                       <Trash2 size={14} />
                     </button>
@@ -325,9 +326,10 @@ export default function Budget({ project, updateProject }) {
 
             {/* Totals row */}
             <div className="grid grid-cols-12 gap-2 px-4 py-3 bg-cream border-t border-linen font-semibold text-sm">
-              <div className="col-span-7 text-mist uppercase text-xs tracking-wide">Total</div>
+              <div className="col-span-6 text-mist uppercase text-xs tracking-wide self-center">Total</div>
+              <div className="col-span-2" />
               <div className="col-span-2 text-right text-ink">${totalPlanned.toLocaleString()}</div>
-              <div className={`col-span-2 text-right ${totalActual > totalPlanned ? 'text-red-600' : 'text-ink'}`}>
+              <div className={`col-span-1 text-right ${totalActual > totalPlanned ? 'text-red-600' : 'text-ink'}`}>
                 ${totalActual.toLocaleString()}
               </div>
               <div className="col-span-1" />
