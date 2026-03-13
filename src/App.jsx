@@ -14,7 +14,6 @@ import Profile from './components/Profile';
 import Documents from './components/Documents';
 import ChangeOrders from './components/ChangeOrders';
 import PaymentSchedule from './components/PaymentSchedule';
-import PunchList from './components/PunchList';
 import CommunicationLog from './components/CommunicationLog';
 import LienWaivers from './components/LienWaivers';
 import ShareView from './components/ShareView';
@@ -73,7 +72,6 @@ export default function App() {
       {section === 'timeline' && <Timeline {...sectionProps} />}
       {section === 'changeorders' && <ChangeOrders {...sectionProps} />}
       {section === 'payments' && <PaymentSchedule {...sectionProps} />}
-      {section === 'punchlist' && <PunchList {...sectionProps} />}
       {section === 'commslog' && <CommunicationLog {...sectionProps} />}
       {section === 'lienwaiver' && <LienWaivers {...sectionProps} />}
       {section === 'checklists' && <Checklists {...sectionProps} />}

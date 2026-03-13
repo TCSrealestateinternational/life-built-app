@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Trash2, Printer } from 'lucide-react';
+import { Plus, Trash2, Printer, ArrowLeft } from 'lucide-react';
 import PunchListTab from './PunchListTab';
 import { PUNCH_LIST_TOTAL } from '../data/punchListData';
 import { printGenericChecklist, printPunchList } from '../utils/printChecklist';
@@ -12,7 +12,7 @@ const CHECKLIST_META = {
 };
 
 export default function Checklists({ project, updateProject }) {
-  const [activeTab, setActiveTab] = useState('landEvaluation');
+  const [activeTab, setActiveTab] = useState(null);
   const checklists = project?.checklists ?? {};
 
   // Generic checklist toggle (for landEvaluation, permits, contractor)
@@ -106,52 +106,96 @@ export default function Checklists({ project, updateProject }) {
     });
   }
 
-  const tabs = Object.keys(CHECKLIST_META);
-  const isPunchList = activeTab === 'punchList';
-  const currentList = isPunchList ? [] : (checklists[activeTab] ?? []);
+  const keys = Object.keys(CHECKLIST_META);
   const punchListChecked = checklists.punchList ?? [];
   const punchListCustom = checklists.punchListCustom ?? {};
   const customTotal = Object.values(punchListCustom).reduce((s, items) => s + items.length, 0);
-  const done = isPunchList ? punchListChecked.length : currentList.filter((i) => i.done).length;
-  const total = isPunchList ? PUNCH_LIST_TOTAL + customTotal : currentList.length;
+
+  // Per-key helpers used in both hub and detail
+  function getProgress(key) {
+    if (key === 'punchList') {
+      const t = PUNCH_LIST_TOTAL + customTotal;
+      return { done: punchListChecked.length, total: t };
+    }
+    const list = checklists[key] ?? [];
+    return { done: list.filter((i) => i.done).length, total: list.length };
+  }
+
+  // ── Hub view ─────────────────────────────────────────────────────────────
+  if (!activeTab) {
+    return (
+      <div className="p-6 max-w-3xl mx-auto">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+            Checklists
+          </h1>
+          <p className="text-sage text-sm mt-0.5">Step-by-step guides for your land-to-build journey.</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {keys.map((key) => {
+            const m = CHECKLIST_META[key];
+            const { done, total } = getProgress(key);
+            const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+            const complete = total > 0 && done === total;
+            return (
+              <button
+                key={key}
+                onClick={() => setActiveTab(key)}
+                className="text-left bg-white border border-linen rounded-xl p-5 hover:border-forest/40 hover:shadow-sm transition-all group"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <div className="text-2xl mb-1">{m.emoji}</div>
+                    <div className="font-semibold text-ink text-sm group-hover:text-forest transition-colors">{m.label}</div>
+                    <div className="text-xs text-mist mt-0.5 leading-snug">{m.desc}</div>
+                  </div>
+                  {complete && (
+                    <span className="text-xs bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded-full shrink-0 ml-2">Done</span>
+                  )}
+                </div>
+                <div className="h-1.5 bg-linen rounded-full overflow-hidden mb-1.5">
+                  <div
+                    className={`h-full rounded-full transition-all ${complete ? 'bg-green-500' : 'bg-forest'}`}
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+                <div className="text-xs text-mist">
+                  {total > 0 ? `${done} / ${total} done` : 'Not started'}
+                  {total > 0 && !complete && <span className="ml-1 text-forest font-medium">({pct}%)</span>}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Detail view ───────────────────────────────────────────────────────────
+  const isPunchList = activeTab === 'punchList';
+  const currentList = isPunchList ? [] : (checklists[activeTab] ?? []);
+  const { done, total } = getProgress(activeTab);
   const meta = CHECKLIST_META[activeTab];
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
+      {/* Back button + header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-          Checklists
-        </h1>
-        <p className="text-sage text-sm mt-0.5">Step-by-step guides for your land-to-build journey.</p>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-1 mb-6 bg-linen/50 p-1 rounded-xl overflow-x-auto">
-        {tabs.map((key) => {
-          const m = CHECKLIST_META[key];
-          const list = checklists[key] ?? [];
-          const d = key === 'punchList' ? (checklists.punchList ?? []).length : list.filter((i) => i.done).length;
-          const t = key === 'punchList' ? PUNCH_LIST_TOTAL + customTotal : list.length;
-          return (
-            <button
-              key={key}
-              onClick={() => setActiveTab(key)}
-              className={`flex-1 text-xs font-medium px-2 py-2 rounded-lg transition-colors whitespace-nowrap ${
-                activeTab === key ? 'bg-white text-ink shadow-sm' : 'text-mist hover:text-ink'
-              }`}
-            >
-              {m.emoji} {m.tab}
-              <span className="ml-1 text-mist">({d}/{t})</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Active list */}
-      <div className="bg-white rounded-xl border border-linen p-5">
-        <div className="flex items-center justify-between mb-1">
-          <h2 className="font-semibold text-ink">{meta.emoji} {meta.label}</h2>
-          <div className="flex items-center gap-3">
+        <button
+          onClick={() => setActiveTab(null)}
+          className="flex items-center gap-1.5 text-xs text-mist hover:text-forest transition-colors mb-4"
+        >
+          <ArrowLeft size={13} /> All Checklists
+        </button>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+              {meta.emoji} {meta.label}
+            </h1>
+            <p className="text-sage text-sm mt-0.5">{meta.desc}</p>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
             <span className="text-xs text-mist">{done}/{total} done</span>
             <button
               onClick={() => {
@@ -168,19 +212,20 @@ export default function Checklists({ project, updateProject }) {
             </button>
           </div>
         </div>
-        <p className="text-xs text-mist mb-4">{meta.desc}</p>
+      </div>
 
-        {/* Progress bar */}
-        {total > 0 && (
-          <div className="h-1.5 bg-linen rounded-full overflow-hidden mb-4">
-            <div
-              className="h-full bg-forest rounded-full transition-all"
-              style={{ width: `${(done / total) * 100}%` }}
-            />
-          </div>
-        )}
+      {/* Progress bar */}
+      {total > 0 && (
+        <div className="h-1.5 bg-linen rounded-full overflow-hidden mb-6">
+          <div
+            className="h-full bg-forest rounded-full transition-all"
+            style={{ width: `${(done / total) * 100}%` }}
+          />
+        </div>
+      )}
 
-        {/* Punch list renders its own layout */}
+      {/* List content */}
+      <div className="bg-white rounded-xl border border-linen p-5">
         {isPunchList ? (
           <PunchListTab
             checkedIds={punchListChecked}
@@ -217,7 +262,6 @@ export default function Checklists({ project, updateProject }) {
                 </div>
               ))}
             </div>
-
             <button
               onClick={() => addItem(activeTab)}
               className="flex items-center gap-1.5 text-xs text-forest mt-4 hover:underline"
