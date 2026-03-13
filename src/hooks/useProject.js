@@ -8,6 +8,10 @@ const DEFAULT_PROJECT = {
   budget: { items: [], total: 0 },
   timeline: { milestones: [] },
   changeOrders: [],
+  paymentSchedule: [],
+  punchList: [],
+  communicationLog: [],
+  lienWaivers: [],
   team: [],
   checklists: {
     landEvaluation: [

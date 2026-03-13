@@ -52,11 +52,22 @@ function exportCSV(items) {
   URL.revokeObjectURL(url);
 }
 
+function resolvePaymentStatus(payment, milestones) {
+  if (payment.paidDate) return 'paid';
+  const linked = milestones.find((m) => m.id === payment.milestoneId);
+  if (linked && (linked.done || linked.progress >= 100)) return 'due';
+  return 'upcoming';
+}
+
 export default function Budget({ project, updateProject }) {
   const items = project?.budget?.items ?? [];
   const changeOrders = project?.changeOrders ?? [];
   const approvedCOs = changeOrders.filter((co) => co.status === 'approved');
   const coApprovedTotal = approvedCOs.reduce((sum, co) => sum + (parseFloat(co.amount) || 0), 0);
+  const milestones = project?.timeline?.milestones ?? [];
+  const payments = project?.paymentSchedule ?? [];
+  const totalPaid = payments.filter((p) => p.paidDate).reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
+  const totalDue = payments.filter((p) => resolvePaymentStatus(p, milestones) === 'due').reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
   const [filter, setFilter] = useState('All');
 
   function addItem() {
@@ -173,6 +184,25 @@ export default function Budget({ project, updateProject }) {
           See Change Orders<br />for full detail
         </div>
       </div>
+
+      {/* Payment Schedule summary card */}
+      {payments.length > 0 && (
+        <div className="bg-white rounded-xl border border-green-200 p-4 mb-6 flex items-center gap-4">
+          <div className="flex-1">
+            <div className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-0.5">Payment Schedule</div>
+            <div className="text-xl font-bold text-green-700">{totalPaid > 0 ? `$${totalPaid.toLocaleString()}` : '—'} <span className="text-sm font-normal text-mist">paid</span></div>
+            <div className="text-xs text-mist mt-0.5">
+              {payments.filter((p) => p.paidDate).length} of {payments.length} draws paid
+              {totalDue > 0 && (
+                <span className="ml-2 text-red-600">· ${totalDue.toLocaleString()} due now</span>
+              )}
+            </div>
+          </div>
+          <div className="text-xs text-mist text-right shrink-0">
+            See Payments<br />for full detail
+          </div>
+        </div>
+      )}
 
       {/* Category filter */}
       {items.length > 0 && (
