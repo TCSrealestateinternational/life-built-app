@@ -11,6 +11,7 @@ const DEFAULT_PROJECT = {
   paymentSchedule: [],
   punchList: [],
   communicationLog: [],
+  todos: [],
   lienWaivers: [],
   team: [],
   checklists: {
