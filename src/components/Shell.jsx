@@ -15,6 +15,7 @@ import {
   CheckSquare,
   Users,
   FolderOpen,
+  BookUser,
   LogOut,
   Menu,
   X,
@@ -33,6 +34,7 @@ const NAV_ITEMS = [
   { id: 'lienwaiver', label: 'Lien Waivers', icon: Shield },
   { id: 'checklists', label: 'Checklists', icon: CheckSquare },
   { id: 'documents', label: 'Documents', icon: FolderOpen },
+  { id: 'keycontacts', label: 'Key Contacts', icon: BookUser },
   { id: 'team', label: 'Team', icon: Users },
 ];
 

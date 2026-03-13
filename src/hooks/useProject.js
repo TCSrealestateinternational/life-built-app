@@ -9,6 +9,26 @@ const DEFAULT_PROJECT = {
   timeline: { milestones: [] },
   changeOrders: [],
   paymentSchedule: [],
+  dashboardPrefs: {
+    statCards: ['properties', 'budget', 'timeline', 'checklists'],
+    widgets: { timelineWidget: true, quickNav: true, checklistProgress: true },
+  },
+  keyContacts: {
+    contractors: [
+      'Architect','Structural Engineer','Geotechnical Engineer','Surveyor','Title 24',
+      'Planning Department','Building Department','PGE','Arborist','Contractor',
+      'Project Manager','Foundation','Plumbing','Electrical','Low Voltage','HVAC',
+      'Insulation','Waterproofing','Roofing','Stucco','Fire Protection','Fireplace',
+      'Drywall','Cabinets','Counter Top Installation','Tile Installation',
+      'Stair / Railings','Hardwood Floor Installation','Carpet Installation',
+      'Garage Door','Glass','Paint','Appliance Installation','Landscaping',
+    ].map((trade) => ({ id: trade.toLowerCase().replace(/[^a-z0-9]/g, '_'), trade, company: '', name: '', phone: '', email: '', web: '' })),
+    distributors: [
+      'Appliances','Windows','Exterior Doors','Interior Doors','Plumbing Products',
+      'Electrical Products','Millwork','Fireplace','Home Automation','Tile','Stone',
+      'Carpet','Hardwood','Garage Door','Finish Hardware','Hardscape','Landscape','Paint',
+    ].map((trade) => ({ id: trade.toLowerCase().replace(/[^a-z0-9]/g, '_'), trade, company: '', name: '', phone: '', email: '', web: '' })),
+  },
   punchList: [],
   communicationLog: [],
   todos: [],

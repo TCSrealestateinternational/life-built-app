@@ -12,6 +12,7 @@ import Checklists from './components/Checklists';
 import Team from './components/Team';
 import Profile from './components/Profile';
 import Documents from './components/Documents';
+import KeyContacts from './components/KeyContacts';
 import ChangeOrders from './components/ChangeOrders';
 import PaymentSchedule from './components/PaymentSchedule';
 import CommunicationLog from './components/CommunicationLog';
@@ -76,6 +77,7 @@ export default function App() {
       {section === 'lienwaiver' && <LienWaivers {...sectionProps} />}
       {section === 'checklists' && <Checklists {...sectionProps} />}
       {section === 'documents' && <Documents {...sectionProps} uid={user.uid} />}
+      {section === 'keycontacts' && <KeyContacts {...sectionProps} />}
       {section === 'team' && <Team {...sectionProps} uid={user.uid} />}
     </Shell>
     </>
