@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Lightbulb, Plus, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Info, Lightbulb, Plus, Trash2 } from 'lucide-react';
 
 export default function SectionedChecklistTab({
   sections,
@@ -12,10 +12,15 @@ export default function SectionedChecklistTab({
   onRemoveCustom,
 }) {
   const [expandedSections, setExpandedSections] = useState({});
+  const [expandedWhy, setExpandedWhy] = useState({});
   const checkedSet = new Set(checkedIds);
 
   function toggleSection(id) {
     setExpandedSections((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
+
+  function toggleWhy(id) {
+    setExpandedWhy((prev) => ({ ...prev, [id]: !prev[id] }));
   }
 
   return (
@@ -69,21 +74,36 @@ export default function SectionedChecklistTab({
                 <div className="divide-y divide-linen/50">
                   {section.items.map((item) => {
                     const checked = checkedSet.has(item.id);
+                    const whyOpen = !!expandedWhy[item.id];
                     return (
-                      <label
-                        key={item.id}
-                        className="flex items-start gap-3 px-4 py-2.5 hover:bg-cream/30 cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() => onToggle(item.id)}
-                          className="accent-forest mt-0.5 shrink-0"
-                        />
-                        <span className={`text-sm leading-snug ${checked ? 'line-through text-mist' : 'text-ink'}`}>
-                          {item.text}
-                        </span>
-                      </label>
+                      <div key={item.id}>
+                        <label className="flex items-start gap-3 px-4 py-2.5 hover:bg-cream/30 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => onToggle(item.id)}
+                            className="accent-forest mt-0.5 shrink-0"
+                          />
+                          <span className={`flex-1 text-sm leading-snug ${checked ? 'line-through text-mist' : 'text-ink'}`}>
+                            {item.text}
+                          </span>
+                          {item.why && (
+                            <button
+                              type="button"
+                              onClick={(e) => { e.preventDefault(); toggleWhy(item.id); }}
+                              className={`shrink-0 mt-0.5 transition-colors ${whyOpen ? 'text-forest' : 'text-mist hover:text-forest'}`}
+                              title="Why this matters"
+                            >
+                              <Info size={13} />
+                            </button>
+                          )}
+                        </label>
+                        {item.why && whyOpen && (
+                          <div className="mx-4 mb-2.5 px-3 py-2 bg-forest/5 border border-forest/15 rounded-lg text-xs text-ink leading-relaxed">
+                            {item.why}
+                          </div>
+                        )}
+                      </div>
                     );
                   })}
                 </div>

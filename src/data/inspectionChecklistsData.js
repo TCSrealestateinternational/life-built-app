@@ -1,4 +1,5 @@
-const s = (id, text) => ({ id, text });
+const s  = (id, text)       => ({ id, text });
+const sw = (id, text, why)  => ({ id, text, why });
 
 // Shared pro tip shown on Electrical Rough-In (mentions all 3 most-failed inspections)
 const PRO_TIP_COMMONLY_FAILED = {
@@ -7,6 +8,65 @@ const PRO_TIP_COMMONLY_FAILED = {
 };
 
 export const INSPECTION_CHECKLISTS = {
+
+  // ── Hiring a Contractor (Vetting & Background Checks) ─────────────────────
+  contractor: {
+    label: 'Hiring a Contractor',
+    emoji: '🔨',
+    desc: 'Do this before you invite anyone to bid. Eliminating unqualified contractors early saves time and protects you from costly mistakes.',
+    proTip: null,
+    sections: [
+      {
+        id: 'con-s1',
+        title: 'Licensing & Legal Standing',
+        items: [
+          sw('con001', 'Verify contractor holds a valid Kentucky contractor license (check at kentucky.gov)',
+            'Kentucky requires contractors doing work over $10,000 to hold a valid license through the Department of Housing, Buildings and Construction. An unlicensed contractor cannot legally pull permits in their name, has no accountability to a licensing board, and leaves you with no recourse if work fails inspection or the project is abandoned.'),
+          s('con002', 'Confirm license is in good standing — no suspensions or disciplinary actions'),
+          s('con003', 'Verify the business entity exists and is in good standing with the Kentucky Secretary of State'),
+          s('con004', 'Confirm they have a physical business address (not just a P.O. box or cell number)'),
+          sw('con005', 'Check for any liens, judgments, or lawsuits filed against them in Jefferson County court records',
+            'A contractor with unpaid supplier or subcontractor invoices from past jobs is a serious red flag. Unpaid bills create mechanic\'s liens — and those can attach to YOUR property even after you\'ve paid the contractor in full. A pattern of lawsuits often signals abandoned projects, billing disputes, or cash flow problems that will eventually hit your build.'),
+        ],
+      },
+      {
+        id: 'con-s2',
+        title: 'Insurance',
+        items: [
+          sw('con006', 'Request a Certificate of Insurance — do not accept a verbal confirmation',
+            'If a worker is injured on your property and the contractor has no documented insurance, you can be held personally liable. Verbal claims of coverage are worthless — policies expire, lapse, or get canceled without notice. The certificate is the only legally usable proof, and you need it in hand before a single worker sets foot on your property.'),
+          s('con007', 'General liability insurance: minimum $1 million per occurrence for a full build'),
+          s('con008', 'Workers\' compensation insurance covers all employees and subcontractors on site'),
+          s('con009', 'Confirm you are named as an additional insured on their policy'),
+          s('con010', 'Call the insurance company directly to verify the certificate is current and not expired'),
+        ],
+      },
+      {
+        id: 'con-s3',
+        title: 'Reputation & Track Record',
+        items: [
+          s('con011', 'Check Better Business Bureau rating and review any complaints and responses'),
+          s('con012', 'Search Google, Houzz, and Facebook reviews — look for patterns, not individual outliers'),
+          s('con013', 'Ask for a list of at least 3 completed projects of similar size in the last 2 years'),
+          sw('con014', 'Request references from past clients AND from subcontractors and suppliers they work with',
+            'Homeowners often give positive reviews even when a job was difficult, because they have no baseline for comparison. Subcontractors and suppliers have worked with this contractor across many jobs — they know whether bills get paid on time, how the site is managed, and whether the contractor disappears when problems arise. A contractor who has burned their subs will face walkouts and material shortages on your project.'),
+          s('con015', 'Drive by or visit at least one completed project in person if possible'),
+          s('con016', 'Ask how long they have been operating under this business name — watch for recently renamed companies with a troubled history'),
+        ],
+      },
+      {
+        id: 'con-s4',
+        title: 'Financial Stability',
+        items: [
+          s('con017', 'Ask if they have an established account with a local lumber yard or building supply company'),
+          s('con018', 'Request a list of their regular subcontractors and verify those subs are also licensed and insured'),
+          sw('con019', 'Ask whether they will be pulling all required permits themselves',
+            'The permit holder is legally responsible for ensuring all inspections pass. If the contractor lets you pull your own permit — or suggests skipping permits entirely — they can walk away from failed work and leave you holding the liability. A contractor who pulls permits puts their own license on the line and cannot easily abandon the project when an inspector rejects substandard work.'),
+          s('con020', 'Ask how many active projects they are currently managing — overextended GCs are a common source of delays'),
+        ],
+      },
+    ],
+  },
 
   // ── Foundation & Pre-Pour ─────────────────────────────────────────────────
   foundationPrePour: {

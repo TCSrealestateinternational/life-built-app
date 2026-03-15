@@ -9,7 +9,7 @@ import { printGenericChecklist, printPunchList } from '../utils/printChecklist';
 const CHECKLIST_META = {
   landEvaluation:       { label: 'Land Evaluation',                        emoji: '🌿', desc: 'Before you buy — due diligence essentials.',                                       type: 'generic'   },
   permits:              { label: 'Permits & Inspections',                   emoji: '📋', desc: 'Keep your build legal and on track.',                                              type: 'generic'   },
-  contractor:           { label: 'Hiring a Contractor',                     emoji: '🔨', desc: 'Protect yourself with these steps before signing.',                                type: 'generic'   },
+  contractor:           { ...INSPECTION_CHECKLISTS.contractor,               type: 'sectioned' },
   foundationPrePour:    { ...INSPECTION_CHECKLISTS.foundationPrePour,       type: 'sectioned' },
   framingRoughIn:       { ...INSPECTION_CHECKLISTS.framingRoughIn,          type: 'sectioned' },
   plumbingRoughIn:      { ...INSPECTION_CHECKLISTS.plumbingRoughIn,         type: 'sectioned' },

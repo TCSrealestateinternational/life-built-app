@@ -52,13 +52,7 @@ const DEFAULT_PROJECT = {
       { id: 4, text: 'Schedule rough-in inspections', done: false },
       { id: 5, text: 'Schedule final inspection', done: false },
     ],
-    contractor: [
-      { id: 1, text: 'Verify license & insurance', done: false },
-      { id: 2, text: 'Get 3+ bids', done: false },
-      { id: 3, text: 'Sign detailed contract', done: false },
-      { id: 4, text: 'Confirm draw schedule', done: false },
-      { id: 5, text: 'Set weekly check-in cadence', done: false },
-    ],
+    contractor: [],
   },
 };
 
