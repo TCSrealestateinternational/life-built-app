@@ -15,6 +15,11 @@ function addDays(dateStr, n) {
   return d.toISOString().slice(0, 10);
 }
 
+function fmtDate(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
 // Migrate old milestone format ({ targetDate }) to new ({ start, end, progress, photos, linkedDocs })
 function normalize(m) {
   const base = m.start && m.end ? m : {
@@ -275,6 +280,14 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete, projectDocs }) {
               className="flex-1 text-sm border border-linen rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-forest/40 resize-none"
             />
           </div>
+
+          {/* Attribution */}
+          {m.createdBy && (
+            <p className="text-xs text-sage mt-0.5">Added by {m.createdBy.name} · {fmtDate(m.createdBy.at)}</p>
+          )}
+          {m.editedBy && !m.createdBy && (
+            <p className="text-xs text-sage mt-0.5">Edited by {m.editedBy.name} · {fmtDate(m.editedBy.at)}</p>
+          )}
 
           {/* Progress Photos */}
           <div>

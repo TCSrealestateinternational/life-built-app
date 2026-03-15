@@ -17,6 +17,11 @@ function formatDate(d) {
   return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+function fmtTs(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
 // ── Log Entry ─────────────────────────────────────────────────────────────────
 
 function LogEntry({ entry, onUpdate, onRemove }) {
@@ -113,6 +118,14 @@ function LogEntry({ entry, onUpdate, onRemove }) {
               className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
             />
           </div>
+          {entry.addedBy && (
+            <p className="text-xs text-sage">Added by {entry.addedBy.name} · {fmtTs(entry.addedBy.at)}</p>
+          )}
+          {(entry.teamNotes ?? []).map((n) => (
+            <div key={n.id} className="mt-1 pl-3 border-l-2 border-linen text-xs text-mist">
+              <span className="font-medium text-ink">{n.by}:</span> {n.text}
+            </div>
+          ))}
         </div>
       )}
     </div>
@@ -157,6 +170,12 @@ function TodoItem({ todo, onUpdate, onRemove }) {
               <span className={overdue ? 'text-red-500 font-medium' : 'text-mist'}>
                 {overdue ? '⚠ ' : ''}Due {formatDate(todo.dueDate)}
               </span>
+            )}
+            {todo.completedBy && (
+              <span className="text-sage ml-2">Completed by {todo.completedBy.name}</span>
+            )}
+            {todo.createdBy && !todo.done && (
+              <span className="text-sage ml-2">Added by {todo.createdBy.name}</span>
             )}
           </div>
         </div>

@@ -306,9 +306,6 @@ function MemberModal({ member, uid, onSave, onClose }) {
               </button>
             </div>
             <PermissionsGrid permissions={permissions} onChange={handlePermChange} />
-            <p className="text-xs text-mist mt-2">
-              ⓘ Edit access is reserved for a future update — all shared views are currently read-only.
-            </p>
           </div>
 
           {error && <p className="text-xs text-red-500">{error}</p>}
@@ -682,6 +679,22 @@ export default function Team({ project, updateProject, uid }) {
           >
             Add your first team member →
           </button>
+        </div>
+      )}
+
+      {/* Recent Activity */}
+      {(project?.activityFeed ?? []).length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-sm font-semibold text-ink mb-3">Recent Team Activity</h2>
+          <div className="space-y-2">
+            {[...(project.activityFeed)].reverse().slice(0, 20).map((entry) => (
+              <div key={entry.id} className="bg-white rounded-xl border border-linen px-4 py-3 text-sm">
+                <span className="font-medium text-ink">{entry.by}</span>
+                <span className="text-mist"> · {entry.detail}</span>
+                <span className="text-xs text-linen ml-2">{fmtDate(entry.at)}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
