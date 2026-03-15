@@ -7,7 +7,7 @@ const FAQ_DATA = [
     questions: [
       {
         q: 'Who is this app for?',
-        a: 'This app is for buyers working through the land-to-build process in Central Kentucky. It helps you organize your entire journey in one place — from evaluating land and tracking your budget to planning your home design and preparing for your final walkthrough.',
+        a: 'This app is for anyone working through the land-to-build process. It helps you organize your entire journey in one place — from evaluating land and tracking your budget to planning your home design and preparing for your final walkthrough.',
       },
       {
         q: 'Is this app free?',
@@ -87,7 +87,7 @@ const FAQ_DATA = [
     questions: [
       {
         q: 'What is "Load Standard Budget"?',
-        a: "It pre-fills your budget with 460+ line items organized across 37 categories — based on a real land-to-build budget used by Life Built in Kentucky. Every major cost is included, from land acquisition and permits through kitchen finishes, mechanical systems, and landscaping. You fill in your planned and actual costs as you go. It's a starting point, not a locked template — delete what doesn't apply and add anything that's missing.",
+        a: "It pre-fills your budget with 460+ line items organized across 37 categories — based on a real land-to-build budget from a complete new construction project. Every major cost is included, from land acquisition and permits through kitchen finishes, mechanical systems, and landscaping. You fill in your planned and actual costs as you go. It's a starting point, not a locked template — delete what doesn't apply and add anything that's missing.",
       },
       {
         q: "What's the difference between Planned and Actual?",
