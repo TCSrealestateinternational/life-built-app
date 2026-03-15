@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInWithPopup,
+  signInWithRedirect,
 } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 
@@ -34,10 +34,10 @@ export default function AuthScreen() {
     setError('');
     setLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
+      await signInWithRedirect(auth, googleProvider);
+      // Page redirects to Google — code below does not run
     } catch (err) {
       setError(err.message.replace('Firebase: ', '').replace(/\(.*\)\.?/, '').trim());
-    } finally {
       setLoading(false);
     }
   }

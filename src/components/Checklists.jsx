@@ -4,11 +4,17 @@ import PunchListTab from './PunchListTab';
 import SectionedChecklistTab from './SectionedChecklistTab';
 import { PUNCH_LIST_TOTAL } from '../data/punchListData';
 import { INSPECTION_CHECKLISTS, INSPECTION_TOTALS } from '../data/inspectionChecklistsData';
+import { PERMITS_CHECKLISTS, PERMITS_TOTALS } from '../data/permitsData';
 import { printGenericChecklist, printPunchList } from '../utils/printChecklist';
 
 const CHECKLIST_META = {
   landEvaluation:       { label: 'Land Evaluation',                        emoji: '🌿', desc: 'Before you buy — due diligence essentials.',                                       type: 'generic'   },
-  permits:              { label: 'Permits & Inspections',                   emoji: '📋', desc: 'Keep your build legal and on track.',                                              type: 'generic'   },
+  permitsPreCon:        { ...PERMITS_CHECKLISTS.permitsPreCon,              type: 'permits'   },
+  permitsSiteFdn:       { ...PERMITS_CHECKLISTS.permitsSiteFdn,             type: 'permits'   },
+  permitsFraming:       { ...PERMITS_CHECKLISTS.permitsFraming,             type: 'permits'   },
+  permitsInsDrw:        { ...PERMITS_CHECKLISTS.permitsInsDrw,              type: 'permits'   },
+  permitsFinals:        { ...PERMITS_CHECKLISTS.permitsFinals,              type: 'permits'   },
+  permitsCO:            { ...PERMITS_CHECKLISTS.permitsCO,                  type: 'permits'   },
   contractor:           { ...INSPECTION_CHECKLISTS.contractor,               type: 'sectioned' },
   foundationPrePour:    { ...INSPECTION_CHECKLISTS.foundationPrePour,       type: 'sectioned' },
   framingRoughIn:       { ...INSPECTION_CHECKLISTS.framingRoughIn,          type: 'sectioned' },
@@ -184,12 +190,13 @@ export default function Checklists({ project, updateProject }) {
       const t = PUNCH_LIST_TOTAL + punchCustomTotal;
       return { done: punchListChecked.length, total: t };
     }
-    if (INSPECTION_TOTALS[key] !== undefined) {
+    if (INSPECTION_TOTALS[key] !== undefined || PERMITS_TOTALS[key] !== undefined) {
+      const baseTotal = INSPECTION_TOTALS[key] ?? PERMITS_TOTALS[key];
       const customKey = key + 'Custom';
       const custom = checklists[customKey] ?? {};
       const customCount = Object.values(custom).reduce((s, items) => s + items.length, 0);
       const checked = checklists[key] ?? [];
-      return { done: checked.length, total: INSPECTION_TOTALS[key] + customCount };
+      return { done: checked.length, total: baseTotal + customCount };
     }
     const list = checklists[key] ?? [];
     return { done: list.filter((i) => i.done).length, total: list.length };
@@ -251,7 +258,10 @@ export default function Checklists({ project, updateProject }) {
 
   const meta = CHECKLIST_META[activeTab];
   const isPunchList = activeTab === 'punchList';
-  const isSectioned = meta.type === 'sectioned';
+  const isSectioned = meta.type === 'sectioned' || meta.type === 'permits';
+  const sectionedSource = meta.type === 'permits'
+    ? PERMITS_CHECKLISTS[activeTab]
+    : INSPECTION_CHECKLISTS[activeTab];
   const currentList = (!isPunchList && !isSectioned) ? (checklists[activeTab] ?? []) : [];
   const { done, total } = getProgress(activeTab);
 
@@ -260,7 +270,7 @@ export default function Checklists({ project, updateProject }) {
       printPunchList({ checkedIds: punchListChecked, customItems: punchListCustom });
     } else if (isSectioned) {
       const checkedSet = new Set(checklists[activeTab] ?? []);
-      const allItems = INSPECTION_CHECKLISTS[activeTab].sections.flatMap((sec) =>
+      const allItems = sectionedSource.sections.flatMap((sec) =>
         sec.items.map((item) => ({ ...item, done: checkedSet.has(item.id) }))
       );
       printGenericChecklist({ label: meta.label, emoji: meta.emoji, desc: meta.desc, items: allItems });
@@ -322,8 +332,8 @@ export default function Checklists({ project, updateProject }) {
           />
         ) : isSectioned ? (
           <SectionedChecklistTab
-            sections={INSPECTION_CHECKLISTS[activeTab].sections}
-            proTip={INSPECTION_CHECKLISTS[activeTab].proTip}
+            sections={sectionedSource.sections}
+            proTip={sectionedSource.proTip}
             checkedIds={checklists[activeTab] ?? []}
             customItems={checklists[activeTab + 'Custom'] ?? {}}
             onToggle={(itemId) => toggleSectioned(activeTab, itemId)}

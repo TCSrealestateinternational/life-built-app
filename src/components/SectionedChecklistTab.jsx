@@ -75,6 +75,9 @@ export default function SectionedChecklistTab({
                   {section.items.map((item) => {
                     const checked = checkedSet.has(item.id);
                     const whyOpen = !!expandedWhy[item.id];
+                    const isConditional = item.tags?.includes('conditional');
+                    const isPermit = item.tags?.includes('permit');
+                    const isInspection = item.tags?.includes('inspection');
                     return (
                       <div key={item.id}>
                         <label className="flex items-start gap-3 px-4 py-2.5 hover:bg-cream/30 cursor-pointer">
@@ -84,9 +87,30 @@ export default function SectionedChecklistTab({
                             onChange={() => onToggle(item.id)}
                             className="accent-forest mt-0.5 shrink-0"
                           />
-                          <span className={`flex-1 text-sm leading-snug ${checked ? 'line-through text-mist' : 'text-ink'}`}>
-                            {item.text}
-                          </span>
+                          <div className="flex-1 min-w-0">
+                            <span className={`text-sm leading-snug ${checked ? 'line-through text-mist' : 'text-ink'}`}>
+                              {item.text}
+                            </span>
+                            {(isConditional || isPermit || isInspection) && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {isPermit && (
+                                  <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-sage/20 text-sage font-medium tracking-wide uppercase">
+                                    Permit
+                                  </span>
+                                )}
+                                {isInspection && (
+                                  <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-forest/10 text-forest font-medium tracking-wide uppercase">
+                                    Inspection
+                                  </span>
+                                )}
+                                {isConditional && (
+                                  <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-linen text-mist font-medium tracking-wide uppercase">
+                                    If applicable
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
                           {item.why && (
                             <button
                               type="button"
