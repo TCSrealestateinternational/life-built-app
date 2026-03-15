@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { useProject } from './hooks/useProject';
 import AuthScreen from './components/AuthScreen';
@@ -20,6 +20,10 @@ import LienWaivers from './components/LienWaivers';
 import ShareView from './components/ShareView';
 import SharedPortal from './components/SharedPortal';
 import InstallPrompt from './components/InstallPrompt';
+import TourOverlay from './components/TourOverlay';
+import { TOUR_STEPS } from './data/tourSteps';
+
+const TOUR_KEY = 'lifebuilt_tour_seen';
 
 function getShareUid() {
   const match = window.location.pathname.match(/^\/share\/([^/]+)$/);
@@ -37,6 +41,41 @@ export default function App() {
   const user = useAuth();
   const [section, setSection] = useState('dashboard');
   const { project, loading, updateProject, saving } = useProject(user?.uid ?? null);
+
+  const [tourActive, setTourActive] = useState(false);
+  const [tourStep, setTourStep] = useState(0);
+
+  useEffect(() => {
+    if (!user || loading) return;
+    if (localStorage.getItem(TOUR_KEY)) return;
+    const timer = setTimeout(() => {
+      setTourStep(0);
+      setSection(TOUR_STEPS[0].sectionId);
+      setTourActive(true);
+      localStorage.setItem(TOUR_KEY, '1');
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [user, loading]);
+
+  function startTour() {
+    setTourStep(0);
+    setSection(TOUR_STEPS[0].sectionId);
+    setTourActive(true);
+  }
+  function nextStep() {
+    const next = tourStep + 1;
+    setTourStep(next);
+    setSection(TOUR_STEPS[next].sectionId);
+  }
+  function backStep() {
+    const prev = tourStep - 1;
+    setTourStep(prev);
+    setSection(TOUR_STEPS[prev].sectionId);
+  }
+  function endTour() {
+    setTourActive(false);
+    setTourStep(0);
+  }
 
   if (shareUid) return <ShareView uid={shareUid} />;
   if (teamToken) return <SharedPortal token={teamToken} />;
@@ -63,8 +102,8 @@ export default function App() {
 
   return (
     <>
-    <InstallPrompt />
-    <Shell user={user} section={section} onSection={setSection} saving={saving}>
+    <InstallPrompt hideDuring={tourActive} />
+    <Shell user={user} section={section} onSection={setSection} saving={saving} tourActive={tourActive} onStartTour={startTour}>
       {section === 'dashboard' && <Dashboard {...sectionProps} user={user} onSection={setSection} />}
       {section === 'profile' && <Profile {...sectionProps} user={user} />}
       {section === 'properties' && <Properties {...sectionProps} uid={user.uid} />}
@@ -80,6 +119,14 @@ export default function App() {
       {section === 'keycontacts' && <KeyContacts {...sectionProps} />}
       {section === 'team' && <Team {...sectionProps} uid={user.uid} />}
     </Shell>
+    <TourOverlay
+      tourActive={tourActive}
+      tourStep={tourStep}
+      onNext={nextStep}
+      onBack={backStep}
+      onSkip={endTour}
+      onEnd={endTour}
+    />
     </>
   );
 }

@@ -9,7 +9,7 @@ function isInStandaloneMode() {
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 }
 
-export default function InstallPrompt() {
+export default function InstallPrompt({ hideDuring = false }) {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showAndroid, setShowAndroid] = useState(false);
   const [showIOS, setShowIOS] = useState(false);
@@ -55,6 +55,7 @@ export default function InstallPrompt() {
     }
   }
 
+  if (hideDuring) return null;
   if (!showAndroid && !showIOS) return null;
 
   return (

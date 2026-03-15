@@ -19,6 +19,7 @@ import {
   LogOut,
   Menu,
   X,
+  Compass,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -38,13 +39,13 @@ const NAV_ITEMS = [
   { id: 'team', label: 'Team', icon: Users },
 ];
 
-export default function Shell({ user, section, onSection, children, saving }) {
+export default function Shell({ user, section, onSection, children, saving, tourActive = false, onStartTour }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <div className="min-h-screen flex bg-cream">
       {/* Sidebar (desktop) */}
-      <aside className="hidden md:flex flex-col w-56 bg-ink text-white shrink-0">
+      <aside className={`hidden md:flex flex-col w-56 bg-ink text-white shrink-0${tourActive ? ' relative z-50' : ''}`}>
         <div className="px-5 py-6 border-b border-white/10">
           <div className="text-lg font-bold" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
             Life Built
@@ -59,7 +60,7 @@ export default function Shell({ user, section, onSection, children, saving }) {
               onClick={() => onSection(id)}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
                 section === id
-                  ? 'bg-forest text-white'
+                  ? `bg-forest text-white${tourActive ? ' ring-2 ring-white/40 ring-offset-1 ring-offset-[#1e2e22]' : ''}`
                   : 'text-mist hover:bg-white/5 hover:text-white'
               }`}
             >
@@ -70,6 +71,14 @@ export default function Shell({ user, section, onSection, children, saving }) {
         </nav>
 
         <div className="px-2 pb-4 space-y-0.5">
+          {onStartTour && (
+            <button
+              onClick={onStartTour}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-mist hover:bg-white/5 hover:text-white transition-colors"
+            >
+              <Compass size={16} /> Take the Tour
+            </button>
+          )}
           <button
             onClick={() => signOut(auth)}
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-mist hover:bg-white/5 hover:text-white transition-colors"
@@ -111,6 +120,14 @@ export default function Shell({ user, section, onSection, children, saving }) {
               ))}
             </nav>
             <div className="px-2 pb-6 space-y-0.5">
+              {onStartTour && (
+                <button
+                  onClick={() => { onStartTour(); setMobileOpen(false); }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-mist hover:bg-white/5 hover:text-white transition-colors"
+                >
+                  <Compass size={16} /> Take the Tour
+                </button>
+              )}
               <button
                 onClick={() => signOut(auth)}
                 className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-mist hover:bg-white/5 hover:text-white transition-colors"
