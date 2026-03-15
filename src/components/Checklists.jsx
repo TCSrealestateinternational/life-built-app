@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { Plus, Trash2, Printer, ArrowLeft } from 'lucide-react';
 import PunchListTab from './PunchListTab';
 import SectionedChecklistTab from './SectionedChecklistTab';
+import LandEvaluationTab from './LandEvaluationTab';
 import { PUNCH_LIST_TOTAL } from '../data/punchListData';
 import { INSPECTION_CHECKLISTS, INSPECTION_TOTALS } from '../data/inspectionChecklistsData';
 import { PERMITS_CHECKLISTS, PERMITS_TOTALS } from '../data/permitsData';
+import { LAND_EVAL_CHECKLISTS } from '../data/landEvalData';
 import { printGenericChecklist, printPunchList } from '../utils/printChecklist';
 
 const CHECKLIST_META = {
-  landEvaluation:       { label: 'Land Evaluation',                        emoji: '🌿', desc: 'Before you buy — due diligence essentials.',                                       type: 'generic'   },
+  landEvaluation:       { label: 'Land Evaluation',                        emoji: '🌿', desc: 'Before you buy — due diligence essentials.',                                       type: 'landEval'  },
   permitsPreCon:        { ...PERMITS_CHECKLISTS.permitsPreCon,              type: 'permits'   },
   permitsSiteFdn:       { ...PERMITS_CHECKLISTS.permitsSiteFdn,             type: 'permits'   },
   permitsFraming:       { ...PERMITS_CHECKLISTS.permitsFraming,             type: 'permits'   },
@@ -185,10 +187,23 @@ export default function Checklists({ project, updateProject }) {
   const punchListCustom = checklists.punchListCustom ?? {};
   const punchCustomTotal = Object.values(punchListCustom).reduce((s, items) => s + items.length, 0);
 
+  function setLandEvalType(type) {
+    updateProject({ checklists: { ...checklists, landEvalType: type } });
+  }
+
   function getProgress(key) {
     if (key === 'punchList') {
       const t = PUNCH_LIST_TOTAL + punchCustomTotal;
       return { done: punchListChecked.length, total: t };
+    }
+    if (key === 'landEvaluation') {
+      const activeType = checklists.landEvalType ?? 'rural_acreage';
+      const typeData = LAND_EVAL_CHECKLISTS[activeType];
+      const allTypeIds = new Set(typeData.sections.flatMap((sec) => sec.items.map((i) => i.id)));
+      const custom = checklists.landEvaluationCustom ?? {};
+      const customCount = typeData.sections.reduce((acc, sec) => acc + (custom[sec.id]?.length ?? 0), 0);
+      const checked = checklists[key] ?? [];
+      return { done: checked.filter((id) => allTypeIds.has(id)).length, total: allTypeIds.size + customCount };
     }
     if (INSPECTION_TOTALS[key] !== undefined || PERMITS_TOTALS[key] !== undefined) {
       const baseTotal = INSPECTION_TOTALS[key] ?? PERMITS_TOTALS[key];
@@ -259,15 +274,26 @@ export default function Checklists({ project, updateProject }) {
   const meta = CHECKLIST_META[activeTab];
   const isPunchList = activeTab === 'punchList';
   const isSectioned = meta.type === 'sectioned' || meta.type === 'permits';
+  const isLandEval = meta.type === 'landEval';
   const sectionedSource = meta.type === 'permits'
     ? PERMITS_CHECKLISTS[activeTab]
-    : INSPECTION_CHECKLISTS[activeTab];
-  const currentList = (!isPunchList && !isSectioned) ? (checklists[activeTab] ?? []) : [];
+    : meta.type === 'sectioned'
+    ? INSPECTION_CHECKLISTS[activeTab]
+    : null;
+  const currentList = (!isPunchList && !isSectioned && !isLandEval) ? (checklists[activeTab] ?? []) : [];
   const { done, total } = getProgress(activeTab);
 
   function handlePrint() {
     if (isPunchList) {
       printPunchList({ checkedIds: punchListChecked, customItems: punchListCustom });
+    } else if (isLandEval) {
+      const activeType = checklists.landEvalType ?? 'rural_acreage';
+      const typeData = LAND_EVAL_CHECKLISTS[activeType];
+      const checkedSet = new Set(checklists[activeTab] ?? []);
+      const allItems = typeData.sections.flatMap((sec) =>
+        sec.items.map((item) => ({ ...item, done: checkedSet.has(item.id) }))
+      );
+      printGenericChecklist({ label: typeData.label, emoji: '🌿', desc: typeData.desc, items: allItems });
     } else if (isSectioned) {
       const checkedSet = new Set(checklists[activeTab] ?? []);
       const allItems = sectionedSource.sections.flatMap((sec) =>
@@ -329,6 +355,17 @@ export default function Checklists({ project, updateProject }) {
             onAddCustom={addPunchListCustomItem}
             onUpdateCustom={updatePunchListCustomItem}
             onRemoveCustom={removePunchListCustomItem}
+          />
+        ) : isLandEval ? (
+          <LandEvaluationTab
+            activeType={checklists.landEvalType ?? 'rural_acreage'}
+            onSetType={setLandEvalType}
+            checkedIds={checklists.landEvaluation ?? []}
+            customItems={checklists.landEvaluationCustom ?? {}}
+            onToggle={(itemId) => toggleSectioned('landEvaluation', itemId)}
+            onAddCustom={(sectionId) => addSectionedCustom('landEvaluation', sectionId)}
+            onUpdateCustom={(sectionId, itemId, text) => updateSectionedCustom('landEvaluation', sectionId, itemId, text)}
+            onRemoveCustom={(sectionId, itemId) => removeSectionedCustom('landEvaluation', sectionId, itemId)}
           />
         ) : isSectioned ? (
           <SectionedChecklistTab
