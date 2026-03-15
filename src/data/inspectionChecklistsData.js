@@ -8,6 +8,117 @@ const PRO_TIP_COMMONLY_FAILED = {
 
 export const INSPECTION_CHECKLISTS = {
 
+  // ── Foundation & Pre-Pour ─────────────────────────────────────────────────
+  foundationPrePour: {
+    label: 'Foundation & Pre-Pour Inspection',
+    emoji: '🏗️',
+    desc: 'Conducted before concrete is poured — critical because issues are nearly impossible to fix afterward.',
+    proTip: null,
+    sections: [
+      {
+        id: 'fnd-s1',
+        title: 'Excavation & Site Prep',
+        items: [
+          s('fnd001', 'Footing trenches are dug to the correct depth and width per approved plans'),
+          s('fnd002', 'Soil bearing capacity has been verified and undisturbed native soil is present'),
+          s('fnd003', 'Trenches are free of loose soil, standing water, and debris'),
+          s('fnd004', 'Frost depth requirements are met based on local climate zone'),
+          s('fnd005', 'Site is properly graded to direct water away from the foundation'),
+        ],
+      },
+      {
+        id: 'fnd-s2',
+        title: 'Forms & Layout',
+        items: [
+          s('fnd006', 'Form boards are properly staked, level, and plumb'),
+          s('fnd007', 'Footings are correctly sized per structural drawings'),
+          s('fnd008', 'Foundation dimensions and squareness confirmed (diagonal measurements match)'),
+          s('fnd009', 'All corners and turns are at correct angles'),
+          s('fnd010', 'Openings for pipes, conduit, and anchor bolts are correctly placed'),
+        ],
+      },
+      {
+        id: 'fnd-s3',
+        title: 'Reinforcement (Rebar)',
+        items: [
+          s('fnd011', 'Rebar size, spacing, and placement match engineering drawings'),
+          s('fnd012', 'Rebar is properly tied and secured so it won\'t shift during pour'),
+          s('fnd013', 'Minimum concrete cover over rebar is maintained (typically 3" for footings)'),
+          s('fnd014', 'Lap splices meet code-required minimum lengths'),
+          s('fnd015', 'Chairs or supports hold rebar off the ground correctly'),
+        ],
+      },
+      {
+        id: 'fnd-s4',
+        title: 'Pre-Pour Checklist',
+        items: [
+          s('fnd016', 'Vapor barrier (if required) is in place and undamaged'),
+          s('fnd017', 'All underground plumbing and conduit stubs are in position'),
+          s('fnd018', 'Anchor bolt locations for sill plate are marked and ready'),
+          s('fnd019', 'Inspector has reviewed and approved forms before pour begins'),
+          s('fnd020', 'Concrete mix design meets specified strength (e.g., 3000 PSI minimum)'),
+        ],
+      },
+    ],
+  },
+
+  // ── Framing / Rough-In ────────────────────────────────────────────────────
+  framingRoughIn: {
+    label: 'Framing / Rough-In Inspection',
+    emoji: '🪵',
+    desc: 'After the structural skeleton is erected but before insulation or drywall conceals anything.',
+    proTip: PRO_TIP_COMMONLY_FAILED,
+    sections: [
+      {
+        id: 'frm-s1',
+        title: 'Floor Framing',
+        items: [
+          s('frm001', 'Floor joists are correct species, size, and spacing per plans'),
+          s('frm002', 'Joist hangers and fasteners are installed at all required connections'),
+          s('frm003', 'Double joists are installed under load-bearing walls and parallel partitions'),
+          s('frm004', 'Blocking is in place at joist ends and at required intervals'),
+          s('frm005', 'Subfloor sheathing is correct thickness, properly glued and nailed'),
+        ],
+      },
+      {
+        id: 'frm-s2',
+        title: 'Wall Framing',
+        items: [
+          s('frm006', 'Stud size and spacing meets code (typically 16" or 24" on center)'),
+          s('frm007', 'All load-bearing walls are identified and properly framed'),
+          s('frm008', 'Headers above doors and windows are correct size for span'),
+          s('frm009', 'King studs, jack studs, and cripple studs properly installed at all openings'),
+          s('frm010', 'Walls are plumb, straight, and properly braced'),
+          s('frm011', 'Corner framing provides adequate nailing surface for interior finish'),
+          s('frm012', 'Anchor bolts connect sill plate to foundation at required spacing'),
+        ],
+      },
+      {
+        id: 'frm-s3',
+        title: 'Roof & Ceiling Framing',
+        items: [
+          s('frm013', 'Rafters or trusses are correctly sized and spaced'),
+          s('frm014', 'Ridge board or ridge beam is properly supported'),
+          s('frm015', 'Collar ties or rafter ties are in place to resist outward thrust'),
+          s('frm016', 'Ceiling joists are correct size with adequate bearing at walls'),
+          s('frm017', 'Roof sheathing is correct thickness and properly nailed per shear schedule'),
+          s('frm018', 'Overhangs and fascia blocking are complete'),
+        ],
+      },
+      {
+        id: 'frm-s4',
+        title: 'Connections & Hardware',
+        items: [
+          s('frm019', 'Hurricane ties or rafter clips connect rafters/trusses to wall plates'),
+          s('frm020', 'Hold-down hardware is installed at required shear wall locations'),
+          s('frm021', 'All structural connectors match hardware specified in plans'),
+          s('frm022', 'Nailing pattern on shear walls meets approved schedule'),
+          s('frm023', 'Fire blocking is in place in all required locations (top of wall, stair stringers, etc.)'),
+        ],
+      },
+    ],
+  },
+
   // ── Plumbing Rough-In ──────────────────────────────────────────────────────
   plumbingRoughIn: {
     label: 'Plumbing Rough-In Inspection',
