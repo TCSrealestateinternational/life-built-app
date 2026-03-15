@@ -1,21 +1,31 @@
 import { useState } from 'react';
 import { Plus, Trash2, Printer, ArrowLeft } from 'lucide-react';
 import PunchListTab from './PunchListTab';
+import SectionedChecklistTab from './SectionedChecklistTab';
 import { PUNCH_LIST_TOTAL } from '../data/punchListData';
+import { INSPECTION_CHECKLISTS, INSPECTION_TOTALS } from '../data/inspectionChecklistsData';
 import { printGenericChecklist, printPunchList } from '../utils/printChecklist';
 
 const CHECKLIST_META = {
-  landEvaluation: { label: 'Land Evaluation', tab: 'Land Eval', emoji: '🌿', desc: 'Before you buy — due diligence essentials.' },
-  permits: { label: 'Permits & Inspections', tab: 'Permits', emoji: '📋', desc: 'Keep your build legal and on track.' },
-  contractor: { label: 'Hiring a Contractor', tab: 'Contractor', emoji: '🔨', desc: 'Protect yourself with these steps before signing.' },
-  punchList: { label: 'Punch List Inspection', tab: 'Punch List', emoji: '🏷️', desc: 'Final walkthrough before closing — blue tape inspection.' },
+  landEvaluation:       { label: 'Land Evaluation',                        emoji: '🌿', desc: 'Before you buy — due diligence essentials.',                                       type: 'generic'   },
+  permits:              { label: 'Permits & Inspections',                   emoji: '📋', desc: 'Keep your build legal and on track.',                                              type: 'generic'   },
+  contractor:           { label: 'Hiring a Contractor',                     emoji: '🔨', desc: 'Protect yourself with these steps before signing.',                                type: 'generic'   },
+  plumbingRoughIn:      { ...INSPECTION_CHECKLISTS.plumbingRoughIn,         type: 'sectioned' },
+  electricalRoughIn:    { ...INSPECTION_CHECKLISTS.electricalRoughIn,       type: 'sectioned' },
+  hvacRoughIn:          { ...INSPECTION_CHECKLISTS.hvacRoughIn,             type: 'sectioned' },
+  insulationInspection: { ...INSPECTION_CHECKLISTS.insulationInspection,    type: 'sectioned' },
+  drywallInspection:    { ...INSPECTION_CHECKLISTS.drywallInspection,       type: 'sectioned' },
+  finalInspections:     { ...INSPECTION_CHECKLISTS.finalInspections,        type: 'sectioned' },
+  punchList:            { label: 'Punch List Inspection',                   emoji: '🏷️', desc: 'Final walkthrough before closing — blue tape inspection.',                       type: 'punchList' },
+  coInspection:         { ...INSPECTION_CHECKLISTS.coInspection,            type: 'sectioned' },
 };
 
 export default function Checklists({ project, updateProject }) {
   const [activeTab, setActiveTab] = useState(null);
   const checklists = project?.checklists ?? {};
 
-  // Generic checklist toggle (for landEvaluation, permits, contractor)
+  // ── Generic flat-list handlers (landEvaluation, permits, contractor) ───────
+
   function toggle(listKey, id) {
     const list = checklists[listKey] ?? [];
     updateProject({
@@ -26,7 +36,36 @@ export default function Checklists({ project, updateProject }) {
     });
   }
 
-  // Punch list toggle — stores array of checked IDs
+  function addItem(listKey) {
+    const list = checklists[listKey] ?? [];
+    if (list.length > 0 && !list[list.length - 1].text.trim()) return;
+    updateProject({
+      checklists: {
+        ...checklists,
+        [listKey]: [...list, { id: `${Date.now()}_${Math.random().toString(36).slice(2)}`, text: '', done: false }],
+      },
+    });
+  }
+
+  function updateText(listKey, id, text) {
+    const list = checklists[listKey] ?? [];
+    updateProject({
+      checklists: {
+        ...checklists,
+        [listKey]: list.map((item) => (item.id === id ? { ...item, text } : item)),
+      },
+    });
+  }
+
+  function removeItem(listKey, id) {
+    const list = checklists[listKey] ?? [];
+    updateProject({
+      checklists: { ...checklists, [listKey]: list.filter((i) => i.id !== id) },
+    });
+  }
+
+  // ── Punch list handlers ────────────────────────────────────────────────────
+
   function togglePunchList(itemId) {
     const current = checklists.punchList ?? [];
     const updated = current.includes(itemId)
@@ -35,7 +74,6 @@ export default function Checklists({ project, updateProject }) {
     updateProject({ checklists: { ...checklists, punchList: updated } });
   }
 
-  // Punch list custom items — stored per section in punchListCustom
   function addPunchListCustomItem(sectionId) {
     const custom = checklists.punchListCustom ?? {};
     const sectionItems = custom[sectionId] ?? [];
@@ -78,50 +116,85 @@ export default function Checklists({ project, updateProject }) {
     });
   }
 
-  function addItem(listKey) {
-    const list = checklists[listKey] ?? [];
-    if (list.length > 0 && !list[list.length - 1].text.trim()) return;
+  // ── Sectioned inspection checklist handlers ───────────────────────────────
+
+  function toggleSectioned(key, itemId) {
+    const current = checklists[key] ?? [];
+    const updated = current.includes(itemId)
+      ? current.filter((id) => id !== itemId)
+      : [...current, itemId];
+    updateProject({ checklists: { ...checklists, [key]: updated } });
+  }
+
+  function addSectionedCustom(key, sectionId) {
+    const customKey = key + 'Custom';
+    const custom = checklists[customKey] ?? {};
+    const sectionItems = custom[sectionId] ?? [];
+    const newItem = { id: `cust_${sectionId}_${Date.now()}_${Math.random().toString(36).slice(2)}`, text: '' };
     updateProject({
       checklists: {
         ...checklists,
-        [listKey]: [...list, { id: `${Date.now()}_${Math.random().toString(36).slice(2)}`, text: '', done: false }],
+        [customKey]: { ...custom, [sectionId]: [...sectionItems, newItem] },
       },
     });
   }
 
-  function updateText(listKey, id, text) {
-    const list = checklists[listKey] ?? [];
+  function updateSectionedCustom(key, sectionId, itemId, text) {
+    const customKey = key + 'Custom';
+    const custom = checklists[customKey] ?? {};
+    const sectionItems = custom[sectionId] ?? [];
     updateProject({
       checklists: {
         ...checklists,
-        [listKey]: list.map((item) => (item.id === id ? { ...item, text } : item)),
+        [customKey]: {
+          ...custom,
+          [sectionId]: sectionItems.map((i) => (i.id === itemId ? { ...i, text } : i)),
+        },
       },
     });
   }
 
-  function removeItem(listKey, id) {
-    const list = checklists[listKey] ?? [];
+  function removeSectionedCustom(key, sectionId, itemId) {
+    const customKey = key + 'Custom';
+    const custom = checklists[customKey] ?? {};
+    const sectionItems = custom[sectionId] ?? [];
+    const checked = checklists[key] ?? [];
     updateProject({
-      checklists: { ...checklists, [listKey]: list.filter((i) => i.id !== id) },
+      checklists: {
+        ...checklists,
+        [key]: checked.filter((id) => id !== itemId),
+        [customKey]: {
+          ...custom,
+          [sectionId]: sectionItems.filter((i) => i.id !== itemId),
+        },
+      },
     });
   }
 
-  const keys = Object.keys(CHECKLIST_META);
+  // ── Progress helpers ───────────────────────────────────────────────────────
+
   const punchListChecked = checklists.punchList ?? [];
   const punchListCustom = checklists.punchListCustom ?? {};
-  const customTotal = Object.values(punchListCustom).reduce((s, items) => s + items.length, 0);
+  const punchCustomTotal = Object.values(punchListCustom).reduce((s, items) => s + items.length, 0);
 
-  // Per-key helpers used in both hub and detail
   function getProgress(key) {
     if (key === 'punchList') {
-      const t = PUNCH_LIST_TOTAL + customTotal;
+      const t = PUNCH_LIST_TOTAL + punchCustomTotal;
       return { done: punchListChecked.length, total: t };
+    }
+    if (INSPECTION_TOTALS[key] !== undefined) {
+      const customKey = key + 'Custom';
+      const custom = checklists[customKey] ?? {};
+      const customCount = Object.values(custom).reduce((s, items) => s + items.length, 0);
+      const checked = checklists[key] ?? [];
+      return { done: checked.length, total: INSPECTION_TOTALS[key] + customCount };
     }
     const list = checklists[key] ?? [];
     return { done: list.filter((i) => i.done).length, total: list.length };
   }
 
-  // ── Hub view ─────────────────────────────────────────────────────────────
+  // ── Hub view ───────────────────────────────────────────────────────────────
+
   if (!activeTab) {
     return (
       <div className="p-6 max-w-3xl mx-auto">
@@ -133,7 +206,7 @@ export default function Checklists({ project, updateProject }) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {keys.map((key) => {
+          {Object.keys(CHECKLIST_META).map((key) => {
             const m = CHECKLIST_META[key];
             const { done, total } = getProgress(key);
             const pct = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -172,11 +245,27 @@ export default function Checklists({ project, updateProject }) {
     );
   }
 
-  // ── Detail view ───────────────────────────────────────────────────────────
-  const isPunchList = activeTab === 'punchList';
-  const currentList = isPunchList ? [] : (checklists[activeTab] ?? []);
-  const { done, total } = getProgress(activeTab);
+  // ── Detail view ────────────────────────────────────────────────────────────
+
   const meta = CHECKLIST_META[activeTab];
+  const isPunchList = activeTab === 'punchList';
+  const isSectioned = meta.type === 'sectioned';
+  const currentList = (!isPunchList && !isSectioned) ? (checklists[activeTab] ?? []) : [];
+  const { done, total } = getProgress(activeTab);
+
+  function handlePrint() {
+    if (isPunchList) {
+      printPunchList({ checkedIds: punchListChecked, customItems: punchListCustom });
+    } else if (isSectioned) {
+      const checkedSet = new Set(checklists[activeTab] ?? []);
+      const allItems = INSPECTION_CHECKLISTS[activeTab].sections.flatMap((sec) =>
+        sec.items.map((item) => ({ ...item, done: checkedSet.has(item.id) }))
+      );
+      printGenericChecklist({ label: meta.label, emoji: meta.emoji, desc: meta.desc, items: allItems });
+    } else {
+      printGenericChecklist({ label: meta.label, emoji: meta.emoji, desc: meta.desc, items: currentList });
+    }
+  }
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
@@ -198,13 +287,7 @@ export default function Checklists({ project, updateProject }) {
           <div className="flex items-center gap-3 shrink-0">
             <span className="text-xs text-mist">{done}/{total} done</span>
             <button
-              onClick={() => {
-                if (isPunchList) {
-                  printPunchList({ checkedIds: punchListChecked, customItems: punchListCustom });
-                } else {
-                  printGenericChecklist({ label: meta.label, emoji: meta.emoji, desc: meta.desc, items: currentList });
-                }
-              }}
+              onClick={handlePrint}
               className="flex items-center gap-1.5 text-xs text-mist hover:text-forest transition-colors"
               title="Print / Save as PDF"
             >
@@ -235,6 +318,17 @@ export default function Checklists({ project, updateProject }) {
             onUpdateCustom={updatePunchListCustomItem}
             onRemoveCustom={removePunchListCustomItem}
           />
+        ) : isSectioned ? (
+          <SectionedChecklistTab
+            sections={INSPECTION_CHECKLISTS[activeTab].sections}
+            proTip={INSPECTION_CHECKLISTS[activeTab].proTip}
+            checkedIds={checklists[activeTab] ?? []}
+            customItems={checklists[activeTab + 'Custom'] ?? {}}
+            onToggle={(itemId) => toggleSectioned(activeTab, itemId)}
+            onAddCustom={(sectionId) => addSectionedCustom(activeTab, sectionId)}
+            onUpdateCustom={(sectionId, itemId, text) => updateSectionedCustom(activeTab, sectionId, itemId, text)}
+            onRemoveCustom={(sectionId, itemId) => removeSectionedCustom(activeTab, sectionId, itemId)}
+          />
         ) : (
           <>
             <div className="space-y-2">
@@ -251,7 +345,9 @@ export default function Checklists({ project, updateProject }) {
                     value={item.text}
                     onChange={(e) => updateText(activeTab, item.id, e.target.value)}
                     placeholder="Checklist item…"
-                    className={`flex-1 text-sm bg-transparent border-b border-transparent hover:border-linen focus:border-forest focus:outline-none py-0.5 ${item.done ? 'line-through text-mist' : 'text-ink'}`}
+                    className={`flex-1 text-sm bg-transparent border-b border-transparent hover:border-linen focus:border-forest focus:outline-none py-0.5 ${
+                      item.done ? 'line-through text-mist' : 'text-ink'
+                    }`}
                   />
                   <button
                     onClick={() => removeItem(activeTab, item.id)}
