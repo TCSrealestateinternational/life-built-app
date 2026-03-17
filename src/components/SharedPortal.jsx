@@ -380,38 +380,160 @@ function DocumentsSection({ project }) {
 
 // ─── Section: Progress Photos ─────────────────────────────────────────────────
 
-function PhotosSection({ project }) {
-  // Aggregate photos from all milestones
+function PhotosSection({ project, canEdit, member, onSave }) {
+  const [showForm, setShowForm] = useState(false);
+  const [newUrl, setNewUrl] = useState('');
+  const [newCaption, setNewCaption] = useState('');
+
+  // Aggregate milestone photos + team-added photos
   const allPhotos = [];
   (project?.timeline?.milestones ?? []).forEach((m) => {
     (m.photos ?? []).forEach((p) => {
-      if (p.url) allPhotos.push({ ...p, milestoneName: m.title });
+      if (p.url) allPhotos.push({ ...p, milestoneName: m.title, source: 'milestone' });
     });
   });
+  (project?.teamPhotos ?? []).forEach((p) => {
+    if (p.url) allPhotos.push({ ...p, milestoneName: p.caption ? null : null, source: 'team' });
+  });
 
-  if (allPhotos.length === 0) {
-    return <p className="text-sm text-mist">No progress photos shared yet.</p>;
+  function addPhoto() {
+    const url = newUrl.trim();
+    if (!url) return;
+    const photo = {
+      id: `tp_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      url,
+      caption: newCaption.trim(),
+      addedBy: { name: member.name, at: new Date().toISOString() },
+    };
+    const updated = [...(project?.teamPhotos ?? []), photo];
+    onSave({
+      teamPhotos: updated,
+      activityFeed: appendActivity(project.activityFeed, {
+        type: 'photos',
+        by: member.name,
+        at: new Date().toISOString(),
+        detail: `Added progress photo${photo.caption ? ` "${photo.caption}"` : ''}`,
+      }),
+    });
+    setNewUrl('');
+    setNewCaption('');
+    setShowForm(false);
+  }
+
+  function removePhoto(id) {
+    if (!confirm('Remove this photo?')) return;
+    const updated = (project?.teamPhotos ?? []).filter((p) => p.id !== id);
+    onSave({
+      teamPhotos: updated,
+      activityFeed: appendActivity(project.activityFeed, {
+        type: 'photos',
+        by: member.name,
+        at: new Date().toISOString(),
+        detail: 'Removed a progress photo',
+      }),
+    });
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      {allPhotos.map((p, i) => (
-        <a
-          key={p.id ?? i}
-          href={p.url}
-          target="_blank"
-          rel="noreferrer"
-          className="bg-white rounded-xl border border-linen p-4 flex items-start gap-3 hover:shadow-md transition-shadow group"
-        >
-          <Image size={20} className="text-forest shrink-0 mt-0.5" />
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-ink group-hover:text-forest transition-colors truncate">
-              {p.caption || `Photo ${i + 1}`}
-            </p>
-            <p className="text-xs text-mist truncate">{p.milestoneName}</p>
-          </div>
-        </a>
-      ))}
+    <div>
+      {canEdit && (
+        <div className="mb-4">
+          {!showForm ? (
+            <button
+              onClick={() => setShowForm(true)}
+              className="flex items-center gap-1.5 text-xs text-forest hover:underline"
+            >
+              + Add Progress Photo
+            </button>
+          ) : (
+            <div className="bg-white rounded-xl border border-linen p-4 space-y-3">
+              <p className="text-xs font-semibold text-ink">Add Progress Photo</p>
+              <div>
+                <label className="text-xs text-mist mb-1 block">Photo URL (required)</label>
+                <input
+                  type="url"
+                  value={newUrl}
+                  onChange={(e) => setNewUrl(e.target.value)}
+                  placeholder="https://photos.google.com/… or any public image URL"
+                  className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
+                />
+                <p className="text-xs text-mist mt-1">
+                  Take a photo → upload to Google Photos or Dropbox → paste the share link here.
+                </p>
+              </div>
+              <div>
+                <label className="text-xs text-mist mb-1 block">Caption (optional)</label>
+                <input
+                  type="text"
+                  value={newCaption}
+                  onChange={(e) => setNewCaption(e.target.value)}
+                  placeholder="e.g. Framing complete, north wall"
+                  className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={addPhoto}
+                  disabled={!newUrl.trim()}
+                  className="text-sm bg-forest text-white px-4 py-1.5 rounded-lg hover:bg-deep transition-colors disabled:opacity-40"
+                >
+                  Add Photo
+                </button>
+                <button
+                  onClick={() => { setShowForm(false); setNewUrl(''); setNewCaption(''); }}
+                  className="text-sm text-mist hover:text-ink px-3"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {allPhotos.length === 0 ? (
+        <p className="text-sm text-mist">No progress photos shared yet.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {allPhotos.map((p, i) => (
+            <div
+              key={p.id ?? i}
+              className="bg-white rounded-xl border border-linen p-4 flex items-start gap-3 group"
+            >
+              <a href={p.url} target="_blank" rel="noreferrer" className="shrink-0 mt-0.5">
+                <Image size={20} className="text-forest hover:text-deep transition-colors" />
+              </a>
+              <div className="flex-1 min-w-0">
+                <a
+                  href={p.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm font-medium text-ink hover:text-forest transition-colors truncate block"
+                >
+                  {p.caption || `Photo ${i + 1}`}
+                </a>
+                {p.milestoneName && (
+                  <p className="text-xs text-mist truncate">{p.milestoneName}</p>
+                )}
+                {p.addedBy && (
+                  <p className="text-xs text-sage mt-0.5">
+                    Added by {p.addedBy.name} · {fmtDate(p.addedBy.at)}
+                  </p>
+                )}
+              </div>
+              {canEdit && p.source === 'team' && (
+                <button
+                  onClick={() => removePhoto(p.id)}
+                  className="shrink-0 text-mist hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 text-xs"
+                  title="Remove photo"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -981,7 +1103,7 @@ export default function SharedPortal({ token }) {
               {tab === 'timeline'  && <TimelineSection project={project} canEdit={!!perms.timeline?.edit} member={member} onSave={updatePortalProject} />}
               {tab === 'budget'    && <BudgetSection project={project} />}
               {tab === 'documents' && <DocumentsSection project={project} />}
-              {tab === 'photos'    && <PhotosSection project={project} />}
+              {tab === 'photos'    && <PhotosSection project={project} canEdit={!!perms.photos?.edit} member={member} onSave={updatePortalProject} />}
               {tab === 'messages'  && <MessagesSection project={project} canEdit={!!perms.messages?.edit} member={member} onSave={updatePortalProject} />}
               {tab === 'contacts'  && <ContactsSection project={project} />}
             </div>

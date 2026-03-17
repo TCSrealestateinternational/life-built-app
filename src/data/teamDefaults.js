@@ -15,7 +15,7 @@ export const PERMISSION_SECTIONS = [
   { id: 'timeline',  label: 'Timeline / Gantt',     canEdit: true  },
   { id: 'budget',    label: 'Budget & Costs',        canEdit: false },
   { id: 'documents', label: 'Documents & Permits',   canEdit: false },
-  { id: 'photos',    label: 'Progress Photos',       canEdit: false },
+  { id: 'photos',    label: 'Progress Photos',       canEdit: true  },
   { id: 'messages',  label: 'Messages / Notes',      canEdit: true  },
   { id: 'contacts',  label: 'Team Contact Info',     canEdit: false },
 ];

@@ -3,6 +3,13 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Share tokens — anyone can read (unauthenticated portal access),
+    // only authenticated users can create/update their own tokens.
+    match /shareTokens/{token} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
     // Shared portal: unauthenticated team members can read/write project data.
     // The portal token validates identity at the app layer.
     match /users/{userId}/project/data {
