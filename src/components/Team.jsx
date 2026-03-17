@@ -125,6 +125,8 @@ function MemberModal({ member, uid, onSave, onClose }) {
   const [edited, setEdited] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [savedLink, setSavedLink] = useState(null);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   function handleRoleChange(newRole) {
     setRole(newRole);
@@ -185,9 +187,11 @@ function MemberModal({ member, uid, onSave, onClose }) {
         });
       }
 
-      // Auto-copy link for new members
+      // For new members: show the link in the modal instead of silently closing
       if (!isEdit) {
-        navigator.clipboard.writeText(portalUrl(token)).catch(() => {});
+        const url = portalUrl(token);
+        setSavedLink(url);
+        navigator.clipboard.writeText(url).catch(() => {});
       }
 
       onSave(savedMember);
@@ -313,25 +317,66 @@ function MemberModal({ member, uid, onSave, onClose }) {
 
         {/* Footer */}
         <div className="shrink-0 px-6 pb-5 pt-4 border-t border-linen space-y-3">
-          {!isEdit && (
-            <div className="bg-sky-50 border border-sky-200 rounded-lg px-3 py-2.5 text-xs text-sky-700 leading-snug">
-              <strong>Next step:</strong> After saving, the portal link is copied to your clipboard.
-              You'll need to send it to {name.trim() || 'this person'} yourself — by text, email, or however you prefer.
-              No message is sent automatically.
-            </div>
+          {savedLink ? (
+            /* ── Link reveal state (new member just saved) ── */
+            <>
+              <div className="bg-forest/5 border border-forest/20 rounded-xl px-4 py-3 space-y-2.5">
+                <p className="text-xs font-semibold text-forest flex items-center gap-1.5">
+                  <Check size={13} /> Saved! Send this link to {name.trim() || 'this person'}:
+                </p>
+                <div className="flex items-center gap-2 bg-white border border-linen rounded-lg px-3 py-2">
+                  <Link2 size={12} className="text-mist shrink-0" />
+                  <span className="text-xs text-mist flex-1 truncate select-all font-mono">{savedLink}</span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(savedLink).then(() => {
+                        setLinkCopied(true);
+                        setTimeout(() => setLinkCopied(false), 2000);
+                      });
+                    }}
+                    className="text-xs text-forest hover:underline shrink-0 flex items-center gap-1"
+                  >
+                    {linkCopied ? <><Check size={11} /> Copied!</> : <><Copy size={11} /> Copy</>}
+                  </button>
+                  <a href={savedLink} target="_blank" rel="noreferrer" className="text-mist hover:text-forest shrink-0">
+                    <ExternalLink size={12} />
+                  </a>
+                </div>
+                <p className="text-xs text-mist/70">
+                  This link is also saved under {name.trim()}'s name so you can copy it again anytime.
+                </p>
+              </div>
+              <button
+                onClick={onClose}
+                className="w-full bg-forest text-white text-sm py-2.5 rounded-lg hover:bg-deep transition-colors"
+              >
+                Done
+              </button>
+            </>
+          ) : (
+            /* ── Normal pre-save footer ── */
+            <>
+              {!isEdit && (
+                <div className="bg-sky-50 border border-sky-200 rounded-lg px-3 py-2.5 text-xs text-sky-700 leading-snug">
+                  <strong>Next step:</strong> After saving, your team member's portal link will appear here.
+                  You'll need to send it to {name.trim() || 'this person'} yourself — by text, email, or however you prefer.
+                  No message is sent automatically.
+                </div>
+              )}
+              <div className="flex gap-3">
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="flex-1 bg-forest text-white text-sm py-2.5 rounded-lg hover:bg-deep transition-colors disabled:opacity-50"
+                >
+                  {saving ? 'Saving…' : isEdit ? 'Save Changes' : 'Save & Get Link'}
+                </button>
+                <button onClick={onClose} className="text-sm text-mist hover:text-ink px-4">
+                  Cancel
+                </button>
+              </div>
+            </>
           )}
-          <div className="flex gap-3">
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="flex-1 bg-forest text-white text-sm py-2.5 rounded-lg hover:bg-deep transition-colors disabled:opacity-50"
-            >
-              {saving ? 'Saving…' : isEdit ? 'Save Changes' : 'Save & Copy Link'}
-            </button>
-            <button onClick={onClose} className="text-sm text-mist hover:text-ink px-4">
-              Cancel
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -544,8 +589,12 @@ export default function Team({ project, updateProject, uid }) {
       ? team.map((m) => (m.id === savedMember.id ? savedMember : m))
       : [...team, savedMember];
     updateProject({ team: newTeam });
-    if (!existing) showToast(`Link copied! Send it to ${savedMember.name}.`);
-    closeModal();
+    if (existing) {
+      // Edit: close modal and show toast
+      showToast(`${savedMember.name} updated.`);
+      closeModal();
+    }
+    // New member: keep modal open so the link reveal state shows — user clicks "Done" to close
   }
 
   async function revokeMember(member) {
