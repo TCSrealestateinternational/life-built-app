@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { useProject } from './hooks/useProject';
-import { useSubscription } from './hooks/useSubscription';
 import AuthScreen from './components/AuthScreen';
-import PaywallScreen from './components/PaywallScreen';
 import Shell from './components/Shell';
 import Dashboard from './components/Dashboard';
 import Properties from './components/Properties';
@@ -41,7 +39,6 @@ export default function App() {
   const shareUid = getShareUid();
   const teamToken = getTeamToken();
   const user = useAuth();
-  const { canAccess, loading: subLoading } = useSubscription(user?.uid ?? null);
   const [section, setSection] = useState('dashboard');
   const { project, loading, updateProject, saving } = useProject(user?.uid ?? null);
 
@@ -92,16 +89,6 @@ export default function App() {
   }
 
   if (!user) return <AuthScreen />;
-
-  if (subLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-cream text-mist text-sm">
-        Loading…
-      </div>
-    );
-  }
-
-  if (!canAccess) return <PaywallScreen user={user} />;
 
   if (loading) {
     return (
