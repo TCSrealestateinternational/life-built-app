@@ -61,7 +61,7 @@ exports.createCheckoutSession = functions.https.onCall(async (data, context) => 
   }
 
   const uid = context.auth.uid;
-  const stripe = Stripe(functions.config().stripe.secret_key);
+  const stripe = new Stripe(functions.config().stripe.secret_key);
   const priceId = functions.config().stripe.price_id;
 
   const session = await stripe.checkout.sessions.create({
@@ -83,7 +83,7 @@ exports.createCheckoutSession = functions.https.onCall(async (data, context) => 
 // Raw HTTPS endpoint — Stripe posts signed events here
 // ---------------------------------------------------------------------------
 exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
-  const stripe = Stripe(functions.config().stripe.secret_key);
+  const stripe = new Stripe(functions.config().stripe.secret_key);
   const webhookSecret = functions.config().stripe.webhook_secret;
 
   let event;
