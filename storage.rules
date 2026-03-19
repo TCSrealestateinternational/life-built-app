@@ -1,0 +1,17 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /users/{uid}/documents/{filename} {
+      // Anyone with the link can read (needed for portal users and download URLs)
+      allow read: if true;
+      // Owner (authenticated) can write their own files
+      allow write: if request.auth != null && request.auth.uid == uid;
+      // Portal users (unauthenticated) can write if file is under 50MB
+      allow write: if request.auth == null && request.resource.size < 52428800;
+    }
+    // Deny all other paths
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

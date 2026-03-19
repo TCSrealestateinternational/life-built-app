@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { doc, getDoc, updateDoc, setDoc, increment } from 'firebase/firestore';
-import { db } from '../firebase';
-import { MapPin, Calendar, DollarSign, FolderOpen, Image, Users, MessageSquare } from 'lucide-react';
+import { ref as storageRef, deleteObject } from 'firebase/storage';
+import { db, storage } from '../firebase';
+import { useUpload } from '../hooks/useUpload';
+import { MapPin, Calendar, DollarSign, FolderOpen, Image, Users, MessageSquare, Upload } from 'lucide-react';
 
 // ─── Section icons / labels used in tabs ─────────────────────────────────────
 
@@ -334,58 +336,144 @@ function BudgetSection({ project }) {
 
 // ─── Section: Documents ───────────────────────────────────────────────────────
 
-function DocumentsSection({ project }) {
+function DocumentsSection({ project, canEdit, member, onSave, uid }) {
   const docs = project?.documents ?? [];
-  if (docs.length === 0) return <p className="text-sm text-mist">No documents shared yet.</p>;
+  const fileInputRef = useRef(null);
+  const { upload, progress } = useUpload(uid);
+  const [uploadError, setUploadError] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
 
-  // Group by category
+  async function handleFiles(files) {
+    setUploadError('');
+    const file = files[0];
+    if (!file) return;
+    try {
+      const newDoc = await upload(file, null);
+      newDoc.uploadedBy = { name: member.name, at: new Date().toISOString() };
+      onSave({
+        documents: [...docs, newDoc],
+        activityFeed: appendActivity(project.activityFeed, {
+          type: 'documents',
+          by: member.name,
+          at: new Date().toISOString(),
+          detail: `Uploaded "${file.name}"`,
+        }),
+      });
+    } catch (e) {
+      setUploadError(e.message ?? 'Upload failed.');
+    }
+  }
+
+  function onFileInputChange(e) {
+    handleFiles(e.target.files);
+    e.target.value = '';
+  }
+
+  function onDrop(e) {
+    e.preventDefault();
+    setIsDragging(false);
+    handleFiles(e.dataTransfer.files);
+  }
+
+  // Group non-media docs by category for display
+  const displayDocs = docs.filter((d) => !d.type || (!d.type.startsWith('image/') && !d.type.startsWith('video/')));
+
+  if (displayDocs.length === 0 && !canEdit) return <p className="text-sm text-mist">No documents shared yet.</p>;
+
   const byCategory = {};
-  docs.forEach((d) => {
+  displayDocs.forEach((d) => {
     const cat = d.category || 'General';
     if (!byCategory[cat]) byCategory[cat] = [];
     byCategory[cat].push(d);
   });
 
   return (
-    <div className="space-y-4">
-      {Object.entries(byCategory).map(([cat, items]) => (
-        <div key={cat}>
-          <p className="text-xs font-semibold text-mist uppercase tracking-wider mb-2">{cat}</p>
-          <div className="space-y-2">
-            {items.map((d) => (
-              <div key={d.id} className="bg-white rounded-xl border border-linen p-4 flex items-center gap-3">
-                <FolderOpen size={16} className="text-forest shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-ink truncate">{d.name}</p>
-                  {d.notes && <p className="text-xs text-mist truncate">{d.notes}</p>}
+    <div
+      className={isDragging ? 'ring-2 ring-forest ring-inset rounded-2xl' : ''}
+      onDrop={canEdit ? onDrop : undefined}
+      onDragOver={canEdit ? (e) => { e.preventDefault(); setIsDragging(true); } : undefined}
+      onDragLeave={canEdit ? () => setIsDragging(false) : undefined}
+    >
+      {canEdit && (
+        <>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,video/*,.heic,.heif"
+            className="hidden"
+            onChange={onFileInputChange}
+          />
+          <div className="mb-4 flex items-center gap-2">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={progress !== null}
+              className="flex items-center gap-1.5 text-xs text-forest border border-forest/30 px-3 py-1.5 rounded-lg hover:bg-forest/5 transition-colors disabled:opacity-50"
+            >
+              <Upload size={13} /> Upload File
+            </button>
+            {progress !== null && (
+              <div className="flex-1 max-w-40">
+                <div className="h-1.5 bg-linen rounded-full overflow-hidden">
+                  <div className="h-full bg-forest rounded-full transition-all" style={{ width: `${progress}%` }} />
                 </div>
-                {d.url && (
-                  <a
-                    href={d.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-xs text-forest hover:underline shrink-0 border border-forest/30 px-2.5 py-1 rounded-lg hover:bg-forest/5 transition-colors"
-                  >
-                    Open
-                  </a>
-                )}
               </div>
-            ))}
+            )}
           </div>
+          {uploadError && (
+            <div className="mb-3 text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+              {uploadError}
+            </div>
+          )}
+        </>
+      )}
+
+      {displayDocs.length === 0 ? (
+        <p className="text-sm text-mist">No documents shared yet.</p>
+      ) : (
+        <div className="space-y-4">
+          {Object.entries(byCategory).map(([cat, items]) => (
+            <div key={cat}>
+              <p className="text-xs font-semibold text-mist uppercase tracking-wider mb-2">{cat}</p>
+              <div className="space-y-2">
+                {items.map((d) => (
+                  <div key={d.id} className="bg-white rounded-xl border border-linen p-4 flex items-center gap-3">
+                    <FolderOpen size={16} className="text-forest shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-ink truncate">{d.name}</p>
+                      {d.notes && <p className="text-xs text-mist truncate">{d.notes}</p>}
+                    </div>
+                    {d.url && (
+                      <a
+                        href={d.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs text-forest hover:underline shrink-0 border border-forest/30 px-2.5 py-1 rounded-lg hover:bg-forest/5 transition-colors"
+                      >
+                        Open
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 }
 
 // ─── Section: Progress Photos ─────────────────────────────────────────────────
 
-function PhotosSection({ project, canEdit, member, onSave }) {
+function PhotosSection({ project, canEdit, member, onSave, uid }) {
   const [showForm, setShowForm] = useState(false);
   const [newUrl, setNewUrl] = useState('');
   const [newCaption, setNewCaption] = useState('');
+  const fileInputRef = useRef(null);
+  const { upload, progress } = useUpload(uid);
+  const [uploadError, setUploadError] = useState('');
 
-  // Aggregate milestone photos + team-added photos
+  // Aggregate milestone photos + team-added URL photos + uploaded docs that are images/videos
   const allPhotos = [];
   (project?.timeline?.milestones ?? []).forEach((m) => {
     (m.photos ?? []).forEach((p) => {
@@ -393,7 +481,19 @@ function PhotosSection({ project, canEdit, member, onSave }) {
     });
   });
   (project?.teamPhotos ?? []).forEach((p) => {
-    if (p.url) allPhotos.push({ ...p, milestoneName: p.caption ? null : null, source: 'team' });
+    if (p.url) allPhotos.push({ ...p, source: 'team' });
+  });
+  (project?.documents ?? []).forEach((d) => {
+    if (d.source === 'upload' && d.type && (d.type.startsWith('image/') || d.type.startsWith('video/'))) {
+      allPhotos.push({
+        id: d.id,
+        url: d.url,
+        caption: d.name,
+        addedBy: d.uploadedBy ?? null,
+        source: 'uploaded-doc',
+        storagePath: d.storagePath,
+      });
+    }
   });
 
   function addPhoto() {
@@ -420,7 +520,7 @@ function PhotosSection({ project, canEdit, member, onSave }) {
     setShowForm(false);
   }
 
-  function removePhoto(id) {
+  function removeTeamPhoto(id) {
     if (!confirm('Remove this photo?')) return;
     const updated = (project?.teamPhotos ?? []).filter((p) => p.id !== id);
     onSave({
@@ -434,60 +534,120 @@ function PhotosSection({ project, canEdit, member, onSave }) {
     });
   }
 
+  async function removeUploadedPhoto(id, storagePath) {
+    if (!confirm('Delete this photo permanently?')) return;
+    if (storagePath) {
+      try { await deleteObject(storageRef(storage, storagePath)); } catch (e) { /* already gone */ }
+    }
+    const updatedDocs = (project?.documents ?? []).filter((d) => d.id !== id);
+    onSave({
+      documents: updatedDocs,
+      activityFeed: appendActivity(project.activityFeed, {
+        type: 'photos',
+        by: member.name,
+        at: new Date().toISOString(),
+        detail: 'Deleted an uploaded photo',
+      }),
+    });
+  }
+
+  async function handleUploadFiles(files) {
+    setUploadError('');
+    const file = files[0];
+    if (!file) return;
+    try {
+      const newDoc = await upload(file, 'Photos');
+      newDoc.uploadedBy = { name: member.name, at: new Date().toISOString() };
+      const updatedDocs = [...(project?.documents ?? []), newDoc];
+      onSave({
+        documents: updatedDocs,
+        activityFeed: appendActivity(project.activityFeed, {
+          type: 'photos',
+          by: member.name,
+          at: new Date().toISOString(),
+          detail: `Uploaded photo "${file.name}"`,
+        }),
+      });
+    } catch (e) {
+      setUploadError(e.message ?? 'Upload failed.');
+    }
+  }
+
   return (
     <div>
       {canEdit && (
-        <div className="mb-4">
-          {!showForm ? (
-            <button
-              onClick={() => setShowForm(true)}
-              className="flex items-center gap-1.5 text-xs text-forest hover:underline"
-            >
-              + Add Progress Photo
-            </button>
-          ) : (
-            <div className="bg-white rounded-xl border border-linen p-4 space-y-3">
-              <p className="text-xs font-semibold text-ink">Add Progress Photo</p>
-              <div>
-                <label className="text-xs text-mist mb-1 block">Photo URL (required)</label>
-                <input
-                  type="url"
-                  value={newUrl}
-                  onChange={(e) => setNewUrl(e.target.value)}
-                  placeholder="https://photos.google.com/… or any public image URL"
-                  className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
-                />
-                <p className="text-xs text-mist mt-1">
-                  Take a photo → upload to Google Photos or Dropbox → paste the share link here.
-                </p>
-              </div>
-              <div>
-                <label className="text-xs text-mist mb-1 block">Caption (optional)</label>
-                <input
-                  type="text"
-                  value={newCaption}
-                  onChange={(e) => setNewCaption(e.target.value)}
-                  placeholder="e.g. Framing complete, north wall"
-                  className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
-                />
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={addPhoto}
-                  disabled={!newUrl.trim()}
-                  className="text-sm bg-forest text-white px-4 py-1.5 rounded-lg hover:bg-deep transition-colors disabled:opacity-40"
-                >
-                  Add Photo
-                </button>
-                <button
-                  onClick={() => { setShowForm(false); setNewUrl(''); setNewCaption(''); }}
-                  className="text-sm text-mist hover:text-ink px-3"
-                >
-                  Cancel
-                </button>
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,video/*,.heic,.heif"
+            className="hidden"
+            onChange={(e) => { handleUploadFiles(e.target.files); e.target.value = ''; }}
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={progress !== null}
+            className="flex items-center gap-1.5 text-xs text-forest border border-forest/30 px-3 py-1.5 rounded-lg hover:bg-forest/5 transition-colors disabled:opacity-50"
+          >
+            <Upload size={13} /> Upload Photo
+          </button>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="flex items-center gap-1.5 text-xs text-forest hover:underline"
+          >
+            + Add Link
+          </button>
+          {progress !== null && (
+            <div className="flex-1 max-w-40">
+              <div className="h-1.5 bg-linen rounded-full overflow-hidden">
+                <div className="h-full bg-forest rounded-full transition-all" style={{ width: `${progress}%` }} />
               </div>
             </div>
           )}
+          {uploadError && (
+            <span className="text-xs text-red-500">{uploadError}</span>
+          )}
+        </div>
+      )}
+
+      {canEdit && showForm && (
+        <div className="bg-white rounded-xl border border-linen p-4 space-y-3 mb-4">
+          <p className="text-xs font-semibold text-ink">Add Progress Photo by URL</p>
+          <div>
+            <label className="text-xs text-mist mb-1 block">Photo URL (required)</label>
+            <input
+              type="url"
+              value={newUrl}
+              onChange={(e) => setNewUrl(e.target.value)}
+              placeholder="https://photos.google.com/… or any public image URL"
+              className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-mist mb-1 block">Caption (optional)</label>
+            <input
+              type="text"
+              value={newCaption}
+              onChange={(e) => setNewCaption(e.target.value)}
+              placeholder="e.g. Framing complete, north wall"
+              className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
+            />
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={addPhoto}
+              disabled={!newUrl.trim()}
+              className="text-sm bg-forest text-white px-4 py-1.5 rounded-lg hover:bg-deep transition-colors disabled:opacity-40"
+            >
+              Add Photo
+            </button>
+            <button
+              onClick={() => { setShowForm(false); setNewUrl(''); setNewCaption(''); }}
+              className="text-sm text-mist hover:text-ink px-3"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       )}
 
@@ -523,9 +683,18 @@ function PhotosSection({ project, canEdit, member, onSave }) {
               </div>
               {canEdit && p.source === 'team' && (
                 <button
-                  onClick={() => removePhoto(p.id)}
+                  onClick={() => removeTeamPhoto(p.id)}
                   className="shrink-0 text-mist hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 text-xs"
                   title="Remove photo"
+                >
+                  ✕
+                </button>
+              )}
+              {canEdit && p.source === 'uploaded-doc' && (
+                <button
+                  onClick={() => removeUploadedPhoto(p.id, p.storagePath)}
+                  className="shrink-0 text-mist hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 text-xs"
+                  title="Delete photo"
                 >
                   ✕
                 </button>
@@ -1102,8 +1271,8 @@ export default function SharedPortal({ token }) {
             <div>
               {tab === 'timeline'  && <TimelineSection project={project} canEdit={!!perms.timeline?.edit} member={member} onSave={updatePortalProject} />}
               {tab === 'budget'    && <BudgetSection project={project} />}
-              {tab === 'documents' && <DocumentsSection project={project} />}
-              {tab === 'photos'    && <PhotosSection project={project} canEdit={!!perms.photos?.edit} member={member} onSave={updatePortalProject} />}
+              {tab === 'documents' && <DocumentsSection project={project} canEdit={!!perms.documents?.edit} member={member} onSave={updatePortalProject} uid={uid} />}
+              {tab === 'photos'    && <PhotosSection project={project} canEdit={!!perms.photos?.edit} member={member} onSave={updatePortalProject} uid={uid} />}
               {tab === 'messages'  && <MessagesSection project={project} canEdit={!!perms.messages?.edit} member={member} onSave={updatePortalProject} />}
               {tab === 'contacts'  && <ContactsSection project={project} />}
             </div>
