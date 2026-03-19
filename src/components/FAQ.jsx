@@ -95,7 +95,7 @@ const FAQ_DATA = [
       },
       {
         q: 'How do I export my budget?',
-        a: 'Click the "Export CSV" button at the top of the Budget section. This downloads a file called life-built-budget.csv that opens in Excel or Google Sheets, with columns for Category, Description, Planned, Actual, and Variance plus a totals row.',
+        a: 'Click the "Export CSV" button at the top of the Budget section. This downloads a file called waymark-build-budget.csv that opens in Excel or Google Sheets, with columns for Category, Description, Planned, Actual, and Variance plus a totals row.',
       },
       {
         q: 'Can I add items that aren\'t in the standard budget?',

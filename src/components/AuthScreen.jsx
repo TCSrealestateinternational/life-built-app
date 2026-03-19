@@ -54,9 +54,9 @@ export default function AuthScreen() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-            Life Built Planning App
+            Waymark Build App
           </h1>
-          <p className="text-sage text-sm mt-1">Your land-to-home journey, organized.</p>
+          <p className="text-sage text-sm mt-1">Know the way. Build with confidence.</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-linen p-8">

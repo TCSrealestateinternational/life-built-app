@@ -69,14 +69,14 @@ export function printGenericChecklist({ label, emoji, desc, items }) {
   const rows = items.map((i) => itemHtml(i.text || '(blank item)', i.done)).join('');
 
   const body = `
-    <div class="brand">Life Built in Kentucky</div>
+    <div class="brand">Waymark Build</div>
     <h1>${escHtml(emoji)} ${escHtml(label)}</h1>
     <div class="subtitle">${escHtml(desc)}</div>
     <div class="print-date">Printed ${date}</div>
     <div class="progress">${done} of ${items.length} items completed</div>
     <div class="list-section">${rows}</div>
   `;
-  openPrint(`${label} — Life Built`, body);
+  openPrint(`${label} — Waymark Build`, body);
 }
 
 export function printPunchList({ checkedIds, customItems }) {
@@ -130,7 +130,7 @@ export function printPunchList({ checkedIds, customItems }) {
   `;
 
   const body = `
-    <div class="brand">Life Built in Kentucky</div>
+    <div class="brand">Waymark Build</div>
     <h1>🏷️ Punch List Inspection</h1>
     <div class="subtitle">Before Closing — Blue Tape Walkthrough</div>
     <div class="print-date">Printed ${date}</div>
@@ -139,5 +139,5 @@ export function printPunchList({ checkedIds, customItems }) {
     ${sectionsHtml}
     ${notesHtml}
   `;
-  openPrint('Punch List Inspection — Life Built', body);
+  openPrint('Punch List Inspection — Waymark Build', body);
 }

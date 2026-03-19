@@ -70,7 +70,7 @@ export default function InstallPrompt({ hideDuring = false }) {
             </svg>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm">Add Life Built to your home screen</p>
+            <p className="font-semibold text-sm">Add Waymark Build to your home screen</p>
             {showAndroid && (
               <p className="text-xs text-mist mt-0.5">Install the app for quick access — works offline too.</p>
             )}

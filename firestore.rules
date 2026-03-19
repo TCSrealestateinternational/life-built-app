@@ -17,6 +17,13 @@ service cloud.firestore {
       allow write: if true;
     }
 
+    // Subscription doc — user can read their own only.
+    // Cloud Functions use Admin SDK and bypass these rules (writes are server-only).
+    match /users/{userId}/subscription/{doc} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false;
+    }
+
     // Each user can only read and write their own project data.
     // No user can access another user's data.
     match /users/{userId}/project/{document=**} {

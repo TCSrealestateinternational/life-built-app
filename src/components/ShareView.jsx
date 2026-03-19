@@ -58,7 +58,7 @@ export default function ShareView({ uid }) {
         <h1 className="text-2xl font-bold text-ink mb-1" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
           Land + Build Project
         </h1>
-        <p className="text-mist text-sm mb-6">Powered by Life Built Planning App</p>
+        <p className="text-mist text-sm mb-6">Powered by Waymark Build Planning App</p>
 
         {/* Tabs */}
         <div className="flex flex-wrap gap-1 mb-6 bg-linen/50 p-1 rounded-xl">

@@ -121,7 +121,7 @@ export function printTimeline({ milestones }) {
 </head>
 <body>
   <h1>Build Timeline</h1>
-  <p class="subtitle">Printed from Life Built Planning App · ${new Date().toLocaleDateString()}</p>
+  <p class="subtitle">Printed from Waymark Build Planning App · ${new Date().toLocaleDateString()}</p>
 
   <div class="summary">
     <div class="summary-stat">

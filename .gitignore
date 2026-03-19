@@ -3,6 +3,9 @@
 .env.local
 .env.production
 
+# Firebase service account — contains private keys, never commit
+scripts/serviceAccount.json
+
 # Logs
 logs
 *.log

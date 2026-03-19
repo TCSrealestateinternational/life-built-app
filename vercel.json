@@ -1,3 +1,9 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://waymarkbuild.app/$1",
+      "permanent": true
+    }
+  ]
 }

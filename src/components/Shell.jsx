@@ -48,7 +48,7 @@ export default function Shell({ user, section, onSection, children, saving, tour
       <aside className={`hidden md:flex flex-col w-56 bg-ink text-white shrink-0${tourActive ? ' relative z-50' : ''}`}>
         <div className="px-5 py-6 border-b border-white/10">
           <div className="text-lg font-bold" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-            Life Built
+            Waymark Build©
           </div>
           <div className="text-xs text-mist mt-0.5 truncate">{user.email}</div>
         </div>
@@ -86,13 +86,16 @@ export default function Shell({ user, section, onSection, children, saving, tour
             <LogOut size={16} />
             Sign Out
           </button>
+          <p className="text-[10px] text-white/20 px-3 pt-2 leading-snug">
+            © {new Date().getFullYear()} Waymark Build App.<br />All rights reserved.
+          </p>
         </div>
       </aside>
 
       {/* Mobile header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between bg-ink text-white px-4 py-3 shadow-md">
         <span className="text-base font-bold" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-          Life Built
+          Waymark Build©
         </span>
         <button onClick={() => setMobileOpen(!mobileOpen)} className="text-white">
           {mobileOpen ? <X size={22} /> : <Menu size={22} />}
@@ -135,6 +138,9 @@ export default function Shell({ user, section, onSection, children, saving, tour
                 <LogOut size={16} />
                 Sign Out
               </button>
+              <p className="text-[10px] text-white/20 px-3 pt-2 leading-snug">
+                © {new Date().getFullYear()} Waymark Build App.<br />All rights reserved.
+              </p>
             </div>
           </div>
           <div className="flex-1 bg-black/40" onClick={() => setMobileOpen(false)} />

@@ -1068,7 +1068,7 @@ export default function SharedPortal({ token }) {
             className="text-xs font-semibold text-ink shrink-0 hidden sm:block"
             style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}
           >
-            Life Built
+            Waymark Build
           </div>
         </div>
 
@@ -1114,7 +1114,7 @@ export default function SharedPortal({ token }) {
         <div className="mt-10 text-center text-xs text-mist">
           <p>
             Powered by{' '}
-            <a href="/" className="text-forest hover:underline">Life Built Planning App</a>
+            <a href="/" className="text-forest hover:underline">Waymark Build Planning App</a>
             {' '}· <a href="https://www.lifebuiltinkentucky.com" className="hover:underline">lifebuiltinkentucky.com</a>
           </p>
         </div>
