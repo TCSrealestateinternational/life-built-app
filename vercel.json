@@ -3,7 +3,11 @@
     {
       "source": "/(.*)",
       "destination": "https://waymarkbuild.app/$1",
-      "permanent": true
+      "permanent": true,
+      "has": [{ "type": "host", "value": "lifebuilt.app" }]
     }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
