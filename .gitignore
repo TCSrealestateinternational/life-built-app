@@ -6,6 +6,9 @@
 # Firebase service account — contains private keys, never commit
 scripts/serviceAccount.json
 
+# Functions environment variables — contains Stripe secret keys, never commit
+functions/.env
+
 # Logs
 logs
 *.log
