@@ -181,4 +181,18 @@ export const TOUR_STEPS = [
     ],
     tip: 'Add your builder to the Team section early. Giving them visibility into your budget and timeline cuts down on status-update calls.',
   },
+  {
+    sectionId: 'team',
+    isInstallStep: true,
+    title: 'Add to Your Home Screen',
+    description:
+      'Waymark Build works as a full app on your phone or tablet — no app store required. Install it to your home screen for one-tap access on the job site.',
+    features: [
+      'Opens full-screen, just like a native app',
+      'Loads instantly — no browser chrome',
+      'Works from your home screen like any other app',
+      'Free — no subscription required to install',
+    ],
+    tip: null,
+  },
 ];

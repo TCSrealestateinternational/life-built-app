@@ -44,6 +44,16 @@ export default function App() {
 
   const [tourActive, setTourActive] = useState(false);
   const [tourStep, setTourStep] = useState(0);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+  useEffect(() => {
+    function handle(e) {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    }
+    window.addEventListener('beforeinstallprompt', handle);
+    return () => window.removeEventListener('beforeinstallprompt', handle);
+  }, []);
 
   useEffect(() => {
     if (!user || loading) return;
@@ -126,6 +136,8 @@ export default function App() {
       onBack={backStep}
       onSkip={endTour}
       onEnd={endTour}
+      deferredPrompt={deferredPrompt}
+      onInstalled={() => setDeferredPrompt(null)}
     />
     </>
   );

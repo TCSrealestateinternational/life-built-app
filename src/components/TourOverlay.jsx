@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { TOUR_STEPS } from '../data/tourSteps';
 import {
   LayoutDashboard,
@@ -14,6 +15,9 @@ import {
   FolderOpen,
   BookUser,
   Users,
+  Smartphone,
+  Download,
+  Share2,
   X,
 } from 'lucide-react';
 
@@ -34,13 +38,121 @@ const ICON_MAP = {
   team: Users,
 };
 
-export default function TourOverlay({ tourActive, tourStep, onNext, onBack, onSkip, onEnd }) {
+function isIOS() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+}
+
+function isInStandaloneMode() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+}
+
+function InstallStep({ deferredPrompt, onInstalled, onEnd }) {
+  const [installed, setInstalled] = useState(false);
+  const alreadyInstalled = isInStandaloneMode();
+  const ios = isIOS();
+
+  async function handleInstall() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setInstalled(true);
+      onInstalled?.();
+    }
+  }
+
+  if (alreadyInstalled || installed) {
+    return (
+      <div className="text-center py-4 space-y-3">
+        <div className="text-4xl">✅</div>
+        <p className="text-sm font-semibold text-forest">App is installed!</p>
+        <p className="text-sm text-ink/70">You're all set — open Waymark Build from your home screen anytime.</p>
+        <button
+          onClick={onEnd}
+          className="mt-2 text-sm font-medium bg-forest text-white px-6 py-2 rounded-lg hover:bg-deep transition-colors"
+        >
+          Let's go →
+        </button>
+      </div>
+    );
+  }
+
+  if (ios) {
+    return (
+      <div className="space-y-4">
+        <div className="bg-forest/5 border border-forest/15 rounded-xl px-4 py-4 space-y-3">
+          <p className="text-sm font-semibold text-ink">Install on iPhone / iPad</p>
+          <ol className="space-y-2 text-sm text-ink/75">
+            <li className="flex items-start gap-2">
+              <span className="shrink-0 w-5 h-5 rounded-full bg-forest/15 text-forest text-xs flex items-center justify-center font-semibold mt-0.5">1</span>
+              Tap <Share2 size={14} className="inline mx-1 text-blue-500" /> <strong>Share</strong> in the Safari toolbar
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="shrink-0 w-5 h-5 rounded-full bg-forest/15 text-forest text-xs flex items-center justify-center font-semibold mt-0.5">2</span>
+              Scroll down and tap <strong>"Add to Home Screen"</strong>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="shrink-0 w-5 h-5 rounded-full bg-forest/15 text-forest text-xs flex items-center justify-center font-semibold mt-0.5">3</span>
+              Tap <strong>Add</strong> — the app icon appears on your home screen
+            </li>
+          </ol>
+        </div>
+        <p className="text-xs text-mist text-center">Must be viewed in Safari to install on iOS</p>
+      </div>
+    );
+  }
+
+  if (deferredPrompt) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-4 bg-forest/5 border border-forest/15 rounded-xl px-4 py-4">
+          <div className="shrink-0 w-12 h-12 bg-forest rounded-xl flex items-center justify-center">
+            <Smartphone size={22} className="text-white" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-ink">Waymark Build</p>
+            <p className="text-xs text-mist">Install to your home screen — works like a native app</p>
+          </div>
+        </div>
+        <button
+          onClick={handleInstall}
+          className="w-full flex items-center justify-center gap-2 bg-forest text-white text-sm font-medium py-3 rounded-xl hover:bg-deep transition-colors"
+        >
+          <Download size={16} /> Install App
+        </button>
+      </div>
+    );
+  }
+
+  // Desktop or browser that doesn't support install prompt
+  return (
+    <div className="space-y-3 text-sm text-ink/70">
+      <p>To install on your device:</p>
+      <ul className="space-y-2">
+        <li className="flex items-start gap-2">
+          <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-forest/50 mt-1.5" />
+          <span><strong>Chrome on Android:</strong> tap the menu (⋮) → "Add to Home Screen"</span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-forest/50 mt-1.5" />
+          <span><strong>Safari on iPhone:</strong> tap Share (<Share2 size={12} className="inline" />) → "Add to Home Screen"</span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-forest/50 mt-1.5" />
+          <span><strong>Chrome on desktop:</strong> click the install icon in the address bar</span>
+        </li>
+      </ul>
+    </div>
+  );
+}
+
+export default function TourOverlay({ tourActive, tourStep, onNext, onBack, onSkip, onEnd, deferredPrompt, onInstalled }) {
   if (!tourActive) return null;
 
   const step = TOUR_STEPS[tourStep];
   const isFirst = tourStep === 0;
   const isLast = tourStep === TOUR_STEPS.length - 1;
-  const Icon = ICON_MAP[step.sectionId] ?? LayoutDashboard;
+  const Icon = step.isInstallStep ? Smartphone : (ICON_MAP[step.sectionId] ?? LayoutDashboard);
 
   return (
     <>
@@ -55,9 +167,7 @@ export default function TourOverlay({ tourActive, tourStep, onNext, onBack, onSk
       <div
         className={[
           'fixed z-50 bg-white shadow-2xl flex flex-col',
-          // Mobile: bottom sheet
           'bottom-0 left-0 right-0 rounded-t-2xl',
-          // Desktop: positioned in main content area beside the sidebar
           'md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:left-60 md:right-6 md:rounded-2xl md:max-w-md md:ml-4',
         ].join(' ')}
         onClick={(e) => e.stopPropagation()}
@@ -86,20 +196,26 @@ export default function TourOverlay({ tourActive, tourStep, onNext, onBack, onSk
         <div className="px-5 py-4 space-y-3 max-h-[55vh] overflow-y-auto md:max-h-none">
           <p className="text-sm text-ink/80 leading-relaxed">{step.description}</p>
 
-          <ul className="space-y-1.5">
-            {step.features.map((f, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-ink/70">
-                <span className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-forest/50" />
-                {f}
-              </li>
-            ))}
-          </ul>
+          {step.isInstallStep ? (
+            <InstallStep deferredPrompt={deferredPrompt} onInstalled={onInstalled} onEnd={onEnd} />
+          ) : (
+            <>
+              <ul className="space-y-1.5">
+                {step.features.map((f, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-ink/70">
+                    <span className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-forest/50" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
 
-          {step.tip && (
-            <div className="rounded-xl border border-forest/15 bg-forest/5 px-4 py-3">
-              <p className="text-xs text-forest font-semibold uppercase tracking-wide mb-1">Pro tip</p>
-              <p className="text-sm text-ink/75 leading-relaxed">{step.tip}</p>
-            </div>
+              {step.tip && (
+                <div className="rounded-xl border border-forest/15 bg-forest/5 px-4 py-3">
+                  <p className="text-xs text-forest font-semibold uppercase tracking-wide mb-1">Pro tip</p>
+                  <p className="text-sm text-ink/75 leading-relaxed">{step.tip}</p>
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -140,12 +256,22 @@ export default function TourOverlay({ tourActive, tourStep, onNext, onBack, onSk
               </button>
             )}
 
-            <button
-              onClick={isLast ? onEnd : onNext}
-              className="text-sm font-medium bg-forest text-white px-4 py-1.5 rounded-lg hover:bg-deep transition-colors"
-            >
-              {isLast ? 'Done' : 'Next'}
-            </button>
+            {/* On install step, show "Maybe Later" instead of Done unless they've installed */}
+            {isLast ? (
+              <button
+                onClick={onEnd}
+                className="text-sm font-medium bg-forest text-white px-4 py-1.5 rounded-lg hover:bg-deep transition-colors"
+              >
+                {step.isInstallStep ? 'Maybe Later' : 'Done'}
+              </button>
+            ) : (
+              <button
+                onClick={onNext}
+                className="text-sm font-medium bg-forest text-white px-4 py-1.5 rounded-lg hover:bg-deep transition-colors"
+              >
+                Next
+              </button>
+            )}
           </div>
         </div>
       </div>

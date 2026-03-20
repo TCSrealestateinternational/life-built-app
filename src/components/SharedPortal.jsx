@@ -3,7 +3,94 @@ import { doc, getDoc, updateDoc, setDoc, increment } from 'firebase/firestore';
 import { ref as storageRef, deleteObject } from 'firebase/storage';
 import { db, storage } from '../firebase';
 import { useUpload } from '../hooks/useUpload';
-import { MapPin, Calendar, DollarSign, FolderOpen, Image, Users, MessageSquare, Upload } from 'lucide-react';
+import { MapPin, Calendar, DollarSign, FolderOpen, Image, Users, MessageSquare, Upload, Download, Share2, Smartphone, X } from 'lucide-react';
+
+// ─── Portal Install Banner ─────────────────────────────────────────────────────
+
+function isIOSDevice() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+}
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+}
+
+function PortalInstallBanner() {
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [show, setShow] = useState(false);
+  const [installed, setInstalled] = useState(false);
+  const ios = isIOSDevice();
+
+  useEffect(() => {
+    if (isStandalone()) return;
+    if (sessionStorage.getItem('portalInstallDismissed')) return;
+
+    if (ios) {
+      setShow(true);
+      return;
+    }
+
+    function handle(e) {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShow(true);
+    }
+    window.addEventListener('beforeinstallprompt', handle);
+    return () => window.removeEventListener('beforeinstallprompt', handle);
+  }, []);
+
+  function dismiss() {
+    sessionStorage.setItem('portalInstallDismissed', '1');
+    setShow(false);
+  }
+
+  async function handleInstall() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setInstalled(true);
+      setDeferredPrompt(null);
+    }
+  }
+
+  if (!show || installed) return null;
+
+  return (
+    <div className="mt-6 bg-white border border-linen rounded-2xl overflow-hidden shadow-sm">
+      <div className="flex items-start gap-3 p-4">
+        <div className="shrink-0 w-10 h-10 bg-forest rounded-xl flex items-center justify-center">
+          <Smartphone size={18} className="text-white" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-ink">Add Waymark Build to your home screen</p>
+          {ios ? (
+            <p className="text-xs text-mist mt-0.5 leading-snug">
+              Tap <Share2 size={11} className="inline mx-0.5 text-blue-500" /> <strong>Share</strong> → <strong>"Add to Home Screen"</strong> for one-tap access
+            </p>
+          ) : (
+            <p className="text-xs text-mist mt-0.5">Install for quick access — works offline too</p>
+          )}
+        </div>
+        <button onClick={dismiss} className="shrink-0 p-1 text-mist hover:text-ink transition-colors">
+          <X size={15} />
+        </button>
+      </div>
+      {!ios && deferredPrompt && (
+        <div className="px-4 pb-4 flex gap-2">
+          <button
+            onClick={handleInstall}
+            className="flex items-center gap-1.5 bg-forest text-white text-sm px-4 py-2 rounded-xl hover:bg-deep transition-colors font-medium"
+          >
+            <Download size={14} /> Install App
+          </button>
+          <button onClick={dismiss} className="text-sm text-mist hover:text-ink px-3 transition-colors">
+            Not now
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ─── Section icons / labels used in tabs ─────────────────────────────────────
 
@@ -1278,6 +1365,9 @@ export default function SharedPortal({ token }) {
             </div>
           </>
         )}
+
+        {/* Install banner */}
+        <PortalInstallBanner />
 
         {/* Footer */}
         <div className="mt-10 text-center text-xs text-mist">
