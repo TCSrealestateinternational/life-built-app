@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { useProject } from './hooks/useProject';
+import { useInstallPrompt } from './hooks/useInstallPrompt';
 import AuthScreen from './components/AuthScreen';
 import Shell from './components/Shell';
 import Dashboard from './components/Dashboard';
@@ -44,16 +45,7 @@ export default function App() {
 
   const [tourActive, setTourActive] = useState(false);
   const [tourStep, setTourStep] = useState(0);
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-
-  useEffect(() => {
-    function handle(e) {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    }
-    window.addEventListener('beforeinstallprompt', handle);
-    return () => window.removeEventListener('beforeinstallprompt', handle);
-  }, []);
+  const installPrompt = useInstallPrompt();
 
   useEffect(() => {
     if (!user || loading) return;
@@ -112,8 +104,8 @@ export default function App() {
 
   return (
     <>
-    <InstallPrompt hideDuring={tourActive} />
-    <Shell user={user} section={section} onSection={setSection} saving={saving} tourActive={tourActive} onStartTour={startTour}>
+    <InstallPrompt hideDuring={tourActive} installPrompt={installPrompt} />
+    <Shell user={user} section={section} onSection={setSection} saving={saving} tourActive={tourActive} onStartTour={startTour} installPrompt={installPrompt}>
       {section === 'dashboard' && <Dashboard {...sectionProps} user={user} onSection={setSection} />}
       {section === 'profile' && <Profile {...sectionProps} user={user} />}
       {section === 'properties' && <Properties {...sectionProps} uid={user.uid} />}
@@ -136,8 +128,7 @@ export default function App() {
       onBack={backStep}
       onSkip={endTour}
       onEnd={endTour}
-      deferredPrompt={deferredPrompt}
-      onInstalled={() => setDeferredPrompt(null)}
+      installPrompt={installPrompt}
     />
     </>
   );

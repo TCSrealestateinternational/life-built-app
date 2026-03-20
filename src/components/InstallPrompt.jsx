@@ -1,62 +1,26 @@
-import { useState, useEffect } from 'react';
-import { X, Download, Share } from 'lucide-react';
+import { useState } from 'react';
+import { X, Download, Share2 } from 'lucide-react';
 
-function isIOS() {
-  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-}
+const DISMISS_KEY = 'pwa_install_dismissed';
 
-function isInStandaloneMode() {
-  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-}
+export default function InstallPrompt({ hideDuring = false, installPrompt }) {
+  const [dismissed, setDismissed] = useState(() => !!localStorage.getItem(DISMISS_KEY));
 
-export default function InstallPrompt({ hideDuring = false }) {
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showAndroid, setShowAndroid] = useState(false);
-  const [showIOS, setShowIOS] = useState(false);
-
-  useEffect(() => {
-    // Don't show if already installed
-    if (isInStandaloneMode()) return;
-
-    // Don't show if dismissed this session
-    if (sessionStorage.getItem('installDismissed')) return;
-
-    // Android/Chrome: capture the beforeinstallprompt event
-    function handleBeforeInstall(e) {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShowAndroid(true);
-    }
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
-
-    // iOS: show manual instructions
-    if (isIOS()) {
-      setShowIOS(true);
-    }
-
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
-  }, []);
+  if (hideDuring) return null;
+  if (!installPrompt) return null;
+  if (installPrompt.isInstalled) return null;
+  if (!installPrompt.isInstallable) return null;
+  if (dismissed) return null;
 
   function dismiss() {
-    sessionStorage.setItem('installDismissed', '1');
-    setShowAndroid(false);
-    setShowIOS(false);
-    setDeferredPrompt(null);
+    localStorage.setItem(DISMISS_KEY, '1');
+    setDismissed(true);
   }
 
   async function handleInstall() {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setShowAndroid(false);
-      setDeferredPrompt(null);
-    }
+    const outcome = await installPrompt.triggerPrompt();
+    if (outcome === 'accepted') setDismissed(true);
   }
-
-  if (hideDuring) return null;
-  if (!showAndroid && !showIOS) return null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pb-safe">
@@ -71,13 +35,12 @@ export default function InstallPrompt({ hideDuring = false }) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-sm">Add Waymark Build to your home screen</p>
-            {showAndroid && (
-              <p className="text-xs text-mist mt-0.5">Install the app for quick access — works offline too.</p>
-            )}
-            {showIOS && (
+            {installPrompt.isIOS ? (
               <p className="text-xs text-mist mt-0.5 leading-snug">
-                Tap <Share size={11} className="inline mb-0.5" /> <strong>Share</strong> then <strong>"Add to Home Screen"</strong>
+                Tap <Share2 size={11} className="inline mb-0.5" /> <strong>Share</strong> then <strong>"Add to Home Screen"</strong>
               </p>
+            ) : (
+              <p className="text-xs text-mist mt-0.5">Install the app for quick access — works offline too.</p>
             )}
           </div>
           <button onClick={dismiss} className="text-mist hover:text-white shrink-0 p-0.5 transition-colors">
@@ -85,7 +48,7 @@ export default function InstallPrompt({ hideDuring = false }) {
           </button>
         </div>
 
-        {showAndroid && (
+        {!installPrompt.isIOS && (
           <div className="px-4 pb-4 flex gap-2">
             <button
               onClick={handleInstall}

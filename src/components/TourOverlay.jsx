@@ -46,22 +46,15 @@ function isInStandaloneMode() {
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 }
 
-function InstallStep({ deferredPrompt, onInstalled, onEnd }) {
-  const [installed, setInstalled] = useState(false);
-  const alreadyInstalled = isInStandaloneMode();
-  const ios = isIOS();
+function InstallStep({ installPrompt, onEnd }) {
+  const alreadyInstalled = installPrompt?.isInstalled;
+  const ios = installPrompt?.isIOS ?? isIOS();
 
   async function handleInstall() {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setInstalled(true);
-      onInstalled?.();
-    }
+    await installPrompt?.triggerPrompt();
   }
 
-  if (alreadyInstalled || installed) {
+  if (alreadyInstalled) {
     return (
       <div className="text-center py-4 space-y-3">
         <div className="text-4xl">✅</div>
@@ -102,7 +95,7 @@ function InstallStep({ deferredPrompt, onInstalled, onEnd }) {
     );
   }
 
-  if (deferredPrompt) {
+  if (installPrompt?.isInstallable && !ios) {
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-4 bg-forest/5 border border-forest/15 rounded-xl px-4 py-4">
@@ -146,7 +139,7 @@ function InstallStep({ deferredPrompt, onInstalled, onEnd }) {
   );
 }
 
-export default function TourOverlay({ tourActive, tourStep, onNext, onBack, onSkip, onEnd, deferredPrompt, onInstalled }) {
+export default function TourOverlay({ tourActive, tourStep, onNext, onBack, onSkip, onEnd, installPrompt }) {
   if (!tourActive) return null;
 
   const step = TOUR_STEPS[tourStep];
@@ -197,7 +190,7 @@ export default function TourOverlay({ tourActive, tourStep, onNext, onBack, onSk
           <p className="text-sm text-ink/80 leading-relaxed">{step.description}</p>
 
           {step.isInstallStep ? (
-            <InstallStep deferredPrompt={deferredPrompt} onInstalled={onInstalled} onEnd={onEnd} />
+            <InstallStep installPrompt={installPrompt} onEnd={onEnd} />
           ) : (
             <>
               <ul className="space-y-1.5">

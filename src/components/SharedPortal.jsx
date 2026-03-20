@@ -3,57 +3,30 @@ import { doc, getDoc, updateDoc, setDoc, increment } from 'firebase/firestore';
 import { ref as storageRef, deleteObject } from 'firebase/storage';
 import { db, storage } from '../firebase';
 import { useUpload } from '../hooks/useUpload';
+import { useInstallPrompt } from '../hooks/useInstallPrompt';
 import { MapPin, Calendar, DollarSign, FolderOpen, Image, Users, MessageSquare, Upload, Download, Share2, Smartphone, X } from 'lucide-react';
 
 // ─── Portal Install Banner ─────────────────────────────────────────────────────
 
-function isIOSDevice() {
-  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-}
-function isStandalone() {
-  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-}
+const PORTAL_DISMISS_KEY = 'pwa_portal_install_dismissed';
 
 function PortalInstallBanner() {
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [show, setShow] = useState(false);
-  const [installed, setInstalled] = useState(false);
-  const ios = isIOSDevice();
+  const installPrompt = useInstallPrompt();
+  const [dismissed, setDismissed] = useState(() => !!localStorage.getItem(PORTAL_DISMISS_KEY));
 
-  useEffect(() => {
-    if (isStandalone()) return;
-    if (sessionStorage.getItem('portalInstallDismissed')) return;
-
-    if (ios) {
-      setShow(true);
-      return;
-    }
-
-    function handle(e) {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShow(true);
-    }
-    window.addEventListener('beforeinstallprompt', handle);
-    return () => window.removeEventListener('beforeinstallprompt', handle);
-  }, []);
+  if (installPrompt.isInstalled) return null;
+  if (!installPrompt.isInstallable) return null;
+  if (dismissed) return null;
 
   function dismiss() {
-    sessionStorage.setItem('portalInstallDismissed', '1');
-    setShow(false);
+    localStorage.setItem(PORTAL_DISMISS_KEY, '1');
+    setDismissed(true);
   }
 
   async function handleInstall() {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setInstalled(true);
-      setDeferredPrompt(null);
-    }
+    const outcome = await installPrompt.triggerPrompt();
+    if (outcome === 'accepted') setDismissed(true);
   }
-
-  if (!show || installed) return null;
 
   return (
     <div className="mt-6 bg-white border border-linen rounded-2xl overflow-hidden shadow-sm">
@@ -63,7 +36,7 @@ function PortalInstallBanner() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-ink">Add Waymark Build to your home screen</p>
-          {ios ? (
+          {installPrompt.isIOS ? (
             <p className="text-xs text-mist mt-0.5 leading-snug">
               Tap <Share2 size={11} className="inline mx-0.5 text-blue-500" /> <strong>Share</strong> → <strong>"Add to Home Screen"</strong> for one-tap access
             </p>
@@ -75,7 +48,7 @@ function PortalInstallBanner() {
           <X size={15} />
         </button>
       </div>
-      {!ios && deferredPrompt && (
+      {!installPrompt.isIOS && (
         <div className="px-4 pb-4 flex gap-2">
           <button
             onClick={handleInstall}
