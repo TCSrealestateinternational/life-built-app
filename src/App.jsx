@@ -162,8 +162,12 @@ export default function App() {
     );
   }
 
-  // ── Team-only account without subscription → redirect to portal ───────────
-  if (teamProfile && teamProfile.accountType === 'team' && !canAccess) {
+  // ── Team member without subscription → portal (not paywall) ────────────────
+  // Catches: team-only accounts OR any authenticated user with stored team tokens
+  if (!canAccess && (
+    (teamProfile && teamProfile.accountType === 'team') ||
+    tokenStore.tokens.length > 0
+  )) {
     return (
       <TeamPortalHome
         tokenStore={tokenStore}
@@ -173,7 +177,7 @@ export default function App() {
     );
   }
 
-  // ── No subscription → Paywall ─────────────────────────────────────────────
+  // ── No subscription, no team tokens → Paywall ─────────────────────────────
   if (!canAccess) {
     return <PaywallScreen user={user} teamProfile={teamProfile} />;
   }
