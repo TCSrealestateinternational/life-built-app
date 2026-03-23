@@ -139,8 +139,19 @@ export default function App() {
     );
   }
 
-  // ── Not logged in → AuthScreen ────────────────────────────────────────────
-  if (!user) return <AuthScreen />;
+  // ── Not logged in: if team tokens exist, show portal instead of auth ─────
+  if (!user) {
+    if (tokenStore.tokens.length > 0) {
+      return (
+        <TeamPortalHome
+          tokenStore={tokenStore}
+          user={null}
+          teamProfile={null}
+        />
+      );
+    }
+    return <AuthScreen />;
+  }
 
   // ── Subscription + team profile loading ───────────────────────────────────
   if (subLoading || teamProfileLoading) {
