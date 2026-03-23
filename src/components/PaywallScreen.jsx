@@ -16,7 +16,7 @@ const FEATURES = [
   'Shareable view for family or lenders',
 ];
 
-export default function PaywallScreen({ user }) {
+export default function PaywallScreen({ user, teamProfile }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -91,6 +91,12 @@ export default function PaywallScreen({ user }) {
             ))}
           </ul>
 
+          {teamProfile && (
+            <div className="mb-4 p-3 rounded-lg bg-forest/5 border border-forest/20 text-sm text-ink">
+              Your team projects will still be available after subscribing.
+            </div>
+          )}
+
           {error && (
             <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
               {error}
@@ -119,6 +125,13 @@ export default function PaywallScreen({ user }) {
             Sign out
           </button>
         </p>
+        {teamProfile && (
+          <p className="text-center text-xs text-mist mt-2">
+            <a href="/portal" className="text-forest font-medium hover:underline">
+              ← Back to your team projects
+            </a>
+          </p>
+        )}
       </div>
     </div>
   );

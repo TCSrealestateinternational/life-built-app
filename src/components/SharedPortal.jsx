@@ -4,7 +4,8 @@ import { ref as storageRef, deleteObject } from 'firebase/storage';
 import { db, storage } from '../firebase';
 import { useUpload } from '../hooks/useUpload';
 import { useInstallPrompt } from '../hooks/useInstallPrompt';
-import { MapPin, Calendar, DollarSign, FolderOpen, Image, Users, MessageSquare, Upload, Download, Share2, Smartphone, X } from 'lucide-react';
+import { MapPin, Calendar, DollarSign, FolderOpen, Image, Users, MessageSquare, Upload, Download, Share2, Smartphone, X, LayoutGrid } from 'lucide-react';
+import PortalProjectSwitcher from './PortalProjectSwitcher';
 
 // ─── Portal Install Banner ─────────────────────────────────────────────────────
 
@@ -35,7 +36,7 @@ function PortalInstallBanner() {
           <Smartphone size={18} className="text-white" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-ink">Add Waymark Build to your home screen</p>
+          <p className="text-sm font-semibold text-ink">Install Waymark Build — your team projects, one tap away</p>
           {installPrompt.isIOS ? (
             <p className="text-xs text-mist mt-0.5 leading-snug">
               Tap <Share2 size={11} className="inline mx-0.5 text-blue-500" /> <strong>Share</strong> → <strong>"Add to Home Screen"</strong> for one-tap access
@@ -1145,7 +1146,7 @@ function ContactsSection({ project }) {
 
 // ─── Main SharedPortal ────────────────────────────────────────────────────────
 
-export default function SharedPortal({ token }) {
+export default function SharedPortal({ token, tokenStore }) {
   const [status, setStatus] = useState('loading');
   const [project, setProject] = useState(null);
   const [member, setMember] = useState(null);
@@ -1192,6 +1193,19 @@ export default function SharedPortal({ token }) {
         setTab(firstVisible?.id ?? null);
 
         setStatus('active');
+
+        // Store token for portal home
+        if (tokenStore?.addToken) {
+          const projectAddress = (projectData?.properties ?? []).find((p) => p.address)?.address || 'Build Project';
+          tokenStore.addToken({
+            token,
+            ownerUid: uid,
+            memberId,
+            projectLabel: projectAddress,
+            memberRole: teamMember.role || 'Team',
+            memberName: teamMember.name || '',
+          });
+        }
 
         // 4. Record view activity
         try {
@@ -1276,6 +1290,11 @@ export default function SharedPortal({ token }) {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 py-6">
+        {/* Project switcher (when 2+ tokens stored) */}
+        {tokenStore && (
+          <PortalProjectSwitcher tokens={tokenStore.tokens} currentToken={token} />
+        )}
+
         {/* Project header */}
         <div className="bg-white rounded-2xl border border-linen p-5 mb-6 flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-forest/10 flex items-center justify-center shrink-0">
@@ -1343,8 +1362,18 @@ export default function SharedPortal({ token }) {
         <PortalInstallBanner />
 
         {/* Footer */}
-        <div className="mt-10 text-center text-xs text-mist">
-          <p>
+        <div className="mt-10 text-center space-y-2">
+          {tokenStore && tokenStore.tokens.length > 0 && (
+            <a
+              href="/portal"
+              className="inline-flex items-center gap-1 text-xs text-forest font-medium hover:underline"
+            >
+              <LayoutGrid size={12} /> View All Projects
+            </a>
+          )}
+          <p className="text-xs text-mist">
+            <a href="/portal/auth" className="text-forest hover:underline">Sign in to sync across devices</a>
+            {' '}·{' '}
             Powered by{' '}
             <a href="/" className="text-forest hover:underline">Waymark Build Planning App</a>
             {' '}· <a href="https://www.lifebuiltinkentucky.com" className="hover:underline">lifebuiltinkentucky.com</a>

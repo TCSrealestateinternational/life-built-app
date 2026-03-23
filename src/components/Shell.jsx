@@ -21,6 +21,7 @@ import {
   X,
   Compass,
   Smartphone,
+  LayoutGrid,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -40,7 +41,7 @@ const NAV_ITEMS = [
   { id: 'team', label: 'Team', icon: Users },
 ];
 
-export default function Shell({ user, section, onSection, children, saving, tourActive = false, onStartTour, installPrompt }) {
+export default function Shell({ user, section, onSection, children, saving, tourActive = false, onStartTour, installPrompt, hasTeamTokens }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showIOSHint, setShowIOSHint] = useState(false);
 
@@ -83,6 +84,14 @@ export default function Shell({ user, section, onSection, children, saving, tour
         </nav>
 
         <div className="px-2 pb-4 space-y-0.5">
+          {hasTeamTokens && (
+            <a
+              href="/portal"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-forest bg-forest/10 hover:bg-forest/20 transition-colors font-medium"
+            >
+              <LayoutGrid size={16} /> Team Projects
+            </a>
+          )}
           {showInstallBtn && (
             <button
               onClick={handleInstallClick}
@@ -143,6 +152,15 @@ export default function Shell({ user, section, onSection, children, saving, tour
               ))}
             </nav>
             <div className="px-2 pb-6 space-y-0.5">
+              {hasTeamTokens && (
+                <a
+                  href="/portal"
+                  onClick={() => setMobileOpen(false)}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-forest bg-forest/10 hover:bg-forest/20 transition-colors font-medium"
+                >
+                  <LayoutGrid size={16} /> Team Projects
+                </a>
+              )}
               {showInstallBtn && (
                 <button
                   onClick={() => { handleInstallClick(); setMobileOpen(false); }}

@@ -1,17 +1,88 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithRedirect,
+  onAuthStateChanged,
 } from 'firebase/auth';
-import { auth, googleProvider } from '../firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { auth, googleProvider, db } from '../firebase';
 
-export default function AuthScreen() {
-  const [mode, setMode] = useState('login'); // 'login' | 'signup'
+/**
+ * Team-flavored authentication screen at /portal/auth.
+ * Same Firebase Auth as AuthScreen but with team framing.
+ * On auth complete: creates/updates teamProfiles/{uid} and merges local tokens.
+ */
+export default function TeamAuthScreen({ tokenStore, user }) {
+  const [mode, setMode] = useState('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+
+  // When user becomes authenticated, sync tokens and redirect
+  useEffect(() => {
+    if (!user?.uid || syncing) return;
+
+    let cancelled = false;
+    setSyncing(true);
+
+    (async () => {
+      try {
+        const profileRef = doc(db, 'teamProfiles', user.uid);
+        const existing = await getDoc(profileRef);
+
+        // Merge local tokens into Firestore profile
+        const localTokens = tokenStore?.tokens || [];
+        const remoteTokens = existing.exists() ? (existing.data().tokens || []) : [];
+
+        const mergedTokens = [...remoteTokens];
+        for (const lt of localTokens) {
+          if (!mergedTokens.some((rt) => rt.token === lt.token)) {
+            mergedTokens.push({
+              token: lt.token,
+              ownerUid: lt.ownerUid,
+              memberId: lt.memberId,
+              projectLabel: lt.projectLabel,
+              memberRole: lt.memberRole,
+              linkedAt: new Date().toISOString(),
+            });
+          }
+        }
+
+        // Create or update team profile
+        await setDoc(profileRef, {
+          accountType: existing.exists() ? (existing.data().accountType || 'team') : 'team',
+          displayName: user.displayName || email || '',
+          email: user.email || email || '',
+          tokens: mergedTokens,
+          updatedAt: new Date().toISOString(),
+          ...(!existing.exists() ? { createdAt: new Date().toISOString() } : {}),
+        }, { merge: true });
+
+        // Link each local token to this uid in shareTokens
+        for (const lt of localTokens) {
+          try {
+            await setDoc(doc(db, 'shareTokens', lt.token), {
+              linkedToUid: user.uid,
+            }, { merge: true });
+          } catch { /* non-critical */ }
+        }
+
+        if (!cancelled) {
+          window.location.href = '/portal';
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError('Failed to sync your account. Please try again.');
+          setSyncing(false);
+        }
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [user?.uid]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -35,11 +106,19 @@ export default function AuthScreen() {
     setLoading(true);
     try {
       await signInWithRedirect(auth, googleProvider);
-      // Page redirects to Google — code below does not run
     } catch (err) {
       setError(err.message.replace('Firebase: ', '').replace(/\(.*\)\.?/, '').trim());
       setLoading(false);
     }
+  }
+
+  // Show syncing state while linking account
+  if (syncing) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-cream text-mist text-sm">
+        Syncing your team access…
+      </div>
+    );
   }
 
   return (
@@ -49,19 +128,24 @@ export default function AuthScreen() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-forest text-white mb-4">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-            Waymark Build App
+            Sync Your Team Access
           </h1>
-          <p className="text-sage text-sm mt-1">Know the way. Build with confidence.</p>
+          <p className="text-sage text-sm mt-1">Free — no subscription needed</p>
+          <p className="text-mist text-xs mt-2 max-w-xs mx-auto">
+            Sign in to keep your shared projects accessible on any device.
+          </p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-linen p-8">
           <h2 className="text-xl font-semibold text-ink mb-6">
-            {mode === 'login' ? 'Welcome back' : 'Create your account'}
+            {mode === 'login' ? 'Sign in' : 'Create free account'}
           </h2>
 
           {error && (
@@ -99,7 +183,7 @@ export default function AuthScreen() {
               disabled={loading}
               className="w-full bg-forest text-white rounded-lg py-2.5 text-sm font-medium hover:bg-deep transition-colors disabled:opacity-50"
             >
-              {loading ? 'Please wait…' : mode === 'login' ? 'Sign In' : 'Create Account'}
+              {loading ? 'Please wait…' : mode === 'login' ? 'Sign In' : 'Create Free Account'}
             </button>
           </form>
 
@@ -134,18 +218,17 @@ export default function AuthScreen() {
           </p>
         </div>
 
-        <p className="text-center text-xs text-mist mt-4">
-          Are you a team member?{' '}
-          <a href="/portal" className="text-forest font-medium hover:underline">
-            Access your shared projects
+        <div className="text-center mt-4 space-y-2">
+          <a href="/portal" className="text-xs text-forest hover:underline">
+            ← Back to projects
           </a>
-        </p>
-        <p className="text-center text-xs text-mist mt-2">
-          A tool by{' '}
-          <a href="https://www.lifebuiltinkentucky.com" target="_blank" rel="noreferrer" className="text-forest hover:underline">
-            Life Built in Kentucky
-          </a>
-        </p>
+          <p className="text-xs text-mist">
+            Want your own planning account?{' '}
+            <a href="/" className="text-forest hover:underline">
+              Sign up here
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -11,14 +11,14 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icon-192.svg', 'icon-512.svg'],
       manifest: {
-        name: 'Life Built Planning App',
-        short_name: 'Life Built',
+        name: 'Waymark Build',
+        short_name: 'Waymark',
         description: 'Plan your land-to-home build journey — properties, budget, timeline, checklists, and team in one place.',
         theme_color: '#335a3a',
         background_color: '#f4f1ea',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/',
+        start_url: '/portal',
         scope: '/',
         icons: [
           {
