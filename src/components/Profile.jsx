@@ -516,7 +516,7 @@ export default function Profile({ project, updateProject, user }) {
 
       {/* Build Stats */}
       <SectionCard title="Your Build at a Glance">
-        <div className="px-4 py-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="px-4 py-4 grid grid-cols-3 gap-4">
           {stats.map(({ icon: Icon, label, value }) => (
             <div key={label} className="text-center">
               <div className="text-xl font-bold text-forest">{value}</div>

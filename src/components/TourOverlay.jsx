@@ -246,7 +246,7 @@ export default function TourOverlay({ tourActive, tourStep, onNext, onBack, onSk
         </div>
 
         {/* Body — scrollable on mobile */}
-        <div className="px-5 py-4 space-y-3 max-h-[65vh] overflow-y-auto md:max-h-none">
+        <div className="px-5 py-4 space-y-3 max-h-[55vh] overflow-y-auto md:max-h-none">
           <p className="text-sm text-ink/80 leading-relaxed">{step.description}</p>
 
           {step.isInstallStep ? (

@@ -349,7 +349,7 @@ export default function Documents({ project, updateProject, uid }) {
       )}
 
       {/* Tab bar */}
-      <div className="flex flex-wrap gap-1 mb-4 bg-linen/50 p-1 rounded-xl w-fit">
+      <div className="flex gap-1 mb-4 bg-linen/50 p-1 rounded-xl w-fit">
         <button
           onClick={() => setActiveTab('documents')}
           className={`text-xs font-medium px-4 py-1.5 rounded-lg transition-colors ${

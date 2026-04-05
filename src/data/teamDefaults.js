@@ -38,7 +38,7 @@ export const ROLE_DEFAULTS = {
     budget:    none,
     documents: edit,
     photos:    view,
-    messages:  edit,
+    messages:  none,
     contacts:  none,
   },
   'Family Member': {
@@ -46,7 +46,7 @@ export const ROLE_DEFAULTS = {
     budget:    none,
     documents: none,
     photos:    view,
-    messages:  view,
+    messages:  none,
     contacts:  none,
   },
   'Lender / Bank': {
@@ -54,7 +54,7 @@ export const ROLE_DEFAULTS = {
     budget:    view,
     documents: view,
     photos:    none,
-    messages:  view,
+    messages:  none,
     contacts:  none,
   },
   'Interior Designer': {
@@ -62,7 +62,7 @@ export const ROLE_DEFAULTS = {
     budget:    none,
     documents: view,
     photos:    view,
-    messages:  edit,
+    messages:  none,
     contacts:  none,
   },
   'Inspector': {
@@ -70,7 +70,7 @@ export const ROLE_DEFAULTS = {
     budget:    none,
     documents: view,
     photos:    view,
-    messages:  view,
+    messages:  none,
     contacts:  none,
   },
   'Custom': {

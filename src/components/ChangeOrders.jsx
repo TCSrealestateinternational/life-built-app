@@ -97,7 +97,7 @@ function ChangeOrderRow({ co, milestones, onUpdate, onRemove }) {
       {/* Expanded detail */}
       {expanded && (
         <div className="px-4 pb-4 border-t border-linen pt-3 space-y-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-medium text-mist mb-1 block">Date Requested</label>
               <input
@@ -262,7 +262,7 @@ export default function ChangeOrders({ project, updateProject }) {
 
       {/* Summary bar */}
       {changeOrders.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="bg-white border border-green-200 rounded-xl p-4 text-center">
             <div className="text-xs text-mist mb-1">Approved Impact</div>
             <div className={`text-xl font-bold ${approvedTotal < 0 ? 'text-green-700' : approvedTotal > 0 ? 'text-red-600' : 'text-ink'}`}>
