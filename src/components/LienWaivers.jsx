@@ -98,7 +98,7 @@ function WaiverRow({ waiver, milestones, onUpdate, onRemove }) {
 
       {expanded && (
         <div className="px-4 pb-4 border-t border-linen pt-3 space-y-3">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-medium text-mist mb-1 block">Waiver Type</label>
               <select
@@ -265,7 +265,7 @@ export default function LienWaivers({ project, updateProject }) {
 
       {waivers.length > 0 && (
         <>
-          <div className="grid grid-cols-3 gap-3 mb-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
             <div className={`rounded-xl border p-4 text-center ${pending > 0 ? 'bg-amber-50 border-amber-200' : 'bg-white border-linen'}`}>
               <div className="text-xs text-mist mb-1">Pending</div>
               <div className={`text-xl font-bold ${pending > 0 ? 'text-amber-700' : 'text-ink'}`}>{pending}</div>

@@ -386,7 +386,7 @@ export default function CommunicationLog({ project, updateProject }) {
       {view === 'todos' && (
         <>
           {todos.length > 0 && (
-            <div className="grid grid-cols-3 gap-3 mb-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
               <div className={`rounded-xl border p-4 text-center ${openTodos.length > 0 ? 'bg-amber-50 border-amber-200' : 'bg-white border-linen'}`}>
                 <div className="text-xs text-mist mb-1">Open</div>
                 <div className={`text-xl font-bold ${openTodos.length > 0 ? 'text-amber-700' : 'text-ink'}`}>{openTodos.length}</div>

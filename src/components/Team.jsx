@@ -204,7 +204,7 @@ function MemberModal({ member, uid, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50">
-      <div className="bg-white w-full sm:rounded-2xl sm:max-w-lg max-h-[95vh] flex flex-col shadow-2xl">
+      <div className="bg-white w-full sm:rounded-2xl max-w-[calc(100vw-2rem)] sm:max-w-lg max-h-[95vh] flex flex-col shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-linen shrink-0">
           <h2 className="font-semibold text-ink">
@@ -229,7 +229,7 @@ function MemberModal({ member, uid, onSave, onClose }) {
           </div>
 
           {/* Email + Phone */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-mist mb-1">Email</label>
               <input
