@@ -324,7 +324,7 @@ export default function PaymentSchedule({ project, updateProject }) {
           No {filter.toLowerCase()} payments.
         </div>
       ) : (
-        <div data-tour="payments-schedule" className="space-y-2">
+        <div className="space-y-2">
           {filtered.map((p) => (
             <PaymentRow
               key={p.id}

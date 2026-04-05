@@ -1,7 +1,6 @@
 export const TOUR_STEPS = [
   {
     sectionId: 'dashboard',
-    target: 'stat-cards',
     title: 'Dashboard',
     description:
       'Your command center for the entire project. At a glance you can see budget health, timeline progress, open action items, and recent activity — all in one place.',
@@ -28,7 +27,6 @@ export const TOUR_STEPS = [
   },
   {
     sectionId: 'properties',
-    target: 'properties-list',
     title: 'Properties',
     description:
       'Track every property tied to your project — land, a new build address, or an existing home being renovated. Quickly look up listings and save notes.',
@@ -42,7 +40,6 @@ export const TOUR_STEPS = [
   },
   {
     sectionId: 'design',
-    target: 'design-rooms',
     title: 'Home Design',
     description:
       'Plan every room of your home before a single nail is driven. Capture finishes, fixtures, appliances, and inspiration photos room by room.',
@@ -56,7 +53,6 @@ export const TOUR_STEPS = [
   },
   {
     sectionId: 'budget',
-    target: 'budget-summary',
     title: 'Budget',
     description:
       'The most detailed construction budget tool you\'ll find outside of a contractor\'s software. Track every dollar from land purchase to punch list completion.',
@@ -70,7 +66,6 @@ export const TOUR_STEPS = [
   },
   {
     sectionId: 'timeline',
-    target: 'timeline-chart',
     title: 'Timeline',
     description:
       'Visualize your construction schedule with a Gantt chart. Choose from five project templates or build a custom schedule from scratch.',
@@ -84,7 +79,6 @@ export const TOUR_STEPS = [
   },
   {
     sectionId: 'changeorders',
-    target: 'change-orders-list',
     title: 'Change Orders',
     description:
       'Document every scope change in writing, the moment it happens. Change orders are where budget overruns begin — staying on top of them protects you.',
@@ -98,7 +92,6 @@ export const TOUR_STEPS = [
   },
   {
     sectionId: 'payments',
-    target: 'payments-schedule',
     title: 'Payment Schedule',
     description:
       'Track draw requests, progress payments, and lender disbursements. Know exactly what has been paid, what is due, and what is coming next.',
@@ -112,7 +105,6 @@ export const TOUR_STEPS = [
   },
   {
     sectionId: 'commslog',
-    target: 'comms-log-entries',
     title: 'Communication Log',
     description:
       'A searchable record of every important conversation with your builder, subcontractors, lender, and design team. Protect yourself with a paper trail.',
@@ -126,7 +118,6 @@ export const TOUR_STEPS = [
   },
   {
     sectionId: 'lienwaiver',
-    target: 'lien-waivers-list',
     title: 'Lien Waivers',
     description:
       'Track lien waiver collection for every subcontractor and supplier. Missing waivers can cloud your title and block final closing.',
@@ -140,7 +131,6 @@ export const TOUR_STEPS = [
   },
   {
     sectionId: 'checklists',
-    target: 'checklists-area',
     title: 'Checklists',
     description:
       'Pre-built inspection checklists walk you through the final walkthrough room by room. Catch issues before your builder closes out the job.',
@@ -154,7 +144,6 @@ export const TOUR_STEPS = [
   },
   {
     sectionId: 'documents',
-    target: 'documents-area',
     title: 'Documents',
     description:
       'A secure home for every contract, permit, warranty, invoice, and photo tied to your project. Organized by category so you can find anything fast.',
@@ -168,7 +157,6 @@ export const TOUR_STEPS = [
   },
   {
     sectionId: 'keycontacts',
-    target: 'key-contacts-list',
     title: 'Key Contacts',
     description:
       'A centralized directory for everyone involved in your project — with license numbers, insurance info, and notes all in one place.',
@@ -182,7 +170,6 @@ export const TOUR_STEPS = [
   },
   {
     sectionId: 'team',
-    target: 'team-members',
     title: 'Team Access',
     description:
       'Invite your builder, spouse, lender, or anyone else to view parts of the project in real time. Granular permissions let you control exactly what each person sees.',

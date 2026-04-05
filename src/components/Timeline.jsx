@@ -559,7 +559,6 @@ export default function Timeline({ project, updateProject }) {
       )}
 
       {/* Content */}
-      <div data-tour="timeline-chart">
       {total === 0 ? (
         <div className="text-center py-16 text-mist">
           <div className="text-4xl mb-3">📅</div>
@@ -592,7 +591,6 @@ export default function Timeline({ project, updateProject }) {
           ))}
         </div>
       )}
-      </div>
 
       {/* Add milestone */}
       <button

@@ -666,7 +666,7 @@ export default function Team({ project, updateProject, uid }) {
 
       {/* Team members (with share links) */}
       {shareMembers.length > 0 && (
-        <div data-tour="team-members" className="space-y-3 mb-6">
+        <div className="space-y-3 mb-6">
           {shareMembers.map((m) => (
             <MemberCard
               key={m.id}

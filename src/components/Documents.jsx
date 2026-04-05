@@ -409,7 +409,7 @@ export default function Documents({ project, updateProject, uid }) {
               <p className="text-sm mt-1">Upload a file or add a link to get started.</p>
             </div>
           ) : (
-            <div data-tour="documents-area" className="space-y-2">
+            <div className="space-y-2">
               {filtered.map((doc) => (
                 <DocRow
                   key={doc.id}

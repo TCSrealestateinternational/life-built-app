@@ -145,7 +145,7 @@ export default function Budget({ project, updateProject }) {
       </div>
 
       {/* Summary cards */}
-      <div data-tour="budget-summary" className="grid grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-3 gap-4 mb-4">
         <div className="bg-white rounded-xl border border-linen p-4 text-center">
           <div className="text-xs text-mist mb-1">Planned Total</div>
           <div className="text-xl font-bold text-ink">${totalPlanned.toLocaleString()}</div>
