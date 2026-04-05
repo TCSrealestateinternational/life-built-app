@@ -229,7 +229,7 @@ export default function Checklists({ project, updateProject }) {
           <p className="text-sage text-sm mt-0.5">Step-by-step guides for your land-to-build journey.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div data-tour="checklists-area" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {Object.keys(CHECKLIST_META).map((key) => {
             const m = CHECKLIST_META[key];
             const { done, total } = getProgress(key);

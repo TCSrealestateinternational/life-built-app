@@ -252,7 +252,7 @@ export default function Properties({ project, updateProject, uid }) {
       )}
 
       {/* Property cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div data-tour="properties-list" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((p) => {
           const visits = p.visits ?? [];
           const avgRating = visits.length

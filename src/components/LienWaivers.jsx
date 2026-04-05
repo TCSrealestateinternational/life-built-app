@@ -314,7 +314,7 @@ export default function LienWaivers({ project, updateProject }) {
       ) : filtered.length === 0 ? (
         <div className="text-center py-12 text-mist text-sm">No {filter.toLowerCase()} waivers.</div>
       ) : (
-        <div className="space-y-2">
+        <div data-tour="lien-waivers-list" className="space-y-2">
           {filtered.map((w) => (
             <WaiverRow
               key={w.id}

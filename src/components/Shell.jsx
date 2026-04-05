@@ -66,7 +66,7 @@ export default function Shell({ user, section, onSection, children, saving, tour
           <div className="text-xs text-mist mt-0.5 truncate">{user.email}</div>
         </div>
 
-        <nav className="flex-1 py-4 space-y-0.5 px-2">
+        <nav data-tour="sidebar-nav" className="flex-1 py-4 space-y-0.5 px-2">
           {NAV_ITEMS.map(({ id, label, icon: Icon }) => (
             <button
               key={id}

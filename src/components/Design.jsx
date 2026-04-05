@@ -239,7 +239,7 @@ export default function Design({ project, updateProject }) {
       </div>
 
       {/* Active rooms */}
-      <div className="space-y-3 mb-6">
+      <div data-tour="design-rooms" className="space-y-3 mb-6">
         {activeRooms.map((room) => {
           const items = design[room]?.items ?? [];
           const doneCount = items.filter((i) => i.done).length;

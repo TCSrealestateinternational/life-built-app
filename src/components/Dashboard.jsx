@@ -331,7 +331,7 @@ export default function Dashboard({ project, user, onSection, updateProject }) {
       )}
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div data-tour="stat-cards" className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {activeCards.map(({ id, sectionId, icon: Icon, label, value, sub, color }) => (
           <button
             key={id}

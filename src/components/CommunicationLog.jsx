@@ -368,7 +368,7 @@ export default function CommunicationLog({ project, updateProject }) {
           ) : sorted.length === 0 ? (
             <div className="text-center py-12 text-mist text-sm">No {filter.toLowerCase()} entries.</div>
           ) : (
-            <div className="space-y-2">
+            <div data-tour="comms-log-entries" className="space-y-2">
               {sorted.map((entry) => (
                 <LogEntry
                   key={entry.id}

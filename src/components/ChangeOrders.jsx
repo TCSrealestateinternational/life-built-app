@@ -327,7 +327,7 @@ export default function ChangeOrders({ project, updateProject }) {
           No {filter.toLowerCase()} change orders.
         </div>
       ) : (
-        <div className="space-y-2">
+        <div data-tour="change-orders-list" className="space-y-2">
           {filtered.map((co) => (
             <ChangeOrderRow
               key={co.id}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { TOUR_STEPS } from '../data/tourSteps';
 import {
   LayoutDashboard,
@@ -139,6 +139,32 @@ function InstallStep({ installPrompt, onEnd }) {
   );
 }
 
+function useSpotlight(target, tourActive) {
+  const [rect, setRect] = useState(null);
+
+  const resolve = useCallback(() => {
+    if (!target || !tourActive) { setRect(null); return; }
+    const el = document.querySelector(`[data-tour="${target}"]`);
+    if (el) {
+      const r = el.getBoundingClientRect();
+      setRect({ top: r.top, left: r.left, width: r.width, height: r.height });
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+      setRect(null);
+    }
+  }, [target, tourActive]);
+
+  useEffect(() => {
+    resolve();
+    // Retry for async rendering
+    const t1 = setTimeout(resolve, 200);
+    const t2 = setTimeout(resolve, 500);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [resolve]);
+
+  return rect;
+}
+
 export default function TourOverlay({ tourActive, tourStep, onNext, onBack, onSkip, onEnd, installPrompt }) {
   if (!tourActive) return null;
 
@@ -146,15 +172,49 @@ export default function TourOverlay({ tourActive, tourStep, onNext, onBack, onSk
   const isFirst = tourStep === 0;
   const isLast = tourStep === TOUR_STEPS.length - 1;
   const Icon = step.isInstallStep ? Smartphone : (ICON_MAP[step.sectionId] ?? LayoutDashboard);
+  const spotlightRect = useSpotlight(step.target, tourActive);
+
+  const PAD = 8;
 
   return (
     <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-40 bg-black/60"
-        onClick={onSkip}
-        aria-hidden="true"
-      />
+      {/* Backdrop — SVG with cutout if spotlight target found */}
+      {spotlightRect ? (
+        <svg
+          className="fixed inset-0 z-40"
+          width="100%"
+          height="100%"
+          onClick={onSkip}
+          aria-hidden="true"
+          style={{ pointerEvents: 'auto' }}
+        >
+          <defs>
+            <mask id="hearth-tour-mask">
+              <rect width="100%" height="100%" fill="white" />
+              <rect
+                x={spotlightRect.left - PAD}
+                y={spotlightRect.top - PAD}
+                width={spotlightRect.width + PAD * 2}
+                height={spotlightRect.height + PAD * 2}
+                rx={10}
+                fill="black"
+              />
+            </mask>
+          </defs>
+          <rect
+            width="100%"
+            height="100%"
+            fill="rgba(0,0,0,0.55)"
+            mask="url(#hearth-tour-mask)"
+          />
+        </svg>
+      ) : (
+        <div
+          className="fixed inset-0 z-40 bg-black/60"
+          onClick={onSkip}
+          aria-hidden="true"
+        />
+      )}
 
       {/* Tour card */}
       <div

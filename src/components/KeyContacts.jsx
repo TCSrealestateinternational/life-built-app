@@ -118,7 +118,7 @@ export default function KeyContacts({ project, updateProject }) {
         )}
       </div>
 
-      <div className="overflow-x-auto">
+      <div data-tour="key-contacts-list" className="overflow-x-auto">
         <div style={{ minWidth: '700px' }}>
           <Section
             title="Contractors"
