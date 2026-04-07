@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import {
   Plus, Trash2, BarChart2, List, RefreshCw,
   ChevronDown, ChevronUp, Printer, Image, Paperclip, X,
+  Flag, Lightbulb, MessageSquare,
 } from 'lucide-react';
 import GanttChart from './GanttChart';
 import { TEMPLATES, buildMilestonesFromTemplate } from '../data/timelineTemplates';
@@ -49,11 +50,12 @@ function TemplatePicker({ startDate, onStartDateChange, onSelect, onSkip, hasExi
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-on-surface font-heading">
+      <div className="mb-8">
+        <p className="text-xs uppercase tracking-[0.2em] text-primary mb-2">Get Started</p>
+        <h1 className="text-3xl font-extrabold text-on-surface font-heading">
           Timeline
         </h1>
-        <p className="text-on-surface-variant text-sm mt-0.5">
+        <p className="text-on-surface-variant text-base mt-1.5">
           Choose a template to auto-generate your milestones, or start from scratch.
         </p>
       </div>
@@ -176,6 +178,9 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete, projectDocs }) {
           }
           className="accent-primary shrink-0"
         />
+        <div className="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center shrink-0">
+          <Flag size={14} className="text-primary-dim" />
+        </div>
         <input
           type="text"
           value={m.title}
@@ -468,61 +473,80 @@ export default function Timeline({ project, updateProject }) {
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-on-surface font-heading">
+      {/* Hero Header */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="flex flex-col justify-center">
+          <p className="text-xs uppercase tracking-[0.2em] text-primary mb-2">Construction Roadmap</p>
+          <h1 className="text-4xl font-extrabold text-on-surface font-heading mb-3">
             Timeline
           </h1>
-          <p className="text-on-surface-variant text-sm mt-0.5">
+          <p className="text-lg text-on-surface-variant">
             {total > 0
-              ? `${done} of ${total} milestones complete`
+              ? 'Track every phase of your build from breaking ground to move-in day.'
               : 'Track your build milestones and phases.'}
           </p>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Gantt view mode */}
-          {view === 'gantt' && total > 0 && (
-            <div className="flex bg-outline-variant/50 rounded-xl p-0.5 text-xs">
-              {['Week', 'Month', 'Quarter'].map((m) => (
-                <button
-                  key={m}
-                  onClick={() => setGanttMode(m)}
-                  className={`px-2.5 py-1 rounded-lg transition-colors ${
-                    ganttMode === m ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-outline hover:text-on-surface'
-                  }`}
-                >
-                  {m}
-                </button>
-              ))}
+        {total > 0 && (
+          <div className="rounded-3xl shadow-md bg-surface-container-low p-6 flex flex-col justify-center">
+            <div className="flex items-baseline gap-1">
+              <span className="text-4xl font-extrabold text-on-surface">{done}</span>
+              <span className="text-4xl font-extrabold text-outline/40">/{total}</span>
             </div>
-          )}
+            <p className="text-sm text-on-surface-variant mt-1">Milestones Complete</p>
+            <div className="h-2 bg-outline-variant/30 rounded-full overflow-hidden mt-3">
+              <div
+                className="h-full bg-primary rounded-full transition-all"
+                style={{ width: `${(done / total) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
 
-          {/* Gantt / List toggle */}
-          {total > 0 && (
-            <div className="flex bg-outline-variant/50 rounded-xl p-0.5 text-xs">
+      {/* View Controls */}
+      {total > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div className="flex items-center gap-3">
+            {/* Gantt / List toggle */}
+            <div className="rounded-full bg-surface-container-high p-1 shadow-inner flex text-xs">
               <button
                 onClick={() => setView('gantt')}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-colors ${
-                  view === 'gantt' ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-outline hover:text-on-surface'
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full transition-colors ${
+                  view === 'gantt' ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
-                <BarChart2 size={12} /> Gantt
+                <BarChart2 size={13} /> Gantt
               </button>
               <button
                 onClick={() => setView('list')}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-colors ${
-                  view === 'list' ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-outline hover:text-on-surface'
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full transition-colors ${
+                  view === 'list' ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
-                <List size={12} /> List
+                <List size={13} /> List
               </button>
             </div>
-          )}
+          </div>
 
-          {/* Print */}
-          {total > 0 && (
+          <div className="flex items-center gap-3">
+            {/* Week/Month/Quarter zoom */}
+            {view === 'gantt' && (
+              <div className="rounded-2xl border border-outline-variant/30 bg-surface-container-lowest p-1.5 flex text-xs">
+                {['Week', 'Month', 'Quarter'].map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setGanttMode(m)}
+                    className={`px-3 py-1 rounded-xl transition-colors ${
+                      ganttMode === m ? 'bg-primary-container text-on-primary-container' : 'text-on-surface-variant hover:text-on-surface'
+                    }`}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Print */}
             <button
               onClick={() => printTimeline({ milestones })}
               className="flex items-center gap-1.5 text-xs text-outline hover:text-primary transition-colors px-2 py-1"
@@ -530,35 +554,25 @@ export default function Timeline({ project, updateProject }) {
             >
               <Printer size={12} /> Print
             </button>
-          )}
 
-          {/* Change template */}
-          <button
-            onClick={() => setShowPicker(true)}
-            className="flex items-center gap-1.5 text-xs text-outline hover:text-primary transition-colors px-2 py-1"
-          >
-            <RefreshCw size={12} /> Change Template
-          </button>
-        </div>
-      </div>
-
-      {/* Progress bar */}
-      {total > 0 && (
-        <div className="h-1.5 bg-outline-variant rounded-full overflow-hidden mb-6">
-          <div
-            className="h-full bg-primary rounded-full transition-all"
-            style={{ width: `${(done / total) * 100}%` }}
-          />
+            {/* Change template */}
+            <button
+              onClick={() => setShowPicker(true)}
+              className="flex items-center gap-1.5 text-xs text-outline hover:text-primary transition-colors px-2 py-1"
+            >
+              <RefreshCw size={12} /> Change Template
+            </button>
+          </div>
         </div>
       )}
 
       {/* Content */}
       {total === 0 ? (
-        <div className="text-center py-16 text-outline">
-          <div className="text-4xl mb-3">📅</div>
-          <p className="font-medium">No milestones yet</p>
-          <p className="text-sm mt-1">
-            <button onClick={() => setShowPicker(true)} className="text-primary hover:underline">
+        <div className="text-center py-20">
+          <div className="text-5xl mb-4">📅</div>
+          <p className="text-xl font-bold text-on-surface">No milestones yet</p>
+          <p className="text-base text-on-surface-variant mt-2">
+            <button onClick={() => setShowPicker(true)} className="text-primary hover:underline font-medium">
               Choose a template
             </button>
             {' '}or add your own below.
@@ -593,6 +607,30 @@ export default function Timeline({ project, updateProject }) {
       >
         <Plus size={13} /> Add Milestone
       </button>
+
+      {/* Build Tips */}
+      {total > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
+          <div className="bg-primary-container/30 rounded-[32px] border border-primary-container/50 p-8">
+            <div className="flex items-center gap-2 mb-3">
+              <Lightbulb size={18} className="text-primary" />
+              <h3 className="text-sm font-bold text-on-surface">Build Tip</h3>
+            </div>
+            <p className="text-sm text-on-surface-variant italic leading-relaxed">
+              &ldquo;Always add a 2&ndash;3 week buffer between major milestones. Weather delays, material shortages, and inspection wait times are more common than you&rsquo;d expect.&rdquo;
+            </p>
+          </div>
+          <div className="bg-primary-container/30 rounded-[32px] border border-primary-container/50 p-8">
+            <div className="flex items-center gap-2 mb-3">
+              <MessageSquare size={18} className="text-primary" />
+              <h3 className="text-sm font-bold text-on-surface">Build Tip</h3>
+            </div>
+            <p className="text-sm text-on-surface-variant italic leading-relaxed">
+              &ldquo;Schedule a weekly check-in with your builder&mdash;even a quick 10-minute call keeps everyone aligned and catches small issues before they become big ones.&rdquo;
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

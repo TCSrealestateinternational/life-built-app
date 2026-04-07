@@ -60,8 +60,25 @@ export default function GanttChart({ tasks, viewMode = 'Month', onDateChange, on
   if (!tasks.length) return null;
 
   return (
-    <div className="overflow-x-auto rounded-3xl shadow-md border border-outline-variant/10">
-      <div className="gantt-container p-2" ref={containerRef} />
+    <div>
+      <div className="overflow-x-auto rounded-[40px] shadow-xl border border-outline-variant/10">
+        <div className="gantt-container p-8" ref={containerRef} />
+      </div>
+      {/* Legend */}
+      <div className="flex items-center gap-6 mt-4 px-2 text-xs text-on-surface-variant">
+        <span className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded-full bg-primary inline-block" />
+          Active Task
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded-full bg-outline-variant inline-block" />
+          Planned
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded-full bg-primary-dim inline-block" />
+          Milestone Hit
+        </span>
+      </div>
     </div>
   );
 }
