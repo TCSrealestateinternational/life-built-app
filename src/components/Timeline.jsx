@@ -50,33 +50,30 @@ function TemplatePicker({ startDate, onStartDateChange, onSelect, onSkip, hasExi
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <div className="mb-6">
-        <h1
-          className="text-2xl font-bold text-ink"
-          style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}
-        >
+        <h1 className="text-2xl font-bold text-on-surface font-heading">
           Timeline
         </h1>
-        <p className="text-sage text-sm mt-0.5">
+        <p className="text-on-surface-variant text-sm mt-0.5">
           Choose a template to auto-generate your milestones, or start from scratch.
         </p>
       </div>
 
       {hasExisting && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-xs text-amber-700">
+        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-3 mb-4 text-xs text-amber-700">
           ⚠️ Applying a template will replace your existing milestones. This cannot be undone.
         </div>
       )}
 
       {/* Start date */}
-      <div className="bg-white rounded-xl border border-linen p-4 mb-4 flex flex-wrap items-center gap-3">
-        <label className="text-sm font-medium text-ink whitespace-nowrap">Project Start Date</label>
+      <div className="shadow-md border border-outline-variant/10 rounded-3xl p-6 mb-4 flex flex-wrap items-center gap-3 bg-surface-container-lowest">
+        <label className="text-sm font-medium text-on-surface whitespace-nowrap">Project Start Date</label>
         <input
           type="date"
           value={startDate}
           onChange={(e) => onStartDateChange(e.target.value)}
-          className="text-sm border border-linen rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-forest/40"
+          className="text-sm border border-outline-variant rounded-xl px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary/40"
         />
-        <p className="text-xs text-mist">All milestone dates will be calculated from this date.</p>
+        <p className="text-xs text-outline">All milestone dates will be calculated from this date.</p>
       </div>
 
       {/* Template grid */}
@@ -85,16 +82,16 @@ function TemplatePicker({ startDate, onStartDateChange, onSelect, onSkip, hasExi
           <button
             key={t.id}
             onClick={() => setSelected(t.id === selected ? null : t.id)}
-            className={`text-left rounded-xl border p-4 transition-all ${
+            className={`text-left rounded-3xl border p-6 transition-all ${
               selected === t.id
-                ? 'border-forest bg-forest/5 ring-1 ring-forest'
-                : 'border-linen bg-white hover:border-forest/30'
+                ? 'border-primary bg-primary/5 ring-1 ring-primary'
+                : 'border-outline-variant bg-surface-container-lowest hover:border-primary/30'
             }`}
           >
             <div className="text-2xl mb-1">{t.icon}</div>
-            <div className="font-medium text-ink text-sm">{t.name}</div>
-            <div className="text-xs text-forest font-medium mb-1">{t.months}</div>
-            <div className="text-xs text-mist leading-snug">{t.description}</div>
+            <div className="font-medium text-on-surface text-sm">{t.name}</div>
+            <div className="text-xs text-primary font-medium mb-1">{t.months}</div>
+            <div className="text-xs text-outline leading-snug">{t.description}</div>
           </button>
         ))}
       </div>
@@ -103,13 +100,13 @@ function TemplatePicker({ startDate, onStartDateChange, onSelect, onSkip, hasExi
         <button
           onClick={handleApply}
           disabled={!selected}
-          className="px-4 py-2 text-sm bg-forest text-white rounded-lg hover:bg-deep transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="px-4 py-2 text-sm bg-primary text-on-primary rounded-xl hover:bg-primary-dim transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           Apply Template
         </button>
         <button
           onClick={onSkip}
-          className="px-4 py-2 text-sm text-mist hover:text-ink transition-colors"
+          className="px-4 py-2 text-sm text-outline hover:text-on-surface transition-colors"
         >
           Start from Scratch
         </button>
@@ -165,8 +162,8 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete, projectDocs }) {
 
   return (
     <div
-      className={`rounded-xl border overflow-hidden transition-colors ${
-        m.done ? 'border-forest/20 bg-forest/5' : 'border-linen bg-white'
+      className={`rounded-3xl border overflow-hidden transition-colors ${
+        m.done ? 'border-primary/20 bg-primary/5' : 'shadow-md border border-outline-variant/10 bg-surface-container-lowest'
       }`}
     >
       {/* Main row */}
@@ -177,15 +174,15 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete, projectDocs }) {
           onChange={(e) =>
             onUpdate({ done: e.target.checked, progress: e.target.checked ? 100 : pct })
           }
-          className="accent-forest shrink-0"
+          className="accent-primary shrink-0"
         />
         <input
           type="text"
           value={m.title}
           onChange={(e) => onUpdate({ title: e.target.value })}
           placeholder="Milestone title…"
-          className={`flex-1 text-sm bg-transparent focus:outline-none border-b border-transparent hover:border-linen focus:border-forest py-0.5 ${
-            m.done ? 'line-through text-mist' : 'text-ink font-medium'
+          className={`flex-1 text-sm bg-transparent focus:outline-none border-b border-transparent hover:border-outline-variant focus:border-primary py-0.5 ${
+            m.done ? 'line-through text-outline' : 'text-on-surface font-medium'
           }`}
         />
         {/* Dates (desktop) */}
@@ -197,34 +194,34 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete, projectDocs }) {
               const s = e.target.value;
               onUpdate({ start: s, ...(m.end < s ? { end: addDays(s, 13) } : {}) });
             }}
-            className="border border-linen rounded px-2 py-1 text-ink focus:outline-none focus:border-forest"
+            className="border border-outline-variant rounded px-2 py-1 text-on-surface focus:outline-none focus:border-primary"
           />
-          <span className="text-mist">→</span>
+          <span className="text-outline">→</span>
           <input
             type="date"
             value={m.end}
             min={m.start}
             onChange={(e) => { if (e.target.value >= m.start) onUpdate({ end: e.target.value }); }}
-            className="border border-linen rounded px-2 py-1 text-ink focus:outline-none focus:border-forest"
+            className="border border-outline-variant rounded px-2 py-1 text-on-surface focus:outline-none focus:border-primary"
           />
         </div>
         {/* Progress (desktop) */}
         <div className="hidden md:flex items-center gap-1.5 shrink-0">
-          <div className="w-16 h-1.5 bg-linen rounded-full overflow-hidden">
-            <div className="h-full bg-forest rounded-full" style={{ width: `${pct}%` }} />
+          <div className="w-16 h-1.5 bg-outline-variant rounded-full overflow-hidden">
+            <div className="h-full bg-primary rounded-full" style={{ width: `${pct}%` }} />
           </div>
-          <span className="text-xs text-mist w-8">{pct}%</span>
+          <span className="text-xs text-outline w-8">{pct}%</span>
         </div>
         {/* Indicators */}
         {(m.photos || []).length > 0 && (
-          <Image size={12} className="text-mist shrink-0" title={`${m.photos.length} photo(s)`} />
+          <Image size={12} className="text-outline shrink-0" title={`${m.photos.length} photo(s)`} />
         )}
         {(m.linkedDocs || []).length > 0 && (
-          <Paperclip size={12} className="text-mist shrink-0" title={`${m.linkedDocs.length} doc(s)`} />
+          <Paperclip size={12} className="text-outline shrink-0" title={`${m.linkedDocs.length} doc(s)`} />
         )}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="text-mist hover:text-ink transition-colors shrink-0"
+          className="text-outline hover:text-on-surface transition-colors shrink-0"
         >
           {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </button>
@@ -238,72 +235,72 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete, projectDocs }) {
 
       {/* Expanded detail */}
       {expanded && (
-        <div className="px-4 pb-4 pt-3 border-t border-linen bg-cream/20 space-y-4">
+        <div className="px-4 pb-4 pt-3 border-t border-outline-variant bg-surface/20 space-y-4">
           {/* Mobile dates */}
           <div className="sm:hidden flex flex-col gap-2">
             <div className="flex items-center gap-2">
-              <label className="text-xs text-mist w-10 shrink-0">Start</label>
+              <label className="text-xs text-outline w-10 shrink-0">Start</label>
               <input type="date" value={m.start}
                 onChange={(e) => {
                   const s = e.target.value;
                   onUpdate({ start: s, ...(m.end < s ? { end: addDays(s, 13) } : {}) });
                 }}
-                className="text-sm border border-linen rounded px-2 py-1 focus:outline-none focus:border-forest text-ink" />
+                className="text-sm border border-outline-variant rounded px-2 py-1 focus:outline-none focus:border-primary text-on-surface" />
             </div>
             <div className="flex items-center gap-2">
-              <label className="text-xs text-mist w-10 shrink-0">End</label>
+              <label className="text-xs text-outline w-10 shrink-0">End</label>
               <input type="date" value={m.end} min={m.start}
                 onChange={(e) => { if (e.target.value >= m.start) onUpdate({ end: e.target.value }); }}
-                className="text-sm border border-linen rounded px-2 py-1 focus:outline-none focus:border-forest text-ink" />
+                className="text-sm border border-outline-variant rounded px-2 py-1 focus:outline-none focus:border-primary text-on-surface" />
             </div>
           </div>
 
           {/* Progress slider */}
           <div className="flex items-center gap-3">
-            <label className="text-xs text-mist w-16 shrink-0">Progress</label>
+            <label className="text-xs text-outline w-16 shrink-0">Progress</label>
             <input
               type="range" min={0} max={100} step={5} value={pct}
               onChange={(e) => onUpdate({ progress: Number(e.target.value) })}
-              className="flex-1 accent-forest"
+              className="flex-1 accent-primary"
             />
-            <span className="text-xs text-mist w-8 text-right">{pct}%</span>
+            <span className="text-xs text-outline w-8 text-right">{pct}%</span>
           </div>
 
           {/* Notes */}
           <div className="flex items-start gap-3">
-            <label className="text-xs text-mist w-16 shrink-0 pt-2">Notes</label>
+            <label className="text-xs text-outline w-16 shrink-0 pt-2">Notes</label>
             <textarea
               value={m.notes || ''}
               onChange={(e) => onUpdate({ notes: e.target.value })}
               placeholder="Add notes…"
               rows={2}
-              className="flex-1 text-sm border border-linen rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-forest/40 resize-none"
+              className="flex-1 text-sm border border-outline-variant rounded-xl px-3 py-2 bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-primary/40 resize-none"
             />
           </div>
 
           {/* Attribution */}
           {m.createdBy && (
-            <p className="text-xs text-sage mt-0.5">Added by {m.createdBy.name} · {fmtDate(m.createdBy.at)}</p>
+            <p className="text-xs text-on-surface-variant mt-0.5">Added by {m.createdBy.name} · {fmtDate(m.createdBy.at)}</p>
           )}
           {m.editedBy && !m.createdBy && (
-            <p className="text-xs text-sage mt-0.5">Edited by {m.editedBy.name} · {fmtDate(m.editedBy.at)}</p>
+            <p className="text-xs text-on-surface-variant mt-0.5">Edited by {m.editedBy.name} · {fmtDate(m.editedBy.at)}</p>
           )}
 
           {/* Progress Photos */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-medium text-mist flex items-center gap-1">
+              <label className="text-xs font-medium text-outline flex items-center gap-1">
                 <Image size={12} /> Progress Photos
               </label>
               <button
                 onClick={addPhoto}
-                className="text-xs text-forest hover:underline flex items-center gap-0.5"
+                className="text-xs text-primary hover:underline flex items-center gap-0.5"
               >
                 <Plus size={11} /> Add URL
               </button>
             </div>
             {(m.photos || []).length === 0 && (
-              <p className="text-xs text-mist/60 italic">No photos linked yet. Paste a Google Drive or other image URL.</p>
+              <p className="text-xs text-outline/60 italic">No photos linked yet. Paste a Google Drive or other image URL.</p>
             )}
             <div className="space-y-2">
               {(m.photos || []).map((p) => (
@@ -313,18 +310,18 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete, projectDocs }) {
                     value={p.url}
                     onChange={(e) => updatePhoto(p.id, { url: e.target.value })}
                     placeholder="Photo URL…"
-                    className="flex-1 text-xs border border-linen rounded px-2 py-1.5 bg-white focus:outline-none focus:border-forest"
+                    className="flex-1 text-xs border border-outline-variant rounded px-2 py-1.5 bg-surface-container-lowest focus:outline-none focus:border-primary"
                   />
                   <input
                     type="text"
                     value={p.caption}
                     onChange={(e) => updatePhoto(p.id, { caption: e.target.value })}
                     placeholder="Caption (optional)"
-                    className="w-32 text-xs border border-linen rounded px-2 py-1.5 bg-white focus:outline-none focus:border-forest"
+                    className="w-32 text-xs border border-outline-variant rounded px-2 py-1.5 bg-surface-container-lowest focus:outline-none focus:border-primary"
                   />
                   {p.url && (
                     <a href={p.url} target="_blank" rel="noreferrer"
-                      className="text-xs text-forest hover:underline whitespace-nowrap">
+                      className="text-xs text-primary hover:underline whitespace-nowrap">
                       View
                     </a>
                   )}
@@ -339,7 +336,7 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete, projectDocs }) {
           {/* Linked Documents */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-medium text-mist flex items-center gap-1">
+              <label className="text-xs font-medium text-outline flex items-center gap-1">
                 <Paperclip size={12} /> Attached Documents
               </label>
               <div className="flex items-center gap-2">
@@ -347,7 +344,7 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete, projectDocs }) {
                   <select
                     defaultValue=""
                     onChange={(e) => { addDocFromDropdown(e.target.value); e.target.value = ''; }}
-                    className="text-xs border border-linen rounded px-2 py-1 bg-white focus:outline-none focus:border-forest text-ink"
+                    className="text-xs border border-outline-variant rounded px-2 py-1 bg-surface-container-lowest focus:outline-none focus:border-primary text-on-surface"
                   >
                     <option value="">Pick from your docs…</option>
                     {(projectDocs || []).map((d) => (
@@ -357,14 +354,14 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete, projectDocs }) {
                 )}
                 <button
                   onClick={addCustomDoc}
-                  className="text-xs text-forest hover:underline flex items-center gap-0.5"
+                  className="text-xs text-primary hover:underline flex items-center gap-0.5"
                 >
                   <Plus size={11} /> Custom URL
                 </button>
               </div>
             </div>
             {(m.linkedDocs || []).length === 0 && (
-              <p className="text-xs text-mist/60 italic">No documents attached. Pick from your docs list or add a custom URL.</p>
+              <p className="text-xs text-outline/60 italic">No documents attached. Pick from your docs list or add a custom URL.</p>
             )}
             <div className="space-y-2">
               {(m.linkedDocs || []).map((d) => (
@@ -374,18 +371,18 @@ function MilestoneRow({ milestone: m, onUpdate, onDelete, projectDocs }) {
                     value={d.name}
                     onChange={(e) => updateDoc(d.id, { name: e.target.value })}
                     placeholder="Document name…"
-                    className="w-40 text-xs border border-linen rounded px-2 py-1.5 bg-white focus:outline-none focus:border-forest"
+                    className="w-40 text-xs border border-outline-variant rounded px-2 py-1.5 bg-surface-container-lowest focus:outline-none focus:border-primary"
                   />
                   <input
                     type="url"
                     value={d.url}
                     onChange={(e) => updateDoc(d.id, { url: e.target.value })}
                     placeholder="URL…"
-                    className="flex-1 text-xs border border-linen rounded px-2 py-1.5 bg-white focus:outline-none focus:border-forest"
+                    className="flex-1 text-xs border border-outline-variant rounded px-2 py-1.5 bg-surface-container-lowest focus:outline-none focus:border-primary"
                   />
                   {d.url && (
                     <a href={d.url} target="_blank" rel="noreferrer"
-                      className="text-xs text-forest hover:underline whitespace-nowrap">
+                      className="text-xs text-primary hover:underline whitespace-nowrap">
                       Open
                     </a>
                   )}
@@ -474,13 +471,10 @@ export default function Timeline({ project, updateProject }) {
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-          <h1
-            className="text-2xl font-bold text-ink"
-            style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}
-          >
+          <h1 className="text-2xl font-bold text-on-surface font-heading">
             Timeline
           </h1>
-          <p className="text-sage text-sm mt-0.5">
+          <p className="text-on-surface-variant text-sm mt-0.5">
             {total > 0
               ? `${done} of ${total} milestones complete`
               : 'Track your build milestones and phases.'}
@@ -490,13 +484,13 @@ export default function Timeline({ project, updateProject }) {
         <div className="flex flex-wrap items-center gap-2">
           {/* Gantt view mode */}
           {view === 'gantt' && total > 0 && (
-            <div className="flex bg-linen/50 rounded-lg p-0.5 text-xs">
+            <div className="flex bg-outline-variant/50 rounded-xl p-0.5 text-xs">
               {['Week', 'Month', 'Quarter'].map((m) => (
                 <button
                   key={m}
                   onClick={() => setGanttMode(m)}
-                  className={`px-2.5 py-1 rounded-md transition-colors ${
-                    ganttMode === m ? 'bg-white text-ink shadow-sm' : 'text-mist hover:text-ink'
+                  className={`px-2.5 py-1 rounded-lg transition-colors ${
+                    ganttMode === m ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-outline hover:text-on-surface'
                   }`}
                 >
                   {m}
@@ -507,19 +501,19 @@ export default function Timeline({ project, updateProject }) {
 
           {/* Gantt / List toggle */}
           {total > 0 && (
-            <div className="flex bg-linen/50 rounded-lg p-0.5 text-xs">
+            <div className="flex bg-outline-variant/50 rounded-xl p-0.5 text-xs">
               <button
                 onClick={() => setView('gantt')}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-colors ${
-                  view === 'gantt' ? 'bg-white text-ink shadow-sm' : 'text-mist hover:text-ink'
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-colors ${
+                  view === 'gantt' ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-outline hover:text-on-surface'
                 }`}
               >
                 <BarChart2 size={12} /> Gantt
               </button>
               <button
                 onClick={() => setView('list')}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-colors ${
-                  view === 'list' ? 'bg-white text-ink shadow-sm' : 'text-mist hover:text-ink'
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-colors ${
+                  view === 'list' ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-outline hover:text-on-surface'
                 }`}
               >
                 <List size={12} /> List
@@ -531,7 +525,7 @@ export default function Timeline({ project, updateProject }) {
           {total > 0 && (
             <button
               onClick={() => printTimeline({ milestones })}
-              className="flex items-center gap-1.5 text-xs text-mist hover:text-forest transition-colors px-2 py-1"
+              className="flex items-center gap-1.5 text-xs text-outline hover:text-primary transition-colors px-2 py-1"
               title="Print / Save as PDF"
             >
               <Printer size={12} /> Print
@@ -541,7 +535,7 @@ export default function Timeline({ project, updateProject }) {
           {/* Change template */}
           <button
             onClick={() => setShowPicker(true)}
-            className="flex items-center gap-1.5 text-xs text-mist hover:text-forest transition-colors px-2 py-1"
+            className="flex items-center gap-1.5 text-xs text-outline hover:text-primary transition-colors px-2 py-1"
           >
             <RefreshCw size={12} /> Change Template
           </button>
@@ -550,9 +544,9 @@ export default function Timeline({ project, updateProject }) {
 
       {/* Progress bar */}
       {total > 0 && (
-        <div className="h-1.5 bg-linen rounded-full overflow-hidden mb-6">
+        <div className="h-1.5 bg-outline-variant rounded-full overflow-hidden mb-6">
           <div
-            className="h-full bg-forest rounded-full transition-all"
+            className="h-full bg-primary rounded-full transition-all"
             style={{ width: `${(done / total) * 100}%` }}
           />
         </div>
@@ -560,11 +554,11 @@ export default function Timeline({ project, updateProject }) {
 
       {/* Content */}
       {total === 0 ? (
-        <div className="text-center py-16 text-mist">
+        <div className="text-center py-16 text-outline">
           <div className="text-4xl mb-3">📅</div>
           <p className="font-medium">No milestones yet</p>
           <p className="text-sm mt-1">
-            <button onClick={() => setShowPicker(true)} className="text-forest hover:underline">
+            <button onClick={() => setShowPicker(true)} className="text-primary hover:underline">
               Choose a template
             </button>
             {' '}or add your own below.
@@ -595,7 +589,7 @@ export default function Timeline({ project, updateProject }) {
       {/* Add milestone */}
       <button
         onClick={addMilestone}
-        className="flex items-center gap-1.5 text-xs text-forest mt-4 hover:underline"
+        className="flex items-center gap-1.5 text-xs text-primary mt-4 hover:underline"
       >
         <Plus size={13} /> Add Milestone
       </button>

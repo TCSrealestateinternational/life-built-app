@@ -223,10 +223,10 @@ export default function Checklists({ project, updateProject }) {
     return (
       <div className="p-6 max-w-3xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+          <h1 className="text-2xl font-bold text-on-surface font-heading">
             Checklists
           </h1>
-          <p className="text-sage text-sm mt-0.5">Step-by-step guides for your land-to-build journey.</p>
+          <p className="text-on-surface-variant text-sm mt-0.5">Step-by-step guides for your land-to-build journey.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -239,27 +239,27 @@ export default function Checklists({ project, updateProject }) {
               <button
                 key={key}
                 onClick={() => setActiveTab(key)}
-                className="text-left bg-white border border-linen rounded-xl p-5 hover:border-forest/40 hover:shadow-sm transition-all group"
+                className="text-left shadow-md border border-outline-variant/10 rounded-3xl p-6 hover:border-primary/40 hover:shadow-sm transition-all group bg-surface-container-lowest"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="text-2xl mb-1">{m.emoji}</div>
-                    <div className="font-semibold text-ink text-sm group-hover:text-forest transition-colors">{m.label}</div>
-                    <div className="text-xs text-mist mt-0.5 leading-snug">{m.desc}</div>
+                    <div className="font-semibold text-on-surface text-sm group-hover:text-primary transition-colors">{m.label}</div>
+                    <div className="text-xs text-outline mt-0.5 leading-snug">{m.desc}</div>
                   </div>
                   {complete && (
                     <span className="text-xs bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded-full shrink-0 ml-2">Done</span>
                   )}
                 </div>
-                <div className="h-1.5 bg-linen rounded-full overflow-hidden mb-1.5">
+                <div className="h-1.5 bg-outline-variant rounded-full overflow-hidden mb-1.5">
                   <div
-                    className={`h-full rounded-full transition-all ${complete ? 'bg-green-500' : 'bg-forest'}`}
+                    className={`h-full rounded-full transition-all ${complete ? 'bg-green-500' : 'bg-primary'}`}
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <div className="text-xs text-mist">
+                <div className="text-xs text-outline">
                   {total > 0 ? `${done} / ${total} done` : 'Not started'}
-                  {total > 0 && !complete && <span className="ml-1 text-forest font-medium">({pct}%)</span>}
+                  {total > 0 && !complete && <span className="ml-1 text-primary font-medium">({pct}%)</span>}
                 </div>
               </button>
             );
@@ -311,22 +311,22 @@ export default function Checklists({ project, updateProject }) {
       <div className="mb-6">
         <button
           onClick={() => setActiveTab(null)}
-          className="flex items-center gap-1.5 text-xs text-mist hover:text-forest transition-colors mb-4"
+          className="flex items-center gap-1.5 text-xs text-outline hover:text-primary transition-colors mb-4"
         >
           <ArrowLeft size={13} /> All Checklists
         </button>
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+            <h1 className="text-2xl font-bold text-on-surface font-heading">
               {meta.emoji} {meta.label}
             </h1>
-            <p className="text-sage text-sm mt-0.5">{meta.desc}</p>
+            <p className="text-on-surface-variant text-sm mt-0.5">{meta.desc}</p>
           </div>
           <div className="flex items-center gap-3 shrink-0">
-            <span className="text-xs text-mist">{done}/{total} done</span>
+            <span className="text-xs text-outline">{done}/{total} done</span>
             <button
               onClick={handlePrint}
-              className="flex items-center gap-1.5 text-xs text-mist hover:text-forest transition-colors"
+              className="flex items-center gap-1.5 text-xs text-outline hover:text-primary transition-colors"
               title="Print / Save as PDF"
             >
               <Printer size={13} /> Print
@@ -337,16 +337,16 @@ export default function Checklists({ project, updateProject }) {
 
       {/* Progress bar */}
       {total > 0 && (
-        <div className="h-1.5 bg-linen rounded-full overflow-hidden mb-6">
+        <div className="h-1.5 bg-outline-variant rounded-full overflow-hidden mb-6">
           <div
-            className="h-full bg-forest rounded-full transition-all"
+            className="h-full bg-primary rounded-full transition-all"
             style={{ width: `${(done / total) * 100}%` }}
           />
         </div>
       )}
 
       {/* List content */}
-      <div className="bg-white rounded-xl border border-linen p-5">
+      <div className="shadow-md border border-outline-variant/10 rounded-3xl p-6 bg-surface-container-lowest">
         {isPunchList ? (
           <PunchListTab
             checkedIds={punchListChecked}
@@ -387,15 +387,15 @@ export default function Checklists({ project, updateProject }) {
                     type="checkbox"
                     checked={item.done}
                     onChange={() => toggle(activeTab, item.id)}
-                    className="accent-forest shrink-0"
+                    className="accent-primary shrink-0"
                   />
                   <input
                     type="text"
                     value={item.text}
                     onChange={(e) => updateText(activeTab, item.id, e.target.value)}
                     placeholder="Checklist item…"
-                    className={`flex-1 text-sm bg-transparent border-b border-transparent hover:border-linen focus:border-forest focus:outline-none py-0.5 ${
-                      item.done ? 'line-through text-mist' : 'text-ink'
+                    className={`flex-1 text-sm bg-transparent border-b border-transparent hover:border-outline-variant focus:border-primary focus:outline-none py-0.5 ${
+                      item.done ? 'line-through text-outline' : 'text-on-surface'
                     }`}
                   />
                   <button
@@ -409,7 +409,7 @@ export default function Checklists({ project, updateProject }) {
             </div>
             <button
               onClick={() => addItem(activeTab)}
-              className="flex items-center gap-1.5 text-xs text-forest mt-4 hover:underline"
+              className="flex items-center gap-1.5 text-xs text-primary mt-4 hover:underline"
             >
               <Plus size={13} /> Add item
             </button>

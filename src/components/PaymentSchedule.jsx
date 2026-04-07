@@ -13,7 +13,7 @@ function resolveStatus(payment, milestones) {
 const STATUS_STYLES = {
   paid:     { badge: 'bg-green-100 text-green-700 border-green-200', dot: 'bg-green-500',  label: 'Paid' },
   due:      { badge: 'bg-red-100 text-red-600 border-red-200',       dot: 'bg-red-500',    label: 'Due' },
-  upcoming: { badge: 'bg-linen text-mist border-linen',              dot: 'bg-linen',      label: 'Upcoming' },
+  upcoming: { badge: 'bg-outline-variant text-outline border-outline-variant', dot: 'bg-outline-variant', label: 'Upcoming' },
 };
 
 function fmt(n) {
@@ -30,7 +30,7 @@ function PaymentRow({ payment, milestones, onUpdate, onRemove }) {
   const linkedMilestone = milestones.find((m) => m.id === payment.milestoneId);
 
   return (
-    <div className="bg-white border border-linen rounded-xl overflow-hidden">
+    <div className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl overflow-hidden">
       {/* Collapsed row */}
       <div className="flex items-center gap-3 px-4 py-3">
         <span className={`w-2 h-2 rounded-full shrink-0 ${styles.dot}`} />
@@ -40,9 +40,9 @@ function PaymentRow({ payment, milestones, onUpdate, onRemove }) {
             value={payment.title}
             onChange={(e) => onUpdate({ title: e.target.value })}
             placeholder="Payment title…"
-            className="w-full text-sm font-medium bg-transparent border-b border-transparent hover:border-linen focus:border-forest focus:outline-none py-0.5 text-ink"
+            className="w-full text-sm font-medium bg-transparent border-b border-transparent hover:border-outline-variant focus:border-primary focus:outline-none py-0.5 text-on-surface"
           />
-          <div className="flex items-center gap-2 mt-1 flex-wrap text-xs text-mist">
+          <div className="flex items-center gap-2 mt-1 flex-wrap text-xs text-outline">
             <span className={`px-2 py-0.5 rounded-full border text-xs font-medium ${styles.badge}`}>
               {styles.label}
             </span>
@@ -51,7 +51,7 @@ function PaymentRow({ payment, milestones, onUpdate, onRemove }) {
               <span className="flex items-center gap-0.5">
                 {linkedMilestone.done || linkedMilestone.progress >= 100
                   ? <CheckCircle2 size={11} className="text-green-500" />
-                  : <Circle size={11} className="text-mist" />}
+                  : <Circle size={11} className="text-outline" />}
                 {linkedMilestone.title}
               </span>
             )}
@@ -65,7 +65,7 @@ function PaymentRow({ payment, milestones, onUpdate, onRemove }) {
             <button
               onClick={() => onUpdate({ paidDate: new Date().toISOString().split('T')[0] })}
               title="Mark as Paid"
-              className="text-xs bg-forest text-white px-2 py-0.5 rounded-full hover:bg-deep transition-colors whitespace-nowrap"
+              className="text-xs bg-primary text-on-primary px-2 py-0.5 rounded-full hover:bg-primary-dim transition-colors whitespace-nowrap"
             >
               Mark Paid
             </button>
@@ -74,14 +74,14 @@ function PaymentRow({ payment, milestones, onUpdate, onRemove }) {
             <button
               onClick={() => onUpdate({ paidDate: '' })}
               title="Undo Paid"
-              className="text-xs text-mist hover:text-ink transition-colors px-1"
+              className="text-xs text-outline hover:text-on-surface transition-colors px-1"
             >
               ↺
             </button>
           )}
           <button
             onClick={() => setExpanded(!expanded)}
-            className="text-mist hover:text-ink transition-colors p-1"
+            className="text-outline hover:text-on-surface transition-colors p-1"
           >
             {expanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
           </button>
@@ -96,40 +96,40 @@ function PaymentRow({ payment, milestones, onUpdate, onRemove }) {
 
       {/* Expanded detail */}
       {expanded && (
-        <div className="px-4 pb-4 border-t border-linen pt-3 space-y-3">
+        <div className="px-4 pb-4 border-t border-outline-variant pt-3 space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-mist mb-1 block">Amount ($)</label>
+              <label className="text-xs font-medium text-outline mb-1 block">Amount ($)</label>
               <input
                 type="number"
                 value={payment.amount}
                 onChange={(e) => onUpdate({ amount: e.target.value })}
                 placeholder="0"
-                className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-mist mb-1 block">Payee</label>
+              <label className="text-xs font-medium text-outline mb-1 block">Payee</label>
               <input
                 type="text"
                 value={payment.payee}
                 onChange={(e) => onUpdate({ payee: e.target.value })}
                 placeholder="Builder, subcontractor…"
-                className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-mist mb-1 block">
+              <label className="text-xs font-medium text-outline mb-1 block">
                 Linked Milestone
-                <span className="ml-1 text-mist/60 font-normal">(triggers "Due" status)</span>
+                <span className="ml-1 text-outline/60 font-normal">(triggers "Due" status)</span>
               </label>
               {milestones.length > 0 ? (
                 <select
                   value={payment.milestoneId}
                   onChange={(e) => onUpdate({ milestoneId: e.target.value })}
-                  className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                  className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
                 >
                   <option value="">— no milestone —</option>
                   {milestones.map((m) => (
@@ -139,48 +139,48 @@ function PaymentRow({ payment, milestones, onUpdate, onRemove }) {
                   ))}
                 </select>
               ) : (
-                <p className="text-xs text-mist italic">Add milestones in Timeline first.</p>
+                <p className="text-xs text-outline italic">Add milestones in Timeline first.</p>
               )}
             </div>
             <div>
-              <label className="text-xs font-medium text-mist mb-1 block">Expected Due Date</label>
+              <label className="text-xs font-medium text-outline mb-1 block">Expected Due Date</label>
               <input
                 type="date"
                 value={payment.dueDate}
                 onChange={(e) => onUpdate({ dueDate: e.target.value })}
-                className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-mist mb-1 block">Date Paid</label>
+              <label className="text-xs font-medium text-outline mb-1 block">Date Paid</label>
               <input
                 type="date"
                 value={payment.paidDate}
                 onChange={(e) => onUpdate({ paidDate: e.target.value })}
-                className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-mist mb-1 block">Draw / Invoice #</label>
+              <label className="text-xs font-medium text-outline mb-1 block">Draw / Invoice #</label>
               <input
                 type="text"
                 value={payment.invoiceRef}
                 onChange={(e) => onUpdate({ invoiceRef: e.target.value })}
                 placeholder="e.g. Draw #2, INV-0041"
-                className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
               />
             </div>
           </div>
           <div>
-            <label className="text-xs font-medium text-mist mb-1 block">Notes</label>
+            <label className="text-xs font-medium text-outline mb-1 block">Notes</label>
             <input
               type="text"
               value={payment.notes}
               onChange={(e) => onUpdate({ notes: e.target.value })}
               placeholder="Wire transfer, check #, lender draw, etc."
-              className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+              className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
             />
           </div>
         </div>
@@ -250,16 +250,16 @@ export default function PaymentSchedule({ project, updateProject }) {
       {/* Header */}
       <div className="flex items-start justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+          <h1 className="text-2xl font-bold text-on-surface font-heading">
             Payment Schedule
           </h1>
-          <p className="text-sage text-sm mt-0.5">
+          <p className="text-on-surface-variant text-sm mt-0.5">
             Draw payments tied to milestones — automatically shows "Due" when the milestone is complete.
           </p>
         </div>
         <button
           onClick={addPayment}
-          className="flex items-center gap-1.5 bg-forest text-white text-sm px-4 py-2 rounded-lg hover:bg-deep transition-colors shrink-0"
+          className="flex items-center gap-1.5 bg-primary text-on-primary text-sm px-4 py-2 rounded-xl hover:bg-primary-dim transition-colors shrink-0"
         >
           <Plus size={15} /> Add Payment
         </button>
@@ -268,23 +268,23 @@ export default function PaymentSchedule({ project, updateProject }) {
       {/* Summary cards */}
       {payments.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-          <div className="bg-white border border-linen rounded-xl p-4 text-center">
-            <div className="text-xs text-mist mb-1">Contract Total</div>
-            <div className="text-lg font-bold text-ink">{fmt(totalContract)}</div>
+          <div className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl p-6 text-center">
+            <div className="text-xs text-outline mb-1">Contract Total</div>
+            <div className="text-lg font-bold text-on-surface">{fmt(totalContract)}</div>
           </div>
-          <div className="bg-white border border-green-200 rounded-xl p-4 text-center">
-            <div className="text-xs text-mist mb-1">Total Paid</div>
+          <div className="bg-surface-container-lowest shadow-md border border-green-200/10 rounded-3xl p-6 text-center">
+            <div className="text-xs text-outline mb-1">Total Paid</div>
             <div className="text-lg font-bold text-green-700">{totalPaid > 0 ? fmt(totalPaid) : '—'}</div>
           </div>
-          <div className={`rounded-xl border p-4 text-center ${totalDue > 0 ? 'bg-red-50 border-red-200' : 'bg-white border-linen'}`}>
-            <div className="text-xs text-mist mb-1">Due Now</div>
-            <div className={`text-lg font-bold ${totalDue > 0 ? 'text-red-600' : 'text-ink'}`}>
+          <div className={`rounded-3xl border p-6 text-center ${totalDue > 0 ? 'bg-red-50 border-red-200' : 'bg-surface-container-lowest shadow-md border-outline-variant/10'}`}>
+            <div className="text-xs text-outline mb-1">Due Now</div>
+            <div className={`text-lg font-bold ${totalDue > 0 ? 'text-red-600' : 'text-on-surface'}`}>
               {totalDue > 0 ? fmt(totalDue) : '—'}
             </div>
           </div>
-          <div className="bg-white border border-linen rounded-xl p-4 text-center">
-            <div className="text-xs text-mist mb-1">Remaining</div>
-            <div className="text-lg font-bold text-ink">{totalRemaining > 0 ? fmt(totalRemaining) : '—'}</div>
+          <div className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl p-6 text-center">
+            <div className="text-xs text-outline mb-1">Remaining</div>
+            <div className="text-lg font-bold text-on-surface">{totalRemaining > 0 ? fmt(totalRemaining) : '—'}</div>
           </div>
         </div>
       )}
@@ -300,8 +300,8 @@ export default function PaymentSchedule({ project, updateProject }) {
                 onClick={() => setFilter(tab)}
                 className={`text-xs px-3 py-1 rounded-full border transition-colors ${
                   filter === tab
-                    ? 'bg-forest text-white border-forest'
-                    : 'border-linen text-sage hover:border-forest hover:text-forest'
+                    ? 'bg-primary text-on-primary border-primary'
+                    : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
                 }`}
               >
                 {tab}
@@ -314,13 +314,13 @@ export default function PaymentSchedule({ project, updateProject }) {
 
       {/* List */}
       {payments.length === 0 ? (
-        <div className="text-center py-16 text-mist">
+        <div className="text-center py-16 text-outline">
           <div className="text-4xl mb-3">💳</div>
           <p className="font-medium">No payments scheduled yet</p>
           <p className="text-sm mt-1">Add each draw payment and link it to a milestone. It'll show as "Due" the moment that milestone is complete.</p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-12 text-mist text-sm">
+        <div className="text-center py-12 text-outline text-sm">
           No {filter.toLowerCase()} payments.
         </div>
       ) : (

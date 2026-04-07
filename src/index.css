@@ -1,13 +1,43 @@
 @import "tailwindcss";
 
 @theme {
-  --color-forest: #335a3a;
-  --color-sage: #668c66;
-  --color-mist: #8faf9a;
-  --color-linen: #d8d2c8;
-  --color-deep: #3f5d4a;
-  --color-ink: #1e2e22;
-  --color-cream: #f8f6f2;
+  /* ── M3 Design Tokens ── */
+  --color-primary: #4f645b;
+  --color-primary-dim: #3d5249;
+  --color-primary-container: #d0e8dc;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #0c1f16;
+
+  --color-tertiary: #4a6356;
+  --color-tertiary-container: #cce8d8;
+
+  --color-surface: #fbfaf1;
+  --color-surface-container: #f0efe6;
+  --color-surface-container-low: #f5f4eb;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-surface: #31332a;
+  --color-on-surface-variant: #44483d;
+
+  --color-outline: #7a7c70;
+  --color-outline-variant: #c4c7b8;
+
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #410002;
+
+  /* ── Legacy aliases (old class names → new M3 values) ── */
+  --color-forest: #4f645b;
+  --color-deep: #3d5249;
+  --color-sage: #44483d;
+  --color-mist: #7a7c70;
+  --color-linen: #c4c7b8;
+  --color-ink: #31332a;
+  --color-cream: #fbfaf1;
+
+  /* ── Font families ── */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Manrope', system-ui, -apple-system, sans-serif;
 }
 
 * {
@@ -16,7 +46,32 @@
 
 body {
   margin: 0;
-  font-family: 'PT Serif', Georgia, serif;
-  background-color: #f8f6f2;
-  color: #1e2e22;
+  font-family: var(--font-sans);
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Utility classes ── */
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.glass {
+  background: rgba(251, 250, 241, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+.animate-slide-in-right {
+  animation: slide-in-right 0.2s ease-out;
 }

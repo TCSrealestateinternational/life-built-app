@@ -37,36 +37,36 @@ function CompareView({ properties, onBack }) {
     <div className="p-6 max-w-5xl mx-auto">
       <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-mist hover:text-ink text-sm mb-5 transition-colors"
+        className="flex items-center gap-1.5 text-outline hover:text-on-surface text-sm mb-5 transition-colors"
       >
         <ArrowLeft size={16} /> Back to Properties
       </button>
-      <h1 className="text-2xl font-bold text-ink mb-6" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+      <h1 className="text-2xl font-bold text-on-surface mb-6 font-heading">
         Compare Properties
       </h1>
       <div className="overflow-x-auto pb-2">
         <table className="w-full text-sm" style={{ minWidth: `${160 + properties.length * 180}px` }}>
           <thead>
             <tr>
-              <td className="pr-4 py-2 text-xs font-semibold text-mist w-28 align-bottom">Property</td>
+              <td className="pr-4 py-2 text-xs font-semibold text-outline w-28 align-bottom">Property</td>
               {properties.map((p) => (
                 <td key={p.id} className="px-3 py-2 text-center align-bottom" style={{ minWidth: '180px' }}>
                   {p.coverPhoto ? (
-                    <img src={p.coverPhoto} alt="" className="w-full h-28 object-cover rounded-xl mb-2" />
+                    <img src={p.coverPhoto} alt="" className="w-full h-28 object-cover rounded-3xl mb-2" />
                   ) : (
-                    <div className="w-full h-28 bg-linen/50 rounded-xl mb-2 flex items-center justify-center text-3xl">🌿</div>
+                    <div className="w-full h-28 bg-outline-variant/50 rounded-3xl mb-2 flex items-center justify-center text-3xl">🌿</div>
                   )}
-                  <div className="font-medium text-ink text-xs leading-snug">{p.address || 'Untitled'}</div>
+                  <div className="font-medium text-on-surface text-xs leading-snug">{p.address || 'Untitled'}</div>
                 </td>
               ))}
             </tr>
           </thead>
           <tbody>
             {rows.map(({ label, render }) => (
-              <tr key={label} className="border-t border-linen">
-                <td className="pr-4 py-3 text-xs font-medium text-mist">{label}</td>
+              <tr key={label} className="border-t border-outline-variant">
+                <td className="pr-4 py-3 text-xs font-medium text-outline">{label}</td>
                 {properties.map((p) => (
-                  <td key={p.id} className="px-3 py-3 text-center text-ink">{render(p)}</td>
+                  <td key={p.id} className="px-3 py-3 text-center text-on-surface">{render(p)}</td>
                 ))}
               </tr>
             ))}
@@ -154,33 +154,33 @@ export default function Properties({ project, updateProject, uid }) {
       {/* Header */}
       <div className="flex items-start justify-between mb-5 gap-3 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+          <h1 className="text-2xl font-bold text-on-surface font-heading">
             Properties
           </h1>
-          <p className="text-sage text-sm mt-0.5">Track and compare land you're evaluating.</p>
+          <p className="text-on-surface-variant text-sm mt-0.5">Track and compare land you're evaluating.</p>
         </div>
         <div className="flex gap-2 flex-wrap">
           {compareMode && compareIds.length >= 2 && (
             <button
               onClick={() => setView('compare')}
-              className="flex items-center gap-1.5 bg-forest text-white text-sm px-3 py-2 rounded-lg hover:bg-deep transition-colors"
+              className="flex items-center gap-1.5 bg-primary text-on-primary text-sm px-3 py-2 rounded-xl hover:bg-primary-dim transition-colors"
             >
               <BarChart3 size={15} /> Compare ({compareIds.length})
             </button>
           )}
           <button
             onClick={() => { setCompareMode(!compareMode); setCompareIds([]); }}
-            className={`text-sm px-3 py-2 rounded-lg border transition-colors ${
+            className={`text-sm px-3 py-2 rounded-xl border transition-colors ${
               compareMode
-                ? 'border-forest text-forest bg-forest/5'
-                : 'border-linen text-mist hover:text-ink bg-white'
+                ? 'border-primary text-primary bg-primary/5'
+                : 'border-outline-variant text-outline hover:text-on-surface bg-surface-container-lowest'
             }`}
           >
             {compareMode ? 'Cancel' : 'Compare'}
           </button>
           <button
             onClick={addBlank}
-            className="flex items-center gap-1.5 bg-forest text-white text-sm px-3 py-2 rounded-lg hover:bg-deep transition-colors"
+            className="flex items-center gap-1.5 bg-primary text-on-primary text-sm px-3 py-2 rounded-xl hover:bg-primary-dim transition-colors"
           >
             <Plus size={15} /> Add
           </button>
@@ -189,17 +189,17 @@ export default function Properties({ project, updateProject, uid }) {
 
       {/* Quick-add URL bar */}
       <div className="flex gap-2 mb-5">
-        <div className="flex-1 flex items-center gap-2 bg-white border border-linen rounded-lg px-3 py-2.5">
-          <Link2 size={14} className="text-mist shrink-0" />
+        <div className="flex-1 flex items-center gap-2 bg-surface-container-lowest border border-outline-variant rounded-xl px-3 py-2.5">
+          <Link2 size={14} className="text-outline shrink-0" />
           <input
             value={urlInput}
             onChange={(e) => setUrlInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && quickAdd()}
             placeholder="Paste a Zillow or Realtor.com link to auto-fill address…"
-            className="flex-1 text-sm bg-transparent focus:outline-none text-ink placeholder:text-mist"
+            className="flex-1 text-sm bg-transparent focus:outline-none text-on-surface placeholder:text-outline"
           />
           {urlInput && (
-            <button onClick={() => setUrlInput('')} className="text-mist hover:text-ink">
+            <button onClick={() => setUrlInput('')} className="text-outline hover:text-on-surface">
               <X size={14} />
             </button>
           )}
@@ -207,7 +207,7 @@ export default function Properties({ project, updateProject, uid }) {
         <button
           onClick={quickAdd}
           disabled={!urlInput.trim()}
-          className="text-sm px-4 py-2 bg-forest text-white rounded-lg hover:bg-deep disabled:opacity-40 transition-colors"
+          className="text-sm px-4 py-2 bg-primary text-on-primary rounded-xl hover:bg-primary-dim disabled:opacity-40 transition-colors"
         >
           Add
         </button>
@@ -218,7 +218,7 @@ export default function Properties({ project, updateProject, uid }) {
         <button
           onClick={() => setStatusFilter('all')}
           className={`text-xs px-3 py-1.5 rounded-full whitespace-nowrap border transition-colors ${
-            statusFilter === 'all' ? 'bg-forest text-white border-forest' : 'border-linen text-mist hover:text-ink bg-white'
+            statusFilter === 'all' ? 'bg-primary text-on-primary border-primary' : 'border-outline-variant text-outline hover:text-on-surface bg-surface-container-lowest'
           }`}
         >
           All ({properties.length})
@@ -228,7 +228,7 @@ export default function Properties({ project, updateProject, uid }) {
             key={key}
             onClick={() => setStatusFilter(key)}
             className={`text-xs px-3 py-1.5 rounded-full whitespace-nowrap border transition-colors ${
-              statusFilter === key ? 'bg-forest text-white border-forest' : 'border-linen text-mist hover:text-ink bg-white'
+              statusFilter === key ? 'bg-primary text-on-primary border-primary' : 'border-outline-variant text-outline hover:text-on-surface bg-surface-container-lowest'
             }`}
           >
             {s.label} ({properties.filter((p) => p.status === key).length})
@@ -238,7 +238,7 @@ export default function Properties({ project, updateProject, uid }) {
 
       {/* Empty state */}
       {properties.length === 0 && (
-        <div className="text-center py-16 text-mist">
+        <div className="text-center py-16 text-outline">
           <div className="text-4xl mb-3">🗺️</div>
           <p className="font-medium">No properties yet</p>
           <p className="text-sm mt-1">Paste a listing link above or click Add to get started.</p>
@@ -246,7 +246,7 @@ export default function Properties({ project, updateProject, uid }) {
       )}
 
       {filtered.length === 0 && properties.length > 0 && (
-        <div className="text-center py-10 text-mist text-sm">
+        <div className="text-center py-10 text-outline text-sm">
           No properties with that status.
         </div>
       )}
@@ -263,8 +263,8 @@ export default function Properties({ project, updateProject, uid }) {
           return (
             <div
               key={p.id}
-              className={`bg-white rounded-xl border overflow-hidden cursor-pointer transition-all hover:shadow-md ${
-                inCompare ? 'border-forest ring-2 ring-forest/20' : 'border-linen'
+              className={`shadow-md border border-outline-variant/10 bg-surface-container-lowest rounded-3xl overflow-hidden cursor-pointer transition-all hover:shadow-lg ${
+                inCompare ? 'border-primary ring-2 ring-primary/20' : ''
               }`}
               onClick={() => {
                 if (compareMode) { toggleCompare(p.id); return; }
@@ -276,11 +276,11 @@ export default function Properties({ project, updateProject, uid }) {
                 {p.coverPhoto ? (
                   <img src={p.coverPhoto} alt="" className="w-full h-36 object-cover" />
                 ) : (
-                  <div className="w-full h-36 bg-linen/40 flex items-center justify-center text-4xl">🌿</div>
+                  <div className="w-full h-36 bg-outline-variant/40 flex items-center justify-center text-4xl">🌿</div>
                 )}
                 {compareMode && (
                   <div className={`absolute top-2 left-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-                    inCompare ? 'bg-forest border-forest text-white' : 'bg-white border-linen'
+                    inCompare ? 'bg-primary border-primary text-on-primary' : 'bg-surface-container-lowest border-outline-variant'
                   }`}>
                     {inCompare && <Check size={12} />}
                   </div>
@@ -292,15 +292,15 @@ export default function Properties({ project, updateProject, uid }) {
 
               {/* Card body */}
               <div className="p-3">
-                <div className="font-medium text-ink text-sm truncate">
-                  {p.address || <span className="text-mist italic">Untitled Property</span>}
+                <div className="font-medium text-on-surface text-sm truncate">
+                  {p.address || <span className="text-outline italic">Untitled Property</span>}
                 </div>
                 <div className="flex items-center justify-between mt-1">
-                  <div className="text-xs text-mist">
+                  <div className="text-xs text-outline">
                     {p.price ? `$${Number(p.price).toLocaleString()}` : 'Price TBD'}
                     {p.acres ? ` · ${p.acres} ac` : ''}
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-mist">
+                  <div className="flex items-center gap-2 text-xs text-outline">
                     {avgRating && (
                       <span className="flex items-center gap-0.5 text-amber-500">
                         <Star size={11} fill="currentColor" /> {avgRating}
@@ -309,7 +309,7 @@ export default function Properties({ project, updateProject, uid }) {
                     {visits.length > 0 && (
                       <span>{visits.length} visit{visits.length > 1 ? 's' : ''}</span>
                     )}
-                    {!compareMode && <ChevronRight size={13} className="text-mist" />}
+                    {!compareMode && <ChevronRight size={13} className="text-outline" />}
                   </div>
                 </div>
               </div>
@@ -320,7 +320,7 @@ export default function Properties({ project, updateProject, uid }) {
 
       {/* Compare mode footer bar */}
       {compareMode && compareIds.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-ink text-white px-4 py-3 flex items-center justify-between z-50 shadow-lg">
+        <div className="fixed bottom-0 left-0 right-0 bg-on-surface text-on-primary px-4 py-3 flex items-center justify-between z-50 shadow-lg">
           <span className="text-sm">
             {compareIds.length} of 3 selected
             {compareIds.length < 2 && ' — select at least 2'}
@@ -328,14 +328,14 @@ export default function Properties({ project, updateProject, uid }) {
           <div className="flex gap-2">
             <button
               onClick={() => setCompareIds([])}
-              className="text-xs text-mist hover:text-white transition-colors"
+              className="text-xs text-outline hover:text-on-primary transition-colors"
             >
               Clear
             </button>
             {compareIds.length >= 2 && (
               <button
                 onClick={() => setView('compare')}
-                className="flex items-center gap-1.5 bg-forest text-white text-sm px-4 py-1.5 rounded-lg hover:bg-deep transition-colors"
+                className="flex items-center gap-1.5 bg-primary text-on-primary text-sm px-4 py-1.5 rounded-xl hover:bg-primary-dim transition-colors"
               >
                 <BarChart3 size={14} /> Compare
               </button>

@@ -28,7 +28,7 @@ function fmtDate(iso) {
 function StatusBadge({ status }) {
   const map = {
     pending: { label: 'Invite Pending', cls: 'bg-amber-50 text-amber-600 border-amber-200' },
-    active:  { label: 'Active',         cls: 'bg-forest/10 text-forest border-forest/20' },
+    active:  { label: 'Active',         cls: 'bg-primary/10 text-primary border-primary/20' },
     revoked: { label: 'Revoked',        cls: 'bg-red-50 text-red-500 border-red-200' },
   };
   const c = map[status] ?? map.pending;
@@ -49,11 +49,11 @@ function Toggle({ checked, onChange, disabled }) {
       disabled={disabled}
       className={`relative rounded-full transition-colors shrink-0 ${
         disabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'
-      } ${checked && !disabled ? 'bg-forest' : 'bg-linen'}`}
+      } ${checked && !disabled ? 'bg-primary' : 'bg-outline-variant'}`}
       style={{ width: 36, height: 20 }}
     >
       <span
-        className="absolute top-0.5 w-3.5 h-3.5 bg-white rounded-full shadow transition-transform"
+        className="absolute top-0.5 w-3.5 h-3.5 bg-surface-container-lowest rounded-full shadow transition-transform"
         style={{ transform: checked && !disabled ? 'translateX(18px)' : 'translateX(2px)' }}
       />
     </button>
@@ -64,12 +64,12 @@ function Toggle({ checked, onChange, disabled }) {
 
 function PermissionsGrid({ permissions, onChange }) {
   return (
-    <div className="rounded-xl border border-linen overflow-hidden text-sm">
+    <div className="rounded-3xl border border-outline-variant overflow-hidden text-sm">
       {/* Header */}
-      <div className="grid grid-cols-[1fr_64px_64px] bg-cream border-b border-linen">
-        <div className="px-4 py-2 text-xs font-semibold text-mist uppercase tracking-wider">Section</div>
-        <div className="px-3 py-2 text-xs font-semibold text-mist uppercase tracking-wider text-center">View</div>
-        <div className="px-3 py-2 text-xs font-semibold text-mist uppercase tracking-wider text-center">Edit</div>
+      <div className="grid grid-cols-[1fr_64px_64px] bg-surface border-b border-outline-variant">
+        <div className="px-4 py-2 text-xs font-semibold text-outline uppercase tracking-wider">Section</div>
+        <div className="px-3 py-2 text-xs font-semibold text-outline uppercase tracking-wider text-center">View</div>
+        <div className="px-3 py-2 text-xs font-semibold text-outline uppercase tracking-wider text-center">Edit</div>
       </div>
       {PERMISSION_SECTIONS.map((s, i) => {
         const p = permissions[s.id] ?? { view: false, edit: false };
@@ -77,10 +77,10 @@ function PermissionsGrid({ permissions, onChange }) {
           <div
             key={s.id}
             className={`grid grid-cols-[1fr_64px_64px] items-center ${
-              i < PERMISSION_SECTIONS.length - 1 ? 'border-b border-linen' : ''
+              i < PERMISSION_SECTIONS.length - 1 ? 'border-b border-outline-variant' : ''
             }`}
           >
-            <div className="px-4 py-3 text-ink">{s.label}</div>
+            <div className="px-4 py-3 text-on-surface">{s.label}</div>
             <div className="flex justify-center py-3">
               <Toggle
                 checked={!!p.view}
@@ -99,7 +99,7 @@ function PermissionsGrid({ permissions, onChange }) {
                   onChange={(v) => onChange(s.id, { ...p, edit: v })}
                 />
               ) : (
-                <span className="text-xs text-linen select-none">—</span>
+                <span className="text-xs text-outline-variant select-none">—</span>
               )}
             </div>
           </div>
@@ -204,13 +204,13 @@ function MemberModal({ member, uid, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50">
-      <div className="bg-white w-full sm:rounded-2xl sm:max-w-lg max-h-[95vh] flex flex-col shadow-2xl">
+      <div className="bg-surface-container-lowest w-full sm:rounded-3xl sm:max-w-lg max-h-[95vh] flex flex-col shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-linen shrink-0">
-          <h2 className="font-semibold text-ink">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant shrink-0">
+          <h2 className="font-semibold text-on-surface">
             {isEdit ? `Edit — ${member.name}` : 'Add Team Member'}
           </h2>
-          <button onClick={onClose} className="text-mist hover:text-ink p-1">
+          <button onClick={onClose} className="text-outline hover:text-on-surface p-1">
             <X size={18} />
           </button>
         </div>
@@ -219,79 +219,79 @@ function MemberModal({ member, uid, onSave, onClose }) {
         <div className="overflow-y-auto flex-1 px-6 py-5 space-y-4">
           {/* Name */}
           <div>
-            <label className="block text-xs font-medium text-mist mb-1">Name *</label>
+            <label className="block text-xs font-medium text-outline mb-1">Name *</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Full name"
-              className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
+              className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/40"
             />
           </div>
 
           {/* Email + Phone */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-mist mb-1">Email</label>
+              <label className="block text-xs font-medium text-outline mb-1">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@example.com"
-                className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
+                className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/40"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-mist mb-1">Phone</label>
+              <label className="block text-xs font-medium text-outline mb-1">Phone</label>
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="(859) 000-0000"
-                className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
+                className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/40"
               />
             </div>
           </div>
-          <p className="text-xs text-mist -mt-2">
+          <p className="text-xs text-outline -mt-2">
             ⓘ Email and phone are for your reference only — nothing is sent automatically.
           </p>
 
           {/* Role */}
           <div>
-            <label className="block text-xs font-medium text-mist mb-1">Role</label>
+            <label className="block text-xs font-medium text-outline mb-1">Role</label>
             <select
               value={role}
               onChange={(e) => handleRoleChange(e.target.value)}
-              className="w-full text-sm border border-linen rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-forest/40"
+              className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-primary/40"
             >
               {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
             </select>
           </div>
           {role === 'Custom' && (
             <div>
-              <label className="block text-xs font-medium text-mist mb-1">Custom Role Title</label>
+              <label className="block text-xs font-medium text-outline mb-1">Custom Role Title</label>
               <input
                 value={customRole}
                 onChange={(e) => setCustomRole(e.target.value)}
                 placeholder="e.g. Electrician, Plumber, Surveyor…"
-                className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
+                className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/40"
               />
             </div>
           )}
 
           {/* Link expiration */}
           <div>
-            <label className="block text-xs font-medium text-mist mb-1">
-              Link Expires <span className="font-normal text-mist/70">(optional)</span>
+            <label className="block text-xs font-medium text-outline mb-1">
+              Link Expires <span className="font-normal text-outline/70">(optional)</span>
             </label>
             <div className="flex items-center gap-2">
               <input
                 type="date"
                 value={expiresAt || ''}
                 onChange={(e) => setExpiresAt(e.target.value)}
-                className="text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
+                className="text-sm border border-outline-variant rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/40"
               />
               {expiresAt && (
-                <button onClick={() => setExpiresAt('')} className="text-xs text-mist hover:text-ink">
+                <button onClick={() => setExpiresAt('')} className="text-xs text-outline hover:text-on-surface">
                   Clear
                 </button>
               )}
@@ -301,10 +301,10 @@ function MemberModal({ member, uid, onSave, onClose }) {
           {/* Permissions */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-medium text-mist">Access Permissions</label>
+              <label className="text-xs font-medium text-outline">Access Permissions</label>
               <button
                 onClick={() => { setPermissions(getDefaultPermissions(role)); setEdited(false); }}
-                className="text-xs text-forest hover:underline flex items-center gap-1"
+                className="text-xs text-primary hover:underline flex items-center gap-1"
               >
                 <RefreshCw size={10} /> Role defaults
               </button>
@@ -316,17 +316,17 @@ function MemberModal({ member, uid, onSave, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="shrink-0 px-6 pb-5 pt-4 border-t border-linen space-y-3">
+        <div className="shrink-0 px-6 pb-5 pt-4 border-t border-outline-variant space-y-3">
           {savedLink ? (
             /* ── Link reveal state (new member just saved) ── */
             <>
-              <div className="bg-forest/5 border border-forest/20 rounded-xl px-4 py-3 space-y-2.5">
-                <p className="text-xs font-semibold text-forest flex items-center gap-1.5">
+              <div className="bg-primary/5 border border-primary/20 rounded-3xl px-4 py-3 space-y-2.5">
+                <p className="text-xs font-semibold text-primary flex items-center gap-1.5">
                   <Check size={13} /> Saved! Send this link to {name.trim() || 'this person'}:
                 </p>
-                <div className="flex items-center gap-2 bg-white border border-linen rounded-lg px-3 py-2">
-                  <Link2 size={12} className="text-mist shrink-0" />
-                  <span className="text-xs text-mist flex-1 truncate select-all font-mono">{savedLink}</span>
+                <div className="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant rounded-xl px-3 py-2">
+                  <Link2 size={12} className="text-outline shrink-0" />
+                  <span className="text-xs text-outline flex-1 truncate select-all font-mono">{savedLink}</span>
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText(savedLink).then(() => {
@@ -334,21 +334,21 @@ function MemberModal({ member, uid, onSave, onClose }) {
                         setTimeout(() => setLinkCopied(false), 2000);
                       });
                     }}
-                    className="text-xs text-forest hover:underline shrink-0 flex items-center gap-1"
+                    className="text-xs text-primary hover:underline shrink-0 flex items-center gap-1"
                   >
                     {linkCopied ? <><Check size={11} /> Copied!</> : <><Copy size={11} /> Copy</>}
                   </button>
-                  <a href={savedLink} target="_blank" rel="noreferrer" className="text-mist hover:text-forest shrink-0">
+                  <a href={savedLink} target="_blank" rel="noreferrer" className="text-outline hover:text-primary shrink-0">
                     <ExternalLink size={12} />
                   </a>
                 </div>
-                <p className="text-xs text-mist/70">
+                <p className="text-xs text-outline/70">
                   This link is also saved under {name.trim()}'s name so you can copy it again anytime.
                 </p>
               </div>
               <button
                 onClick={onClose}
-                className="w-full bg-forest text-white text-sm py-2.5 rounded-lg hover:bg-deep transition-colors"
+                className="w-full bg-primary text-on-primary text-sm py-2.5 rounded-xl hover:bg-primary-dim transition-colors"
               >
                 Done
               </button>
@@ -357,7 +357,7 @@ function MemberModal({ member, uid, onSave, onClose }) {
             /* ── Normal pre-save footer ── */
             <>
               {!isEdit && (
-                <div className="bg-sky-50 border border-sky-200 rounded-lg px-3 py-2.5 text-xs text-sky-700 leading-snug">
+                <div className="bg-sky-50 border border-sky-200 rounded-xl px-3 py-2.5 text-xs text-sky-700 leading-snug">
                   <strong>Next step:</strong> After saving, your team member's portal link will appear here.
                   You'll need to send it to {name.trim() || 'this person'} yourself — by text, email, or however you prefer.
                   No message is sent automatically.
@@ -367,11 +367,11 @@ function MemberModal({ member, uid, onSave, onClose }) {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="flex-1 bg-forest text-white text-sm py-2.5 rounded-lg hover:bg-deep transition-colors disabled:opacity-50"
+                  className="flex-1 bg-primary text-on-primary text-sm py-2.5 rounded-xl hover:bg-primary-dim transition-colors disabled:opacity-50"
                 >
                   {saving ? 'Saving…' : isEdit ? 'Save Changes' : 'Save & Get Link'}
                 </button>
-                <button onClick={onClose} className="text-sm text-mist hover:text-ink px-4">
+                <button onClick={onClose} className="text-sm text-outline hover:text-on-surface px-4">
                   Cancel
                 </button>
               </div>
@@ -406,28 +406,28 @@ function MemberCard({ member, uid, activity, onEdit, onDelete, onRevoke, onResto
   );
 
   return (
-    <div className={`bg-white rounded-xl border p-4 transition-opacity ${isRevoked ? 'opacity-60' : 'border-linen'}`}>
+    <div className={`shadow-md border border-outline-variant/10 bg-surface-container-lowest rounded-3xl p-6 transition-opacity ${isRevoked ? 'opacity-60' : ''}`}>
       {/* Top row */}
       <div className="flex items-start justify-between gap-3 mb-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-0.5">
-            <span className="font-semibold text-ink text-sm">{member.name || 'Unnamed'}</span>
+            <span className="font-semibold text-on-surface text-sm">{member.name || 'Unnamed'}</span>
             <StatusBadge status={member.status || 'pending'} />
           </div>
-          <div className="text-xs text-mist">{member.role}</div>
-          {member.email && <div className="text-xs text-sage mt-0.5">{member.email}</div>}
+          <div className="text-xs text-outline">{member.role}</div>
+          {member.email && <div className="text-xs text-on-surface-variant mt-0.5">{member.email}</div>}
         </div>
         <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={onEdit}
-            className="p-1.5 text-mist hover:text-ink rounded-lg hover:bg-cream transition-colors"
+            className="p-1.5 text-outline hover:text-on-surface rounded-xl hover:bg-surface transition-colors"
             title="Edit"
           >
             <Edit2 size={14} />
           </button>
           <button
             onClick={onDelete}
-            className="p-1.5 text-red-300 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+            className="p-1.5 text-red-300 hover:text-red-500 rounded-xl hover:bg-red-50 transition-colors"
             title="Delete"
           >
             <Trash2 size={14} />
@@ -437,7 +437,7 @@ function MemberCard({ member, uid, activity, onEdit, onDelete, onRevoke, onResto
 
       {/* Activity */}
       {member.token && (
-        <div className="text-xs text-mist mb-3 flex items-center gap-1">
+        <div className="text-xs text-outline mb-3 flex items-center gap-1">
           <Clock size={11} />
           {act.lastViewed
             ? `Last viewed ${fmtDate(act.lastViewed)} · ${act.viewCount ?? 0} view${act.viewCount === 1 ? '' : 's'}`
@@ -452,16 +452,16 @@ function MemberCard({ member, uid, activity, onEdit, onDelete, onRevoke, onResto
 
       {/* Link copy area */}
       {link && !isRevoked && (
-        <div className="flex items-center gap-2 bg-cream border border-linen rounded-lg px-3 py-2 mb-3">
-          <Link2 size={12} className="text-mist shrink-0" />
-          <span className="text-xs text-mist flex-1 truncate">{link}</span>
+        <div className="flex items-center gap-2 bg-surface border border-outline-variant rounded-xl px-3 py-2 mb-3">
+          <Link2 size={12} className="text-outline shrink-0" />
+          <span className="text-xs text-outline flex-1 truncate">{link}</span>
           <button
             onClick={copyLink}
-            className="text-xs text-forest hover:underline shrink-0 flex items-center gap-1"
+            className="text-xs text-primary hover:underline shrink-0 flex items-center gap-1"
           >
             {copied ? <><Check size={11} /> Copied!</> : <><Copy size={11} /> Copy</>}
           </button>
-          <a href={link} target="_blank" rel="noreferrer" className="text-mist hover:text-forest shrink-0">
+          <a href={link} target="_blank" rel="noreferrer" className="text-outline hover:text-primary shrink-0">
             <ExternalLink size={12} />
           </a>
         </div>
@@ -471,7 +471,7 @@ function MemberCard({ member, uid, activity, onEdit, onDelete, onRevoke, onResto
       <div className="mb-3">
         <button
           onClick={() => setShowPermissions(!showPermissions)}
-          className="flex items-center gap-1 text-xs text-mist hover:text-ink transition-colors"
+          className="flex items-center gap-1 text-xs text-outline hover:text-on-surface transition-colors"
         >
           <Shield size={11} />
           {viewableSections.length > 0
@@ -480,18 +480,18 @@ function MemberCard({ member, uid, activity, onEdit, onDelete, onRevoke, onResto
           {showPermissions ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
         </button>
         {showPermissions && (
-          <div className="mt-2 rounded-lg border border-linen overflow-hidden text-xs">
+          <div className="mt-2 rounded-xl border border-outline-variant overflow-hidden text-xs">
             {PERMISSION_SECTIONS.map((s, i) => {
               const p = member.permissions?.[s.id] ?? {};
               return (
                 <div
                   key={s.id}
                   className={`flex items-center justify-between px-3 py-1.5 ${
-                    i < PERMISSION_SECTIONS.length - 1 ? 'border-b border-linen' : ''
-                  } ${p.view ? 'bg-white' : 'bg-cream/50'}`}
+                    i < PERMISSION_SECTIONS.length - 1 ? 'border-b border-outline-variant' : ''
+                  } ${p.view ? 'bg-surface-container-lowest' : 'bg-surface/50'}`}
                 >
-                  <span className={p.view ? 'text-ink' : 'text-mist/60'}>{s.label}</span>
-                  <span className={`font-medium ${p.view ? 'text-forest' : 'text-mist/40'}`}>
+                  <span className={p.view ? 'text-on-surface' : 'text-outline/60'}>{s.label}</span>
+                  <span className={`font-medium ${p.view ? 'text-primary' : 'text-outline/40'}`}>
                     {p.view ? (s.canEdit && p.edit ? 'View + Edit' : 'View') : 'Hidden'}
                   </span>
                 </div>
@@ -514,13 +514,13 @@ function MemberCard({ member, uid, activity, onEdit, onDelete, onRevoke, onResto
         {isRevoked && (
           <button
             onClick={onRestore}
-            className="text-xs text-forest hover:underline flex items-center gap-1"
+            className="text-xs text-primary hover:underline flex items-center gap-1"
           >
             <RefreshCw size={11} /> Generate New Link
           </button>
         )}
         {!member.token && (
-          <button onClick={onEdit} className="text-xs text-forest hover:underline">
+          <button onClick={onEdit} className="text-xs text-primary hover:underline">
             Enable Sharing →
           </button>
         )}
@@ -645,19 +645,16 @@ export default function Team({ project, updateProject, uid }) {
     <div className="p-6 max-w-3xl mx-auto">
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1
-            className="text-2xl font-bold text-ink"
-            style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}
-          >
+          <h1 className="text-2xl font-bold text-on-surface font-heading">
             My Team
           </h1>
-          <p className="text-sage text-sm mt-0.5">
+          <p className="text-on-surface-variant text-sm mt-0.5">
             Add team members and control exactly what each person can see.
           </p>
         </div>
         <button
           onClick={openAdd}
-          className="flex items-center gap-1.5 bg-forest text-white text-sm px-4 py-2 rounded-lg hover:bg-deep transition-colors shrink-0"
+          className="flex items-center gap-1.5 bg-primary text-on-primary text-sm px-4 py-2 rounded-xl hover:bg-primary-dim transition-colors shrink-0"
         >
           <Plus size={15} /> Add Member
         </button>
@@ -685,20 +682,20 @@ export default function Team({ project, updateProject, uid }) {
       {/* Legacy contacts (no token) */}
       {legacyContacts.length > 0 && (
         <div className="mb-6">
-          <p className="text-xs font-semibold text-mist uppercase tracking-wider mb-2">
+          <p className="text-xs font-semibold text-outline uppercase tracking-wider mb-2">
             Contacts (no share link)
           </p>
           <div className="space-y-2">
             {legacyContacts.map((m) => (
-              <div key={m.id} className="bg-white rounded-xl border border-linen p-4 flex items-center gap-3">
+              <div key={m.id} className="shadow-md border border-outline-variant/10 bg-surface-container-lowest rounded-3xl p-6 flex items-center gap-3">
                 <div className="flex-1 min-w-0">
-                  <span className="font-medium text-ink text-sm">{m.name || 'Unnamed'}</span>
-                  <span className="text-xs text-mist ml-2">{m.role}</span>
-                  {m.email && <div className="text-xs text-sage mt-0.5">{m.email}</div>}
+                  <span className="font-medium text-on-surface text-sm">{m.name || 'Unnamed'}</span>
+                  <span className="text-xs text-outline ml-2">{m.role}</span>
+                  {m.email && <div className="text-xs text-on-surface-variant mt-0.5">{m.email}</div>}
                 </div>
                 <button
                   onClick={() => openEdit(m)}
-                  className="text-xs text-forest hover:underline shrink-0"
+                  className="text-xs text-primary hover:underline shrink-0"
                 >
                   Enable Sharing →
                 </button>
@@ -716,15 +713,15 @@ export default function Team({ project, updateProject, uid }) {
 
       {/* Empty state */}
       {team.length === 0 && (
-        <div className="text-center py-16 text-mist bg-white rounded-xl border border-linen">
+        <div className="text-center py-16 text-outline shadow-md border border-outline-variant/10 bg-surface-container-lowest rounded-3xl">
           <div className="text-4xl mb-3">👷</div>
-          <p className="font-medium text-ink">No team members yet</p>
+          <p className="font-medium text-on-surface">No team members yet</p>
           <p className="text-sm mt-1 mb-4">
             Add your builder, architect, lender, or family — each gets their own link showing only what you choose.
           </p>
           <button
             onClick={openAdd}
-            className="text-sm text-forest hover:underline"
+            className="text-sm text-primary hover:underline"
           >
             Add your first team member →
           </button>
@@ -734,13 +731,13 @@ export default function Team({ project, updateProject, uid }) {
       {/* Recent Activity */}
       {(project?.activityFeed ?? []).length > 0 && (
         <div className="mt-8">
-          <h2 className="text-sm font-semibold text-ink mb-3">Recent Team Activity</h2>
+          <h2 className="text-sm font-semibold text-on-surface mb-3">Recent Team Activity</h2>
           <div className="space-y-2">
             {[...(project.activityFeed)].reverse().slice(0, 20).map((entry) => (
-              <div key={entry.id} className="bg-white rounded-xl border border-linen px-4 py-3 text-sm">
-                <span className="font-medium text-ink">{entry.by}</span>
-                <span className="text-mist"> · {entry.detail}</span>
-                <span className="text-xs text-linen ml-2">{fmtDate(entry.at)}</span>
+              <div key={entry.id} className="shadow-md border border-outline-variant/10 bg-surface-container-lowest rounded-3xl px-4 py-3 text-sm">
+                <span className="font-medium text-on-surface">{entry.by}</span>
+                <span className="text-outline"> · {entry.detail}</span>
+                <span className="text-xs text-outline-variant ml-2">{fmtDate(entry.at)}</span>
               </div>
             ))}
           </div>
@@ -759,7 +756,7 @@ export default function Team({ project, updateProject, uid }) {
 
       {/* Toast */}
       {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-forest text-white text-sm px-5 py-3 rounded-full shadow-lg flex items-center gap-2 pointer-events-none">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-primary text-on-primary text-sm px-5 py-3 rounded-full shadow-lg flex items-center gap-2 pointer-events-none">
           <Check size={15} /> {toast}
         </div>
       )}

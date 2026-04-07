@@ -115,29 +115,29 @@ export default function Budget({ project, updateProject }) {
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex items-start justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+          <h1 className="text-2xl font-bold text-on-surface font-heading">
             Budget Tracker
           </h1>
-          <p className="text-sage text-sm mt-0.5">Plan vs. actual costs across your build.</p>
+          <p className="text-on-surface-variant text-sm mt-0.5">Plan vs. actual costs across your build.</p>
         </div>
         <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
           {items.length > 0 && (
             <button
               onClick={() => exportCSV(items)}
-              className="flex items-center gap-1.5 border border-linen text-sage text-sm px-3 py-2 rounded-lg hover:border-forest hover:text-forest transition-colors"
+              className="flex items-center gap-1.5 border border-outline-variant text-on-surface-variant text-sm px-3 py-2 rounded-xl hover:border-primary hover:text-primary transition-colors"
             >
               <Download size={15} /> Export CSV
             </button>
           )}
           <button
             onClick={loadStandardBudget}
-            className="flex items-center gap-1.5 border border-forest text-forest text-sm px-3 py-2 rounded-lg hover:bg-forest hover:text-white transition-colors"
+            className="flex items-center gap-1.5 border border-primary text-primary text-sm px-3 py-2 rounded-xl hover:bg-primary hover:text-on-primary transition-colors"
           >
             <BookOpen size={15} /> Load Standard Budget
           </button>
           <button
             onClick={addItem}
-            className="flex items-center gap-1.5 bg-forest text-white text-sm px-4 py-2 rounded-lg hover:bg-deep transition-colors"
+            className="flex items-center gap-1.5 bg-primary text-on-primary text-sm px-4 py-2 rounded-xl hover:bg-primary-dim transition-colors"
           >
             <Plus size={16} /> Add Line
           </button>
@@ -146,16 +146,16 @@ export default function Budget({ project, updateProject }) {
 
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-4 mb-4">
-        <div className="bg-white rounded-xl border border-linen p-4 text-center">
-          <div className="text-xs text-mist mb-1">Planned Total</div>
-          <div className="text-xl font-bold text-ink">${totalPlanned.toLocaleString()}</div>
+        <div className="bg-surface-container-lowest rounded-3xl shadow-md border border-outline-variant/10 p-6 text-center">
+          <div className="text-xs text-outline mb-1">Planned Total</div>
+          <div className="text-xl font-bold text-on-surface">${totalPlanned.toLocaleString()}</div>
         </div>
-        <div className="bg-white rounded-xl border border-linen p-4 text-center">
-          <div className="text-xs text-mist mb-1">Actual Spent</div>
-          <div className="text-xl font-bold text-ink">${totalActual.toLocaleString()}</div>
+        <div className="bg-surface-container-lowest rounded-3xl shadow-md border border-outline-variant/10 p-6 text-center">
+          <div className="text-xs text-outline mb-1">Actual Spent</div>
+          <div className="text-xl font-bold text-on-surface">${totalActual.toLocaleString()}</div>
         </div>
-        <div className={`rounded-xl border p-4 text-center ${diff > 0 ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'}`}>
-          <div className="text-xs text-mist mb-1">{diff > 0 ? 'Over Budget' : 'Under Budget'}</div>
+        <div className={`rounded-3xl border p-6 text-center ${diff > 0 ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'}`}>
+          <div className="text-xs text-outline mb-1">{diff > 0 ? 'Over Budget' : 'Under Budget'}</div>
           <div className={`text-xl font-bold ${diff > 0 ? 'text-red-600' : 'text-green-700'}`}>
             {diff !== 0 ? `${diff > 0 ? '+' : ''}$${Math.abs(diff).toLocaleString()}` : '—'}
           </div>
@@ -163,15 +163,15 @@ export default function Budget({ project, updateProject }) {
       </div>
 
       {/* Change Orders summary card */}
-      <div className="bg-white rounded-xl border border-amber-200 p-4 mb-6 flex items-center gap-4">
+      <div className="bg-surface-container-lowest rounded-3xl shadow-md border border-amber-200/10 p-6 mb-6 flex items-center gap-4">
         <div className="flex-1">
           <div className="text-xs font-semibold text-amber-700 uppercase tracking-wide mb-0.5">Approved Change Orders</div>
-          <div className={`text-xl font-bold ${coApprovedTotal < 0 ? 'text-green-700' : coApprovedTotal > 0 ? 'text-red-600' : 'text-ink'}`}>
+          <div className={`text-xl font-bold ${coApprovedTotal < 0 ? 'text-green-700' : coApprovedTotal > 0 ? 'text-red-600' : 'text-on-surface'}`}>
             {coApprovedTotal !== 0
               ? `${coApprovedTotal < 0 ? '−' : '+'}$${Math.abs(coApprovedTotal).toLocaleString()}`
               : '—'}
           </div>
-          <div className="text-xs text-mist mt-0.5">
+          <div className="text-xs text-outline mt-0.5">
             {approvedCOs.length} approved order{approvedCOs.length !== 1 ? 's' : ''}
             {changeOrders.filter((co) => co.status === 'pending').length > 0 && (
               <span className="ml-2 text-amber-600">
@@ -180,25 +180,25 @@ export default function Budget({ project, updateProject }) {
             )}
           </div>
         </div>
-        <div className="text-xs text-mist text-right shrink-0">
+        <div className="text-xs text-outline text-right shrink-0">
           See Change Orders<br />for full detail
         </div>
       </div>
 
       {/* Payment Schedule summary card */}
       {payments.length > 0 && (
-        <div className="bg-white rounded-xl border border-green-200 p-4 mb-6 flex items-center gap-4">
+        <div className="bg-surface-container-lowest rounded-3xl shadow-md border border-green-200/10 p-6 mb-6 flex items-center gap-4">
           <div className="flex-1">
             <div className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-0.5">Payment Schedule</div>
-            <div className="text-xl font-bold text-green-700">{totalPaid > 0 ? `$${totalPaid.toLocaleString()}` : '—'} <span className="text-sm font-normal text-mist">paid</span></div>
-            <div className="text-xs text-mist mt-0.5">
+            <div className="text-xl font-bold text-green-700">{totalPaid > 0 ? `$${totalPaid.toLocaleString()}` : '—'} <span className="text-sm font-normal text-outline">paid</span></div>
+            <div className="text-xs text-outline mt-0.5">
               {payments.filter((p) => p.paidDate).length} of {payments.length} draws paid
               {totalDue > 0 && (
                 <span className="ml-2 text-red-600">· ${totalDue.toLocaleString()} due now</span>
               )}
             </div>
           </div>
-          <div className="text-xs text-mist text-right shrink-0">
+          <div className="text-xs text-outline text-right shrink-0">
             See Payments<br />for full detail
           </div>
         </div>
@@ -212,7 +212,7 @@ export default function Budget({ project, updateProject }) {
               key={c}
               onClick={() => setFilter(c)}
               className={`text-xs px-3 py-1 rounded-full border transition-colors ${
-                filter === c ? 'bg-forest text-white border-forest' : 'border-linen text-sage hover:border-forest hover:text-forest'
+                filter === c ? 'bg-primary text-on-primary border-primary' : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
               }`}
             >
               {c}
@@ -222,17 +222,17 @@ export default function Budget({ project, updateProject }) {
       )}
 
       {items.length === 0 ? (
-        <div className="text-center py-16 text-mist">
+        <div className="text-center py-16 text-outline">
           <div className="text-4xl mb-3">💰</div>
           <p className="font-medium">No budget items yet</p>
           <p className="text-sm mt-1">Click <strong>Load Standard Budget</strong> to pre-fill 460+ line items, or add your own.</p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl">
-          <div className="bg-white border border-linen overflow-hidden rounded-xl" style={{ minWidth: '780px' }}>
+        <div className="overflow-x-auto rounded-3xl">
+          <div className="bg-surface-container-lowest shadow-md border border-outline-variant/10 overflow-hidden rounded-3xl" style={{ minWidth: '780px' }}>
 
             {/* Header — Category | Description | Qty | Unit Price | Planned Total | Actual | ∅ */}
-            <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-cream border-b border-linen text-xs font-semibold text-mist uppercase tracking-wide">
+            <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-surface border-b border-outline-variant text-xs font-semibold text-outline uppercase tracking-wide">
               <div className="col-span-2">Category</div>
               <div className="col-span-3">Description</div>
               <div className="col-span-1 text-center">Qty</div>
@@ -250,13 +250,13 @@ export default function Budget({ project, updateProject }) {
               const overBudget = item.actual && actual > lineTotal;
 
               return (
-                <div key={item.id} className="grid grid-cols-12 gap-2 px-4 py-2 border-b border-linen last:border-0 items-center hover:bg-cream/40">
+                <div key={item.id} className="grid grid-cols-12 gap-2 px-4 py-2 border-b border-outline-variant last:border-0 items-center hover:bg-surface/40">
                   {/* Category */}
                   <div className="col-span-2">
                     <select
                       value={item.category}
                       onChange={(e) => updateItem(item.id, { category: e.target.value })}
-                      className="w-full text-xs border border-linen rounded px-1.5 py-1 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                      className="w-full text-xs border border-outline-variant rounded px-1.5 py-1 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
                     >
                       {BUDGET_CATEGORIES.map((c) => <option key={c}>{c}</option>)}
                     </select>
@@ -269,7 +269,7 @@ export default function Budget({ project, updateProject }) {
                       value={item.description}
                       onChange={(e) => updateItem(item.id, { description: e.target.value })}
                       placeholder="Description…"
-                      className="w-full text-sm bg-transparent border-b border-transparent hover:border-linen focus:border-forest focus:outline-none py-0.5"
+                      className="w-full text-sm bg-transparent border-b border-transparent hover:border-outline-variant focus:border-primary focus:outline-none py-0.5"
                     />
                   </div>
 
@@ -281,7 +281,7 @@ export default function Budget({ project, updateProject }) {
                       step="1"
                       value={item.qty ?? 1}
                       onChange={(e) => updateItem(item.id, { qty: Math.max(1, parseInt(e.target.value) || 1) })}
-                      className="w-full text-sm text-center bg-transparent border-b border-transparent hover:border-linen focus:border-forest focus:outline-none py-0.5"
+                      className="w-full text-sm text-center bg-transparent border-b border-transparent hover:border-outline-variant focus:border-primary focus:outline-none py-0.5"
                     />
                   </div>
 
@@ -292,13 +292,13 @@ export default function Budget({ project, updateProject }) {
                       value={item.planned}
                       onChange={(e) => updateItem(item.id, { planned: e.target.value })}
                       placeholder="0"
-                      className="w-full text-sm text-right bg-transparent border-b border-transparent hover:border-linen focus:border-forest focus:outline-none py-0.5"
+                      className="w-full text-sm text-right bg-transparent border-b border-transparent hover:border-outline-variant focus:border-primary focus:outline-none py-0.5"
                     />
                   </div>
 
                   {/* Planned Total (qty × unit price, read-only) */}
-                  <div className="col-span-2 text-sm text-right text-ink">
-                    {lineTotal > 0 ? `$${lineTotal.toLocaleString()}` : <span className="text-mist">—</span>}
+                  <div className="col-span-2 text-sm text-right text-on-surface">
+                    {lineTotal > 0 ? `$${lineTotal.toLocaleString()}` : <span className="text-outline">—</span>}
                   </div>
 
                   {/* Actual */}
@@ -308,7 +308,7 @@ export default function Budget({ project, updateProject }) {
                       value={item.actual}
                       onChange={(e) => updateItem(item.id, { actual: e.target.value })}
                       placeholder="0"
-                      className={`w-full text-sm text-right bg-transparent border-b border-transparent hover:border-linen focus:border-forest focus:outline-none py-0.5 ${
+                      className={`w-full text-sm text-right bg-transparent border-b border-transparent hover:border-outline-variant focus:border-primary focus:outline-none py-0.5 ${
                         overBudget ? 'text-red-500' : ''
                       }`}
                     />
@@ -325,11 +325,11 @@ export default function Budget({ project, updateProject }) {
             })}
 
             {/* Totals row */}
-            <div className="grid grid-cols-12 gap-2 px-4 py-3 bg-cream border-t border-linen font-semibold text-sm">
-              <div className="col-span-6 text-mist uppercase text-xs tracking-wide self-center">Total</div>
+            <div className="grid grid-cols-12 gap-2 px-4 py-3 bg-surface border-t border-outline-variant font-semibold text-sm">
+              <div className="col-span-6 text-outline uppercase text-xs tracking-wide self-center">Total</div>
               <div className="col-span-2" />
-              <div className="col-span-2 text-right text-ink">${totalPlanned.toLocaleString()}</div>
-              <div className={`col-span-1 text-right ${totalActual > totalPlanned ? 'text-red-600' : 'text-ink'}`}>
+              <div className="col-span-2 text-right text-on-surface">${totalPlanned.toLocaleString()}</div>
+              <div className={`col-span-1 text-right ${totalActual > totalPlanned ? 'text-red-600' : 'text-on-surface'}`}>
                 ${totalActual.toLocaleString()}
               </div>
               <div className="col-span-1" />

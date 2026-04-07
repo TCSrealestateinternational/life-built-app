@@ -60,7 +60,7 @@ export default function GanttChart({ tasks, viewMode = 'Month', onDateChange, on
   if (!tasks.length) return null;
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-linen bg-white">
+    <div className="overflow-x-auto rounded-3xl shadow-md border border-outline-variant/10">
       <div className="gantt-container p-2" ref={containerRef} />
     </div>
   );

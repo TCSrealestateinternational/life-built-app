@@ -115,18 +115,18 @@ export default function TeamAuthScreen({ tokenStore, user }) {
   // Show syncing state while linking account
   if (syncing) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-cream text-mist text-sm">
+      <div className="min-h-screen flex items-center justify-center bg-surface text-outline text-sm">
         Syncing your team access…
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cream px-4">
+    <div className="min-h-screen flex items-center justify-center bg-surface px-4">
       <div className="w-full max-w-md">
         {/* Logo area */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-forest text-white mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary text-on-primary mb-4">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
               <circle cx="9" cy="7" r="4"/>
@@ -134,69 +134,69 @@ export default function TeamAuthScreen({ tokenStore, user }) {
               <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+          <h1 className="text-2xl font-bold text-on-surface font-heading">
             Sync Your Team Access
           </h1>
-          <p className="text-sage text-sm mt-1">Free — no subscription needed</p>
-          <p className="text-mist text-xs mt-2 max-w-xs mx-auto">
+          <p className="text-on-surface-variant text-sm mt-1">Free — no subscription needed</p>
+          <p className="text-outline text-xs mt-2 max-w-xs mx-auto">
             Sign in to keep your shared projects accessible on any device.
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-linen p-8">
-          <h2 className="text-xl font-semibold text-ink mb-6">
+        <div className="bg-surface-container-lowest rounded-3xl shadow-sm border border-outline-variant p-8">
+          <h2 className="text-xl font-semibold text-on-surface mb-6">
             {mode === 'login' ? 'Sign in' : 'Create free account'}
           </h2>
 
           {error && (
-            <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+            <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-ink mb-1">Email</label>
+              <label className="block text-sm font-medium text-on-surface mb-1">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full border border-linen rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-forest/40 bg-cream"
+                className="w-full border border-outline-variant rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 bg-surface"
                 placeholder="you@example.com"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ink mb-1">Password</label>
+              <label className="block text-sm font-medium text-on-surface mb-1">Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full border border-linen rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-forest/40 bg-cream"
+                className="w-full border border-outline-variant rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 bg-surface"
                 placeholder="At least 6 characters"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-forest text-white rounded-lg py-2.5 text-sm font-medium hover:bg-deep transition-colors disabled:opacity-50"
+              className="w-full bg-primary text-on-primary rounded-xl py-2.5 text-sm font-medium hover:bg-primary-dim transition-colors disabled:opacity-50"
             >
               {loading ? 'Please wait…' : mode === 'login' ? 'Sign In' : 'Create Free Account'}
             </button>
           </form>
 
           <div className="my-4 flex items-center gap-3">
-            <div className="flex-1 h-px bg-linen" />
-            <span className="text-xs text-mist">or</span>
-            <div className="flex-1 h-px bg-linen" />
+            <div className="flex-1 h-px bg-outline-variant" />
+            <span className="text-xs text-outline">or</span>
+            <div className="flex-1 h-px bg-outline-variant" />
           </div>
 
           <button
             onClick={handleGoogle}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 border border-linen rounded-lg py-2.5 text-sm font-medium text-ink hover:bg-cream transition-colors disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 border border-outline-variant rounded-xl py-2.5 text-sm font-medium text-on-surface hover:bg-surface transition-colors disabled:opacity-50"
           >
             <svg width="18" height="18" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -207,11 +207,11 @@ export default function TeamAuthScreen({ tokenStore, user }) {
             Continue with Google
           </button>
 
-          <p className="mt-6 text-center text-sm text-mist">
+          <p className="mt-6 text-center text-sm text-outline">
             {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
             <button
               onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }}
-              className="text-forest font-medium hover:underline"
+              className="text-primary font-medium hover:underline"
             >
               {mode === 'login' ? 'Sign up free' : 'Sign in'}
             </button>
@@ -219,12 +219,12 @@ export default function TeamAuthScreen({ tokenStore, user }) {
         </div>
 
         <div className="text-center mt-4 space-y-2">
-          <a href="/portal" className="text-xs text-forest hover:underline">
+          <a href="/portal" className="text-xs text-primary hover:underline">
             ← Back to projects
           </a>
-          <p className="text-xs text-mist">
+          <p className="text-xs text-outline">
             Want your own planning account?{' '}
-            <a href="/" className="text-forest hover:underline">
+            <a href="/" className="text-primary hover:underline">
               Sign up here
             </a>
           </p>

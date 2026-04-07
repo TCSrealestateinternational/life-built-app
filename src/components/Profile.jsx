@@ -22,8 +22,8 @@ import {
 function SectionCard({ title, children }) {
   return (
     <div className="mb-5">
-      <p className="text-xs font-semibold text-mist uppercase tracking-wider px-1 mb-2">{title}</p>
-      <div className="bg-white rounded-xl border border-linen divide-y divide-linen overflow-hidden">
+      <p className="text-xs font-semibold text-outline uppercase tracking-wider px-1 mb-2">{title}</p>
+      <div className="shadow-md border border-outline-variant/10 bg-surface-container-lowest rounded-3xl divide-y divide-outline-variant overflow-hidden">
         {children}
       </div>
     </div>
@@ -31,17 +31,17 @@ function SectionCard({ title, children }) {
 }
 
 function ActionRow({ icon: Icon, label, sublabel, onClick, danger, rightEl, href }) {
-  const cls = `w-full flex items-center gap-3 px-4 py-3 text-left border-b border-linen last:border-0 transition-colors ${
-    danger ? 'hover:bg-red-50' : 'hover:bg-cream/50'
+  const cls = `w-full flex items-center gap-3 px-4 py-3 text-left border-b border-outline-variant last:border-0 transition-colors ${
+    danger ? 'hover:bg-red-50' : 'hover:bg-surface/50'
   }`;
   const inner = (
     <>
-      {Icon && <Icon size={16} className={`shrink-0 ${danger ? 'text-red-400' : 'text-mist'}`} />}
+      {Icon && <Icon size={16} className={`shrink-0 ${danger ? 'text-red-400' : 'text-outline'}`} />}
       <div className="flex-1 min-w-0">
-        <div className={`text-sm ${danger ? 'text-red-500' : 'text-ink'}`}>{label}</div>
-        {sublabel && <div className="text-xs text-mist">{sublabel}</div>}
+        <div className={`text-sm ${danger ? 'text-red-500' : 'text-on-surface'}`}>{label}</div>
+        {sublabel && <div className="text-xs text-outline">{sublabel}</div>}
       </div>
-      {rightEl !== undefined ? rightEl : <ChevronRight size={14} className="text-linen shrink-0" />}
+      {rightEl !== undefined ? rightEl : <ChevronRight size={14} className="text-outline-variant shrink-0" />}
     </>
   );
   if (href) return <a href={href} target="_blank" rel="noreferrer" className={cls}>{inner}</a>;
@@ -50,21 +50,21 @@ function ActionRow({ icon: Icon, label, sublabel, onClick, danger, rightEl, href
 
 function ToggleRow({ icon: Icon, label, sublabel, checked, onChange }) {
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-b border-linen last:border-0">
-      {Icon && <Icon size={16} className="text-mist shrink-0" />}
+    <div className="flex items-center gap-3 px-4 py-3 border-b border-outline-variant last:border-0">
+      {Icon && <Icon size={16} className="text-outline shrink-0" />}
       <div className="flex-1 min-w-0">
-        <div className="text-sm text-ink">{label}</div>
-        {sublabel && <div className="text-xs text-mist">{sublabel}</div>}
+        <div className="text-sm text-on-surface">{label}</div>
+        {sublabel && <div className="text-xs text-outline">{sublabel}</div>}
       </div>
       <button
         onClick={() => onChange(!checked)}
-        className={`relative rounded-full transition-colors shrink-0 ${checked ? 'bg-forest' : 'bg-linen'}`}
+        className={`relative rounded-full transition-colors shrink-0 ${checked ? 'bg-primary' : 'bg-outline-variant'}`}
         style={{ width: 40, height: 22 }}
         aria-checked={checked}
         role="switch"
       >
         <span
-          className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform"
+          className="absolute top-0.5 w-4 h-4 bg-surface-container-lowest rounded-full shadow transition-transform"
           style={{ transform: checked ? 'translateX(20px)' : 'translateX(2px)' }}
         />
       </button>
@@ -93,28 +93,28 @@ function EditableRow({ icon: Icon, label, value, placeholder, type = 'text', mul
   return (
     <div>
       <div className="flex items-center gap-3 px-4 py-3">
-        {Icon && <Icon size={16} className="text-mist shrink-0" />}
+        {Icon && <Icon size={16} className="text-outline shrink-0" />}
         <div className="flex-1 min-w-0">
-          <div className="text-xs text-mist">{label}</div>
-          <div className="text-sm text-ink truncate">
-            {value || <span className="italic text-mist/70">{placeholder || 'Not set'}</span>}
+          <div className="text-xs text-outline">{label}</div>
+          <div className="text-sm text-on-surface truncate">
+            {value || <span className="italic text-outline/70">{placeholder || 'Not set'}</span>}
           </div>
         </div>
         {!editing && (
-          <button onClick={open} className="text-mist hover:text-forest transition-colors shrink-0 p-1">
+          <button onClick={open} className="text-outline hover:text-primary transition-colors shrink-0 p-1">
             <Edit2 size={13} />
           </button>
         )}
       </div>
       {editing && (
-        <div className="px-4 pb-3 border-t border-linen bg-cream/40 space-y-2">
-          {hint && <p className="text-xs text-mist pt-2">{hint}</p>}
+        <div className="px-4 pb-3 border-t border-outline-variant bg-surface/40 space-y-2">
+          {hint && <p className="text-xs text-outline pt-2">{hint}</p>}
           {multiline ? (
             <textarea
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               rows={3}
-              className="w-full text-sm border border-linen rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-forest/40 resize-none mt-2"
+              className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-primary/40 resize-none mt-2"
             />
           ) : (
             <input
@@ -122,7 +122,7 @@ function EditableRow({ icon: Icon, label, value, placeholder, type = 'text', mul
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && save()}
-              className="w-full text-sm border border-linen rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-forest/40 mt-2"
+              className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-primary/40 mt-2"
             />
           )}
           {error && <p className="text-xs text-red-500">{error}</p>}
@@ -130,11 +130,11 @@ function EditableRow({ icon: Icon, label, value, placeholder, type = 'text', mul
             <button
               onClick={save}
               disabled={saving}
-              className="flex items-center gap-1 text-xs bg-forest text-white px-3 py-1.5 rounded-lg hover:bg-deep disabled:opacity-50"
+              className="flex items-center gap-1 text-xs bg-primary text-on-primary px-3 py-1.5 rounded-xl hover:bg-primary-dim disabled:opacity-50"
             >
               <Check size={12} /> {saving ? 'Saving…' : 'Save'}
             </button>
-            <button onClick={close} className="text-xs text-mist hover:text-ink px-2 py-1.5">Cancel</button>
+            <button onClick={close} className="text-xs text-outline hover:text-on-surface px-2 py-1.5">Cancel</button>
           </div>
         </div>
       )}
@@ -175,29 +175,29 @@ function EmailChangeRow({ user, hasPasswordProvider }) {
   return (
     <div>
       <div className="flex items-center gap-3 px-4 py-3">
-        <Mail size={16} className="text-mist shrink-0" />
+        <Mail size={16} className="text-outline shrink-0" />
         <div className="flex-1 min-w-0">
-          <div className="text-xs text-mist">Email</div>
-          <div className="text-sm text-ink truncate">{user.email}</div>
+          <div className="text-xs text-outline">Email</div>
+          <div className="text-sm text-on-surface truncate">{user.email}</div>
         </div>
         {!open && (
-          <button onClick={() => { setEmail(user.email); setOpen(true); }} className="text-mist hover:text-forest transition-colors shrink-0 p-1">
+          <button onClick={() => { setEmail(user.email); setOpen(true); }} className="text-outline hover:text-primary transition-colors shrink-0 p-1">
             <Edit2 size={13} />
           </button>
         )}
       </div>
       {open && (
-        <div className="px-4 pb-3 border-t border-linen bg-cream/40 space-y-2">
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="New email address" className="mt-2 w-full text-sm border border-linen rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-forest/40" />
+        <div className="px-4 pb-3 border-t border-outline-variant bg-surface/40 space-y-2">
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="New email address" className="mt-2 w-full text-sm border border-outline-variant rounded-xl px-3 py-2 bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-primary/40" />
           {hasPasswordProvider && (
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Current password to confirm" className="w-full text-sm border border-linen rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-forest/40" />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Current password to confirm" className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-primary/40" />
           )}
-          {msg && <p className={`text-xs ${msg.startsWith('✓') ? 'text-forest' : 'text-red-500'}`}>{msg}</p>}
+          {msg && <p className={`text-xs ${msg.startsWith('✓') ? 'text-primary' : 'text-red-500'}`}>{msg}</p>}
           <div className="flex gap-2">
-            <button onClick={save} disabled={saving} className="flex items-center gap-1 text-xs bg-forest text-white px-3 py-1.5 rounded-lg hover:bg-deep disabled:opacity-50">
+            <button onClick={save} disabled={saving} className="flex items-center gap-1 text-xs bg-primary text-on-primary px-3 py-1.5 rounded-xl hover:bg-primary-dim disabled:opacity-50">
               <Check size={12} /> {saving ? 'Saving…' : 'Update Email'}
             </button>
-            <button onClick={() => { setOpen(false); setMsg(''); }} className="text-xs text-mist hover:text-ink px-2 py-1.5">Cancel</button>
+            <button onClick={() => { setOpen(false); setMsg(''); }} className="text-xs text-outline hover:text-on-surface px-2 py-1.5">Cancel</button>
           </div>
         </div>
       )}
@@ -239,28 +239,28 @@ function PasswordChangeRow({ hasPasswordProvider }) {
   return (
     <div>
       <div className="flex items-center gap-3 px-4 py-3">
-        <Lock size={16} className="text-mist shrink-0" />
+        <Lock size={16} className="text-outline shrink-0" />
         <div className="flex-1">
-          <div className="text-xs text-mist">Password</div>
-          <div className="text-sm text-ink">••••••••</div>
+          <div className="text-xs text-outline">Password</div>
+          <div className="text-sm text-on-surface">••••••••</div>
         </div>
         {!open && (
-          <button onClick={() => setOpen(true)} className="text-mist hover:text-forest transition-colors shrink-0 p-1">
+          <button onClick={() => setOpen(true)} className="text-outline hover:text-primary transition-colors shrink-0 p-1">
             <Edit2 size={13} />
           </button>
         )}
       </div>
       {open && (
-        <div className="px-4 pb-3 border-t border-linen bg-cream/40 space-y-2">
-          <input type="password" value={current} onChange={(e) => setCurrent(e.target.value)} placeholder="Current password" className="mt-2 w-full text-sm border border-linen rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-forest/40" />
-          <input type="password" value={next} onChange={(e) => setNext(e.target.value)} placeholder="New password (min. 6 characters)" className="w-full text-sm border border-linen rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-forest/40" />
-          <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Confirm new password" className="w-full text-sm border border-linen rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-forest/40" />
-          {msg && <p className={`text-xs ${msg.startsWith('✓') ? 'text-forest' : 'text-red-500'}`}>{msg}</p>}
+        <div className="px-4 pb-3 border-t border-outline-variant bg-surface/40 space-y-2">
+          <input type="password" value={current} onChange={(e) => setCurrent(e.target.value)} placeholder="Current password" className="mt-2 w-full text-sm border border-outline-variant rounded-xl px-3 py-2 bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-primary/40" />
+          <input type="password" value={next} onChange={(e) => setNext(e.target.value)} placeholder="New password (min. 6 characters)" className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-primary/40" />
+          <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Confirm new password" className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-primary/40" />
+          {msg && <p className={`text-xs ${msg.startsWith('✓') ? 'text-primary' : 'text-red-500'}`}>{msg}</p>}
           <div className="flex gap-2">
-            <button onClick={save} disabled={saving} className="flex items-center gap-1 text-xs bg-forest text-white px-3 py-1.5 rounded-lg hover:bg-deep disabled:opacity-50">
+            <button onClick={save} disabled={saving} className="flex items-center gap-1 text-xs bg-primary text-on-primary px-3 py-1.5 rounded-xl hover:bg-primary-dim disabled:opacity-50">
               <Check size={12} /> {saving ? 'Saving…' : 'Update Password'}
             </button>
-            <button onClick={() => { setOpen(false); setMsg(''); }} className="text-xs text-mist hover:text-ink px-2 py-1.5">Cancel</button>
+            <button onClick={() => { setOpen(false); setMsg(''); }} className="text-xs text-outline hover:text-on-surface px-2 py-1.5">Cancel</button>
           </div>
         </div>
       )}
@@ -300,12 +300,12 @@ function DeleteAccountRow() {
     <div>
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-red-50 transition-colors border-b border-linen last:border-0"
+        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-red-50 transition-colors border-b border-outline-variant last:border-0"
       >
         <Trash2 size={16} className="text-red-400 shrink-0" />
         <div className="flex-1">
           <div className="text-sm text-red-500">Delete Account</div>
-          <div className="text-xs text-mist">Permanently remove your account and all data</div>
+          <div className="text-xs text-outline">Permanently remove your account and all data</div>
         </div>
         <ChevronRight size={14} className={`text-red-300 transition-transform shrink-0 ${open ? 'rotate-90' : ''}`} />
       </button>
@@ -313,19 +313,19 @@ function DeleteAccountRow() {
         <div className="px-4 pb-4 pt-3 bg-red-50/60 space-y-2">
           <p className="text-xs text-red-600 font-medium">This cannot be undone. All your project data will be permanently deleted.</p>
           {hasPasswordProvider && (
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password to confirm" className="w-full text-sm border border-red-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-red-300" />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password to confirm" className="w-full text-sm border border-red-200 rounded-xl px-3 py-2 bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-red-300" />
           )}
-          <input type="text" value={confirmText} onChange={(e) => setConfirmText(e.target.value)} placeholder='Type DELETE to confirm' className="w-full text-sm border border-red-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-red-300" />
+          <input type="text" value={confirmText} onChange={(e) => setConfirmText(e.target.value)} placeholder='Type DELETE to confirm' className="w-full text-sm border border-red-200 rounded-xl px-3 py-2 bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-red-300" />
           {error && <p className="text-xs text-red-500">{error}</p>}
           <div className="flex gap-2">
             <button
               onClick={doDelete}
               disabled={saving || confirmText !== 'DELETE'}
-              className="text-xs bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="text-xs bg-red-500 text-white px-3 py-1.5 rounded-xl hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {saving ? 'Deleting…' : 'Delete My Account'}
             </button>
-            <button onClick={() => { setOpen(false); setError(''); setConfirmText(''); setPassword(''); }} className="text-xs text-mist hover:text-ink px-2 py-1.5">Cancel</button>
+            <button onClick={() => { setOpen(false); setError(''); setConfirmText(''); setPassword(''); }} className="text-xs text-outline hover:text-on-surface px-2 py-1.5">Cancel</button>
           </div>
         </div>
       )}
@@ -374,33 +374,33 @@ export default function Profile({ project, updateProject, user }) {
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+        <h1 className="text-2xl font-bold text-on-surface font-heading">
           Profile
         </h1>
-        <p className="text-sage text-sm mt-0.5">Manage your account, preferences, and build details.</p>
+        <p className="text-on-surface-variant text-sm mt-0.5">Manage your account, preferences, and build details.</p>
       </div>
 
       {/* Avatar + name header card */}
-      <div className="bg-white rounded-xl border border-linen p-5 mb-5 flex items-center gap-4">
+      <div className="shadow-md border border-outline-variant/10 bg-surface-container-lowest rounded-3xl p-6 mb-5 flex items-center gap-4">
         <div className="shrink-0">
           {photoURL ? (
             <img
               src={photoURL}
               alt="Profile"
-              className="w-16 h-16 rounded-full object-cover border-2 border-linen"
+              className="w-16 h-16 rounded-full object-cover border-2 border-outline-variant"
               onError={(e) => { e.target.style.display = 'none'; }}
             />
           ) : (
-            <div className="w-16 h-16 rounded-full bg-forest/10 flex items-center justify-center">
-              <User size={28} className="text-forest" />
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <User size={28} className="text-primary" />
             </div>
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-lg font-semibold text-ink truncate">
+          <div className="text-lg font-semibold text-on-surface truncate">
             {displayName || user.email}
           </div>
-          <div className="text-sm text-mist truncate">
+          <div className="text-sm text-outline truncate">
             {profile.bio || profile.location || user.email}
           </div>
         </div>
@@ -459,13 +459,13 @@ export default function Profile({ project, updateProject, user }) {
         />
         <PasswordChangeRow hasPasswordProvider={hasPasswordProvider} />
         <div className="px-4 py-3">
-          <div className="text-xs text-mist mb-2">Linked Accounts</div>
+          <div className="text-xs text-outline mb-2">Linked Accounts</div>
           <div className="flex flex-wrap gap-2">
             {hasPasswordProvider && (
-              <span className="text-xs bg-linen text-ink px-2.5 py-1 rounded-full">✉️ Email / Password</span>
+              <span className="text-xs bg-outline-variant text-on-surface px-2.5 py-1 rounded-full">✉️ Email / Password</span>
             )}
             {hasGoogleProvider && (
-              <span className="text-xs bg-linen text-ink px-2.5 py-1 rounded-full">🔵 Google</span>
+              <span className="text-xs bg-outline-variant text-on-surface px-2.5 py-1 rounded-full">🔵 Google</span>
             )}
           </div>
         </div>
@@ -519,8 +519,8 @@ export default function Profile({ project, updateProject, user }) {
         <div className="px-4 py-4 grid grid-cols-3 gap-4">
           {stats.map(({ icon: Icon, label, value }) => (
             <div key={label} className="text-center">
-              <div className="text-xl font-bold text-forest">{value}</div>
-              <div className="text-xs text-mist mt-0.5 leading-tight">{label}</div>
+              <div className="text-xl font-bold text-primary">{value}</div>
+              <div className="text-xs text-outline mt-0.5 leading-tight">{label}</div>
             </div>
           ))}
         </div>
@@ -529,14 +529,14 @@ export default function Profile({ project, updateProject, user }) {
       {/* Subscription */}
       <SectionCard title="Subscription">
         <div className="px-4 py-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-forest/10 flex items-center justify-center shrink-0">
-            <CreditCard size={18} className="text-forest" />
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <CreditCard size={18} className="text-primary" />
           </div>
           <div className="flex-1">
-            <div className="text-sm font-medium text-ink">Beta Access</div>
-            <div className="text-xs text-mist">Free during beta — all features unlocked</div>
+            <div className="text-sm font-medium text-on-surface">Beta Access</div>
+            <div className="text-xs text-outline">Free during beta — all features unlocked</div>
           </div>
-          <span className="text-xs bg-forest text-white px-2.5 py-1 rounded-full shrink-0">Active</span>
+          <span className="text-xs bg-primary text-on-primary px-2.5 py-1 rounded-full shrink-0">Active</span>
         </div>
         <ActionRow
           icon={CreditCard}

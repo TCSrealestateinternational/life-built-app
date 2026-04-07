@@ -24,7 +24,7 @@ function ChangeOrderRow({ co, milestones, onUpdate, onRemove }) {
   const styles = STATUS_STYLES[co.status] ?? STATUS_STYLES.pending;
 
   return (
-    <div className="bg-white border border-linen rounded-xl overflow-hidden">
+    <div className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl overflow-hidden">
       {/* Collapsed row */}
       <div className="flex items-center gap-3 px-4 py-3">
         <span className={`w-2 h-2 rounded-full shrink-0 ${styles.dot}`} />
@@ -34,9 +34,9 @@ function ChangeOrderRow({ co, milestones, onUpdate, onRemove }) {
             value={co.title}
             onChange={(e) => onUpdate({ title: e.target.value })}
             placeholder="Change order title…"
-            className="w-full text-sm font-medium bg-transparent border-b border-transparent hover:border-linen focus:border-forest focus:outline-none py-0.5 text-ink"
+            className="w-full text-sm font-medium bg-transparent border-b border-transparent hover:border-outline-variant focus:border-primary focus:outline-none py-0.5 text-on-surface"
           />
-          <div className="flex items-center gap-2 mt-1 flex-wrap text-xs text-mist">
+          <div className="flex items-center gap-2 mt-1 flex-wrap text-xs text-outline">
             <span className={`px-2 py-0.5 rounded-full border text-xs font-medium ${styles.badge}`}>
               {co.status.charAt(0).toUpperCase() + co.status.slice(1)}
             </span>
@@ -47,7 +47,7 @@ function ChangeOrderRow({ co, milestones, onUpdate, onRemove }) {
         <div className="shrink-0 text-sm font-semibold text-right min-w-[60px]">
           {co.amount !== '' && co.amount !== undefined
             ? <span className={parseFloat(co.amount) < 0 ? 'text-green-700' : 'text-red-600'}>{fmt(co.amount)}</span>
-            : <span className="text-mist font-normal">—</span>}
+            : <span className="text-outline font-normal">—</span>}
         </div>
         <div className="flex items-center gap-1 shrink-0 ml-1">
           {co.status !== 'approved' && (
@@ -79,7 +79,7 @@ function ChangeOrderRow({ co, milestones, onUpdate, onRemove }) {
           )}
           <button
             onClick={() => setExpanded(!expanded)}
-            className="text-mist hover:text-ink transition-colors p-1"
+            className="text-outline hover:text-on-surface transition-colors p-1"
             title="Edit details"
           >
             {expanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
@@ -96,36 +96,36 @@ function ChangeOrderRow({ co, milestones, onUpdate, onRemove }) {
 
       {/* Expanded detail */}
       {expanded && (
-        <div className="px-4 pb-4 border-t border-linen pt-3 space-y-3">
+        <div className="px-4 pb-4 border-t border-outline-variant pt-3 space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-mist mb-1 block">Date Requested</label>
+              <label className="text-xs font-medium text-outline mb-1 block">Date Requested</label>
               <input
                 type="date"
                 value={co.date}
                 onChange={(e) => onUpdate({ date: e.target.value })}
-                className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-mist mb-1 block">Cost Impact ($)</label>
+              <label className="text-xs font-medium text-outline mb-1 block">Cost Impact ($)</label>
               <input
                 type="number"
                 value={co.amount}
                 onChange={(e) => onUpdate({ amount: e.target.value })}
                 placeholder="0 (negative = credit)"
-                className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-mist mb-1 block">Phase / Milestone</label>
+              <label className="text-xs font-medium text-outline mb-1 block">Phase / Milestone</label>
               {milestones.length > 0 ? (
                 <select
                   value={co.phase}
                   onChange={(e) => onUpdate({ phase: e.target.value })}
-                  className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                  className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
                 >
                   <option value="">— select phase —</option>
                   {milestones.map((m) => (
@@ -138,43 +138,43 @@ function ChangeOrderRow({ co, milestones, onUpdate, onRemove }) {
                   value={co.phase}
                   onChange={(e) => onUpdate({ phase: e.target.value })}
                   placeholder="e.g. Framing, Electrical…"
-                  className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                  className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
                 />
               )}
             </div>
             <div>
-              <label className="text-xs font-medium text-mist mb-1 block">Requested By</label>
+              <label className="text-xs font-medium text-outline mb-1 block">Requested By</label>
               <input
                 type="text"
                 value={co.requestedBy}
                 onChange={(e) => onUpdate({ requestedBy: e.target.value })}
                 placeholder="e.g. Client, Builder name…"
-                className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
               />
             </div>
           </div>
           <div>
-            <label className="text-xs font-medium text-mist mb-1 block">Description</label>
+            <label className="text-xs font-medium text-outline mb-1 block">Description</label>
             <textarea
               value={co.description}
               onChange={(e) => onUpdate({ description: e.target.value })}
               placeholder="What changed and why…"
               rows={2}
-              className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40 resize-none"
+              className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40 resize-none"
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-mist mb-1 block">Notes</label>
+            <label className="text-xs font-medium text-outline mb-1 block">Notes</label>
             <input
               type="text"
               value={co.notes}
               onChange={(e) => onUpdate({ notes: e.target.value })}
               placeholder="Additional context, references…"
-              className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+              className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-mist mb-1 block">Status</label>
+            <label className="text-xs font-medium text-outline mb-1 block">Status</label>
             <div className="flex gap-2">
               {['pending', 'approved', 'rejected'].map((s) => (
                 <button
@@ -183,7 +183,7 @@ function ChangeOrderRow({ co, milestones, onUpdate, onRemove }) {
                   className={`text-xs px-3 py-1 rounded-full border transition-colors ${
                     co.status === s
                       ? STATUS_STYLES[s].badge + ' font-semibold'
-                      : 'border-linen text-mist hover:border-forest hover:text-forest'
+                      : 'border-outline-variant text-outline hover:border-primary hover:text-primary'
                   }`}
                 >
                   {s.charAt(0).toUpperCase() + s.slice(1)}
@@ -245,16 +245,16 @@ export default function ChangeOrders({ project, updateProject }) {
       {/* Header */}
       <div className="flex items-start justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+          <h1 className="text-2xl font-bold text-on-surface font-heading">
             Change Orders
           </h1>
-          <p className="text-sage text-sm mt-0.5">
+          <p className="text-on-surface-variant text-sm mt-0.5">
             Track every unplanned cost change — who requested it, what it costs, and whether it's approved.
           </p>
         </div>
         <button
           onClick={addChangeOrder}
-          className="flex items-center gap-1.5 bg-forest text-white text-sm px-4 py-2 rounded-lg hover:bg-deep transition-colors shrink-0"
+          className="flex items-center gap-1.5 bg-primary text-on-primary text-sm px-4 py-2 rounded-xl hover:bg-primary-dim transition-colors shrink-0"
         >
           <Plus size={15} /> Add Change Order
         </button>
@@ -263,28 +263,28 @@ export default function ChangeOrders({ project, updateProject }) {
       {/* Summary bar */}
       {changeOrders.length > 0 && (
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-white border border-green-200 rounded-xl p-4 text-center">
-            <div className="text-xs text-mist mb-1">Approved Impact</div>
-            <div className={`text-xl font-bold ${approvedTotal < 0 ? 'text-green-700' : approvedTotal > 0 ? 'text-red-600' : 'text-ink'}`}>
+          <div className="bg-surface-container-lowest shadow-md border border-green-200/10 rounded-3xl p-6 text-center">
+            <div className="text-xs text-outline mb-1">Approved Impact</div>
+            <div className={`text-xl font-bold ${approvedTotal < 0 ? 'text-green-700' : approvedTotal > 0 ? 'text-red-600' : 'text-on-surface'}`}>
               {approvedTotal !== 0 ? fmtTotal(approvedTotal) : '—'}
             </div>
-            <div className="text-xs text-mist mt-0.5">
+            <div className="text-xs text-outline mt-0.5">
               {changeOrders.filter((co) => co.status === 'approved').length} approved
             </div>
           </div>
-          <div className="bg-white border border-amber-200 rounded-xl p-4 text-center">
-            <div className="text-xs text-mist mb-1">Pending Impact</div>
-            <div className={`text-xl font-bold ${pendingTotal < 0 ? 'text-green-700' : pendingTotal > 0 ? 'text-amber-600' : 'text-ink'}`}>
+          <div className="bg-surface-container-lowest shadow-md border border-amber-200/10 rounded-3xl p-6 text-center">
+            <div className="text-xs text-outline mb-1">Pending Impact</div>
+            <div className={`text-xl font-bold ${pendingTotal < 0 ? 'text-green-700' : pendingTotal > 0 ? 'text-amber-600' : 'text-on-surface'}`}>
               {pendingTotal !== 0 ? fmtTotal(pendingTotal) : '—'}
             </div>
-            <div className="text-xs text-mist mt-0.5">
+            <div className="text-xs text-outline mt-0.5">
               {changeOrders.filter((co) => co.status === 'pending').length} pending
             </div>
           </div>
-          <div className="bg-white border border-linen rounded-xl p-4 text-center">
-            <div className="text-xs text-mist mb-1">Total Orders</div>
-            <div className="text-xl font-bold text-ink">{changeOrders.length}</div>
-            <div className="text-xs text-mist mt-0.5">
+          <div className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl p-6 text-center">
+            <div className="text-xs text-outline mb-1">Total Orders</div>
+            <div className="text-xl font-bold text-on-surface">{changeOrders.length}</div>
+            <div className="text-xs text-outline mt-0.5">
               {changeOrders.filter((co) => co.status === 'rejected').length} rejected
             </div>
           </div>
@@ -300,8 +300,8 @@ export default function ChangeOrders({ project, updateProject }) {
               onClick={() => setFilter(tab)}
               className={`text-xs px-3 py-1 rounded-full border transition-colors ${
                 filter === tab
-                  ? 'bg-forest text-white border-forest'
-                  : 'border-linen text-sage hover:border-forest hover:text-forest'
+                  ? 'bg-primary text-on-primary border-primary'
+                  : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
               }`}
             >
               {tab}
@@ -317,13 +317,13 @@ export default function ChangeOrders({ project, updateProject }) {
 
       {/* List */}
       {changeOrders.length === 0 ? (
-        <div className="text-center py-16 text-mist">
+        <div className="text-center py-16 text-outline">
           <div className="text-4xl mb-3">📋</div>
           <p className="font-medium">No change orders yet</p>
           <p className="text-sm mt-1">Add one whenever a cost change comes up — before or after approval.</p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-12 text-mist text-sm">
+        <div className="text-center py-12 text-outline text-sm">
           No {filter.toLowerCase()} change orders.
         </div>
       ) : (

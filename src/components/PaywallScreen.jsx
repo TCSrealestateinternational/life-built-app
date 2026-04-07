@@ -39,44 +39,38 @@ export default function PaywallScreen({ user, teamProfile }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cream px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-surface px-4 py-12">
       <div className="w-full max-w-lg">
         {/* Logo area */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-forest text-white mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary text-on-primary mb-4">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
               <polyline points="9 22 9 12 15 12 15 22"/>
             </svg>
           </div>
-          <h1
-            className="text-3xl font-bold text-ink"
-            style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}
-          >
+          <h1 className="text-3xl font-bold text-on-surface font-heading">
             Waymark Build Planning App
           </h1>
-          <p className="text-sage text-sm mt-1">Your land-to-home journey, organized.</p>
+          <p className="text-on-surface-variant text-sm mt-1">Your land-to-home journey, organized.</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-linen p-8">
+        <div className="bg-surface-container-lowest rounded-3xl shadow-sm border border-outline-variant p-8">
           <div className="text-center mb-6">
-            <span className="inline-block bg-forest/10 text-forest text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full mb-3">
+            <span className="inline-block bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full mb-3">
               Full Access
             </span>
-            <h2
-              className="text-2xl font-bold text-ink mb-1"
-              style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}
-            >
-              $29<span className="text-base font-normal text-mist">/month</span>
+            <h2 className="text-2xl font-bold text-on-surface mb-1 font-heading">
+              $29<span className="text-base font-normal text-outline">/month</span>
             </h2>
-            <p className="text-sm text-mist">Cancel anytime. No long-term commitment.</p>
+            <p className="text-sm text-outline">Cancel anytime. No long-term commitment.</p>
           </div>
 
           <ul className="space-y-2 mb-8">
             {FEATURES.map((feature) => (
-              <li key={feature} className="flex items-start gap-2.5 text-sm text-ink">
+              <li key={feature} className="flex items-start gap-2.5 text-sm text-on-surface">
                 <svg
-                  className="shrink-0 mt-0.5 text-forest"
+                  className="shrink-0 mt-0.5 text-primary"
                   width="16"
                   height="16"
                   viewBox="0 0 24 24"
@@ -92,13 +86,13 @@ export default function PaywallScreen({ user, teamProfile }) {
           </ul>
 
           {teamProfile && (
-            <div className="mb-4 p-3 rounded-lg bg-forest/5 border border-forest/20 text-sm text-ink">
+            <div className="mb-4 p-3 rounded-xl bg-primary/5 border border-primary/20 text-sm text-on-surface">
               Your team projects will still be available after subscribing.
             </div>
           )}
 
           {error && (
-            <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+            <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
               {error}
             </div>
           )}
@@ -106,28 +100,28 @@ export default function PaywallScreen({ user, teamProfile }) {
           <button
             onClick={handleSubscribe}
             disabled={loading}
-            className="w-full bg-forest text-white rounded-lg py-3 text-sm font-semibold hover:bg-deep transition-colors disabled:opacity-50"
+            className="w-full bg-primary text-on-primary rounded-xl py-3 text-sm font-semibold hover:bg-primary-dim transition-colors disabled:opacity-50"
           >
             {loading ? 'Redirecting to checkout…' : 'Subscribe — $29/month'}
           </button>
 
-          <p className="text-center text-xs text-mist mt-3">
+          <p className="text-center text-xs text-outline mt-3">
             Secure checkout powered by Stripe
           </p>
         </div>
 
-        <p className="text-center text-xs text-mist mt-4">
+        <p className="text-center text-xs text-outline mt-4">
           Signed in as {user.email}.{' '}
           <button
             onClick={handleSignOut}
-            className="text-forest hover:underline"
+            className="text-primary hover:underline"
           >
             Sign out
           </button>
         </p>
         {teamProfile && (
-          <p className="text-center text-xs text-mist mt-2">
-            <a href="/portal" className="text-forest font-medium hover:underline">
+          <p className="text-center text-xs text-outline mt-2">
+            <a href="/portal" className="text-primary font-medium hover:underline">
               ← Back to your team projects
             </a>
           </p>

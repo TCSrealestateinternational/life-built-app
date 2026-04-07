@@ -30,22 +30,22 @@ function PortalInstallBanner() {
   }
 
   return (
-    <div className="mt-6 bg-white border border-linen rounded-2xl overflow-hidden shadow-sm">
+    <div className="mt-6 bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl overflow-hidden">
       <div className="flex items-start gap-3 p-4">
-        <div className="shrink-0 w-10 h-10 bg-forest rounded-xl flex items-center justify-center">
-          <Smartphone size={18} className="text-white" />
+        <div className="shrink-0 w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+          <Smartphone size={18} className="text-on-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-ink">Install Waymark Build — your team projects, one tap away</p>
+          <p className="text-sm font-semibold text-on-surface">Install Waymark Build — your team projects, one tap away</p>
           {installPrompt.isIOS ? (
-            <p className="text-xs text-mist mt-0.5 leading-snug">
+            <p className="text-xs text-outline mt-0.5 leading-snug">
               Tap <Share2 size={11} className="inline mx-0.5 text-blue-500" /> <strong>Share</strong> → <strong>"Add to Home Screen"</strong> for one-tap access
             </p>
           ) : (
-            <p className="text-xs text-mist mt-0.5">Install for quick access — works offline too</p>
+            <p className="text-xs text-outline mt-0.5">Install for quick access — works offline too</p>
           )}
         </div>
-        <button onClick={dismiss} className="shrink-0 p-1 text-mist hover:text-ink transition-colors">
+        <button onClick={dismiss} className="shrink-0 p-1 text-outline hover:text-on-surface transition-colors">
           <X size={15} />
         </button>
       </div>
@@ -53,11 +53,11 @@ function PortalInstallBanner() {
         <div className="px-4 pb-4 flex gap-2">
           <button
             onClick={handleInstall}
-            className="flex items-center gap-1.5 bg-forest text-white text-sm px-4 py-2 rounded-xl hover:bg-deep transition-colors font-medium"
+            className="flex items-center gap-1.5 bg-primary text-on-primary text-sm px-4 py-2 rounded-xl hover:bg-primary-dim transition-colors font-medium"
           >
             <Download size={14} /> Install App
           </button>
-          <button onClick={dismiss} className="text-sm text-mist hover:text-ink px-3 transition-colors">
+          <button onClick={dismiss} className="text-sm text-outline hover:text-on-surface px-3 transition-colors">
             Not now
           </button>
         </div>
@@ -102,15 +102,14 @@ function appendActivity(feed, entry) {
 
 function StatusScreen({ title, body, cta }) {
   return (
-    <div className="min-h-screen bg-cream flex items-center justify-center px-4">
+    <div className="min-h-screen bg-surface flex items-center justify-center px-4">
       <div className="text-center max-w-sm">
         <div className="text-5xl mb-4">{cta ? '🔗' : '🔒'}</div>
-        <h1 className="text-xl font-bold text-ink mb-2"
-          style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>{title}</h1>
-        <p className="text-sm text-mist mb-6">{body}</p>
+        <h1 className="text-xl font-bold text-on-surface font-heading mb-2">{title}</h1>
+        <p className="text-sm text-outline mb-6">{body}</p>
         <a
           href="/"
-          className="inline-block text-sm text-forest border border-forest/30 px-5 py-2.5 rounded-lg hover:bg-forest hover:text-white transition-colors"
+          className="inline-block text-sm text-primary border border-primary/30 px-5 py-2.5 rounded-xl hover:bg-primary hover:text-on-primary transition-colors"
         >
           Create Your Own Planning Account →
         </a>
@@ -175,23 +174,23 @@ function TimelineSection({ project, canEdit, member, onSave }) {
     setShowAddForm(false);
   }
 
-  if (total === 0 && !canEdit) return <p className="text-sm text-mist">No milestones added yet.</p>;
+  if (total === 0 && !canEdit) return <p className="text-sm text-outline">No milestones added yet.</p>;
 
   return (
     <div>
       {/* Progress */}
       {total > 0 && (
-        <div className="bg-white rounded-xl border border-linen p-4 mb-4">
+        <div className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl p-4 mb-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-ink">{done}/{total} milestones complete</span>
-            <span className="text-xs text-mist">{Math.round((done / total) * 100)}%</span>
+            <span className="text-sm font-medium text-on-surface">{done}/{total} milestones complete</span>
+            <span className="text-xs text-outline">{Math.round((done / total) * 100)}%</span>
           </div>
-          <div className="h-2 bg-linen rounded-full overflow-hidden">
-            <div className="h-full bg-forest rounded-full" style={{ width: `${(done / total) * 100}%` }} />
+          <div className="h-2 bg-outline-variant rounded-full overflow-hidden">
+            <div className="h-full bg-primary rounded-full" style={{ width: `${(done / total) * 100}%` }} />
           </div>
         </div>
       )}
-      {total === 0 && <p className="text-sm text-mist mb-4">No milestones added yet.</p>}
+      {total === 0 && <p className="text-sm text-outline mb-4">No milestones added yet.</p>}
       {/* Milestone list */}
       <div className="space-y-2">
         {milestones.map((m, i) => {
@@ -200,7 +199,7 @@ function TimelineSection({ project, canEdit, member, onSave }) {
           return (
             <div
               key={m.id ?? i}
-              className={`bg-white rounded-xl border p-4 ${m.done ? 'border-forest/20 bg-forest/5' : 'border-linen'}`}
+              className={`bg-surface-container-lowest rounded-3xl border p-4 ${m.done ? 'border-primary/20 bg-primary/5' : 'shadow-md border-outline-variant/10'}`}
             >
               <div className="flex items-start gap-3">
                 {canEdit ? (
@@ -208,46 +207,46 @@ function TimelineSection({ project, canEdit, member, onSave }) {
                     type="checkbox"
                     checked={!!m.done}
                     onChange={(e) => updateMilestone(m.id, { done: e.target.checked, progress: e.target.checked ? 100 : pct })}
-                    className="accent-forest shrink-0 mt-0.5"
+                    className="accent-primary shrink-0 mt-0.5"
                   />
                 ) : (
-                  <span className="text-xs text-mist w-5 text-right mt-0.5 shrink-0">{i + 1}</span>
+                  <span className="text-xs text-outline w-5 text-right mt-0.5 shrink-0">{i + 1}</span>
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`text-sm ${m.done ? 'line-through text-mist' : 'text-ink font-medium'}`}>
+                    <span className={`text-sm ${m.done ? 'line-through text-outline' : 'text-on-surface font-medium'}`}>
                       {m.title}
                     </span>
-                    {m.done && <span className="text-xs text-forest font-medium">✓</span>}
+                    {m.done && <span className="text-xs text-primary font-medium">✓</span>}
                   </div>
                   {(start || m.end) && (
-                    <p className="text-xs text-mist mt-0.5">
+                    <p className="text-xs text-outline mt-0.5">
                       {fmtDate(start)}{m.end && m.end !== start ? ` → ${fmtDate(m.end)}` : ''}
                     </p>
                   )}
-                  {m.notes && <p className="text-xs text-sage mt-1 italic">{m.notes}</p>}
+                  {m.notes && <p className="text-xs text-on-surface-variant mt-1 italic">{m.notes}</p>}
                   {pct > 0 && !m.done && (
                     <div className="mt-2 flex items-center gap-2">
-                      <div className="flex-1 h-1 bg-linen rounded-full overflow-hidden">
-                        <div className="h-full bg-forest rounded-full" style={{ width: `${pct}%` }} />
+                      <div className="flex-1 h-1 bg-outline-variant rounded-full overflow-hidden">
+                        <div className="h-full bg-primary rounded-full" style={{ width: `${pct}%` }} />
                       </div>
-                      <span className="text-xs text-mist">{pct}%</span>
+                      <span className="text-xs text-outline">{pct}%</span>
                     </div>
                   )}
                   {canEdit && (
                     <div className="mt-2 space-y-2">
                       <div className="flex items-center gap-2">
-                        <label className="text-xs text-mist w-14 shrink-0">Progress</label>
+                        <label className="text-xs text-outline w-14 shrink-0">Progress</label>
                         <input
                           type="range" min={0} max={100} step={5} value={pct}
                           onChange={(e) => updateMilestone(m.id, { progress: Number(e.target.value) })}
-                          className="flex-1 accent-forest"
+                          className="flex-1 accent-primary"
                         />
-                        <span className="text-xs text-mist w-8 text-right">{pct}%</span>
+                        <span className="text-xs text-outline w-8 text-right">{pct}%</span>
                       </div>
                       <button
                         onClick={() => setExpandedNotes(expandedNotes === m.id ? null : m.id)}
-                        className="text-xs text-forest hover:underline flex items-center gap-1"
+                        className="text-xs text-primary hover:underline flex items-center gap-1"
                       >
                         ✏️ {expandedNotes === m.id ? 'Hide notes' : 'Edit notes'}
                       </button>
@@ -258,16 +257,16 @@ function TimelineSection({ project, canEdit, member, onSave }) {
                           onBlur={(e) => updateMilestone(m.id, { notes: e.target.value })}
                           placeholder="Add notes…"
                           rows={2}
-                          className="w-full text-sm border border-linen rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-forest/40 resize-none"
+                          className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-primary/40 resize-none"
                         />
                       )}
                     </div>
                   )}
                   {m.editedBy && (
-                    <p className="text-xs text-sage mt-1">Edited by {m.editedBy.name} · {fmtDate(m.editedBy.at)}</p>
+                    <p className="text-xs text-on-surface-variant mt-1">Edited by {m.editedBy.name} · {fmtDate(m.editedBy.at)}</p>
                   )}
                   {m.createdBy && (
-                    <p className="text-xs text-sage mt-0.5">Added by {m.createdBy.name} · {fmtDate(m.createdBy.at)}</p>
+                    <p className="text-xs text-on-surface-variant mt-0.5">Added by {m.createdBy.name} · {fmtDate(m.createdBy.at)}</p>
                   )}
                 </div>
               </div>
@@ -281,43 +280,43 @@ function TimelineSection({ project, canEdit, member, onSave }) {
           {!showAddForm ? (
             <button
               onClick={() => setShowAddForm(true)}
-              className="flex items-center gap-1.5 text-xs text-forest hover:underline"
+              className="flex items-center gap-1.5 text-xs text-primary hover:underline"
             >
               + Add Milestone
             </button>
           ) : (
-            <div className="bg-white rounded-xl border border-linen p-4 space-y-3">
-              <p className="text-xs font-semibold text-ink">New Milestone</p>
+            <div className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl p-4 space-y-3">
+              <p className="text-xs font-semibold text-on-surface">New Milestone</p>
               <input
                 type="text"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder="Title (required)…"
-                className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
+                className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/40"
               />
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-xs text-mist mb-1 block">Start</label>
+                  <label className="text-xs text-outline mb-1 block">Start</label>
                   <input type="date" value={newStart} onChange={(e) => setNewStart(e.target.value)}
-                    className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 focus:outline-none focus:border-forest" />
+                    className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 focus:outline-none focus:border-primary" />
                 </div>
                 <div>
-                  <label className="text-xs text-mist mb-1 block">End</label>
+                  <label className="text-xs text-outline mb-1 block">End</label>
                   <input type="date" value={newEnd} onChange={(e) => setNewEnd(e.target.value)}
-                    className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 focus:outline-none focus:border-forest" />
+                    className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 focus:outline-none focus:border-primary" />
                 </div>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={addMilestone}
                   disabled={!newTitle.trim()}
-                  className="text-sm bg-forest text-white px-4 py-1.5 rounded-lg hover:bg-deep transition-colors disabled:opacity-40"
+                  className="text-sm bg-primary text-on-primary px-4 py-1.5 rounded-xl hover:bg-primary-dim transition-colors disabled:opacity-40"
                 >
                   Add
                 </button>
                 <button
                   onClick={() => { setShowAddForm(false); setNewTitle(''); setNewStart(''); setNewEnd(''); }}
-                  className="text-sm text-mist hover:text-ink px-3"
+                  className="text-sm text-outline hover:text-on-surface px-3"
                 >
                   Cancel
                 </button>
@@ -334,7 +333,7 @@ function TimelineSection({ project, canEdit, member, onSave }) {
 
 function BudgetSection({ project }) {
   const items = project?.budget?.items ?? [];
-  if (items.length === 0) return <p className="text-sm text-mist">No budget items yet.</p>;
+  if (items.length === 0) return <p className="text-sm text-outline">No budget items yet.</p>;
 
   const totalPlanned = items.reduce((s, i) => s + (parseFloat(i.planned) || 0), 0);
   const totalActual = items.reduce((s, i) => s + (parseFloat(i.actual) || 0), 0);
@@ -351,40 +350,40 @@ function BudgetSection({ project }) {
     <div>
       {/* Totals */}
       <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="bg-white rounded-xl border border-linen p-4 text-center">
-          <div className="text-lg font-bold text-ink">{dollars(totalPlanned)}</div>
-          <div className="text-xs text-mist">Total Planned</div>
+        <div className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl p-4 text-center">
+          <div className="text-lg font-bold text-on-surface">{dollars(totalPlanned)}</div>
+          <div className="text-xs text-outline">Total Planned</div>
         </div>
-        <div className="bg-white rounded-xl border border-linen p-4 text-center">
-          <div className="text-lg font-bold text-forest">{dollars(totalActual)}</div>
-          <div className="text-xs text-mist">Total Actual</div>
+        <div className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl p-4 text-center">
+          <div className="text-lg font-bold text-primary">{dollars(totalActual)}</div>
+          <div className="text-xs text-outline">Total Actual</div>
         </div>
       </div>
       {/* Table */}
-      <div className="bg-white rounded-xl border border-linen overflow-hidden">
+      <div className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-cream border-b border-linen">
+          <thead className="bg-surface border-b border-outline-variant">
             <tr>
-              <th className="text-left px-4 py-2 text-xs font-semibold text-mist">Category</th>
-              <th className="text-left px-4 py-2 text-xs font-semibold text-mist hidden sm:table-cell">Description</th>
-              <th className="text-right px-4 py-2 text-xs font-semibold text-mist">Planned</th>
-              <th className="text-right px-4 py-2 text-xs font-semibold text-mist">Actual</th>
+              <th className="text-left px-4 py-2 text-xs font-semibold text-outline">Category</th>
+              <th className="text-left px-4 py-2 text-xs font-semibold text-outline hidden sm:table-cell">Description</th>
+              <th className="text-right px-4 py-2 text-xs font-semibold text-outline">Planned</th>
+              <th className="text-right px-4 py-2 text-xs font-semibold text-outline">Actual</th>
             </tr>
           </thead>
           <tbody>
             {items.map((item) => (
-              <tr key={item.id} className="border-b border-linen last:border-0">
-                <td className="px-4 py-2 text-xs text-mist">{item.category}</td>
+              <tr key={item.id} className="border-b border-outline-variant last:border-0">
+                <td className="px-4 py-2 text-xs text-outline">{item.category}</td>
                 <td className="px-4 py-2 hidden sm:table-cell">{item.description}</td>
                 <td className="px-4 py-2 text-right">{dollars(item.planned)}</td>
                 <td className="px-4 py-2 text-right">{dollars(item.actual)}</td>
               </tr>
             ))}
           </tbody>
-          <tfoot className="bg-cream border-t border-linen">
+          <tfoot className="bg-surface border-t border-outline-variant">
             <tr>
-              <td colSpan={2} className="px-4 py-2 text-xs font-semibold text-mist hidden sm:table-cell">Total</td>
-              <td className="px-4 py-2 text-xs font-semibold text-mist sm:hidden">Total</td>
+              <td colSpan={2} className="px-4 py-2 text-xs font-semibold text-outline hidden sm:table-cell">Total</td>
+              <td className="px-4 py-2 text-xs font-semibold text-outline sm:hidden">Total</td>
               <td className="px-4 py-2 text-right font-semibold">{dollars(totalPlanned)}</td>
               <td className="px-4 py-2 text-right font-semibold">{dollars(totalActual)}</td>
             </tr>
@@ -439,7 +438,7 @@ function DocumentsSection({ project, canEdit, member, onSave, uid }) {
   // Group non-media docs by category for display
   const displayDocs = docs.filter((d) => !d.type || (!d.type.startsWith('image/') && !d.type.startsWith('video/')));
 
-  if (displayDocs.length === 0 && !canEdit) return <p className="text-sm text-mist">No documents shared yet.</p>;
+  if (displayDocs.length === 0 && !canEdit) return <p className="text-sm text-outline">No documents shared yet.</p>;
 
   const byCategory = {};
   displayDocs.forEach((d) => {
@@ -450,7 +449,7 @@ function DocumentsSection({ project, canEdit, member, onSave, uid }) {
 
   return (
     <div
-      className={isDragging ? 'ring-2 ring-forest ring-inset rounded-2xl' : ''}
+      className={isDragging ? 'ring-2 ring-primary ring-inset rounded-3xl' : ''}
       onDrop={canEdit ? onDrop : undefined}
       onDragOver={canEdit ? (e) => { e.preventDefault(); setIsDragging(true); } : undefined}
       onDragLeave={canEdit ? () => setIsDragging(false) : undefined}
@@ -468,20 +467,20 @@ function DocumentsSection({ project, canEdit, member, onSave, uid }) {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={progress !== null}
-              className="flex items-center gap-1.5 text-xs text-forest border border-forest/30 px-3 py-1.5 rounded-lg hover:bg-forest/5 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 text-xs text-primary border border-primary/30 px-3 py-1.5 rounded-xl hover:bg-primary/5 transition-colors disabled:opacity-50"
             >
               <Upload size={13} /> Upload File
             </button>
             {progress !== null && (
               <div className="flex-1 max-w-40">
-                <div className="h-1.5 bg-linen rounded-full overflow-hidden">
-                  <div className="h-full bg-forest rounded-full transition-all" style={{ width: `${progress}%` }} />
+                <div className="h-1.5 bg-outline-variant rounded-full overflow-hidden">
+                  <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${progress}%` }} />
                 </div>
               </div>
             )}
           </div>
           {uploadError && (
-            <div className="mb-3 text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+            <div className="mb-3 text-xs text-red-500 bg-red-50 border border-red-100 rounded-xl px-3 py-2">
               {uploadError}
             </div>
           )}
@@ -489,26 +488,26 @@ function DocumentsSection({ project, canEdit, member, onSave, uid }) {
       )}
 
       {displayDocs.length === 0 ? (
-        <p className="text-sm text-mist">No documents shared yet.</p>
+        <p className="text-sm text-outline">No documents shared yet.</p>
       ) : (
         <div className="space-y-4">
           {Object.entries(byCategory).map(([cat, items]) => (
             <div key={cat}>
-              <p className="text-xs font-semibold text-mist uppercase tracking-wider mb-2">{cat}</p>
+              <p className="text-xs font-semibold text-outline uppercase tracking-wider mb-2">{cat}</p>
               <div className="space-y-2">
                 {items.map((d) => (
-                  <div key={d.id} className="bg-white rounded-xl border border-linen p-4 flex items-center gap-3">
-                    <FolderOpen size={16} className="text-forest shrink-0" />
+                  <div key={d.id} className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl p-4 flex items-center gap-3">
+                    <FolderOpen size={16} className="text-primary shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-ink truncate">{d.name}</p>
-                      {d.notes && <p className="text-xs text-mist truncate">{d.notes}</p>}
+                      <p className="text-sm font-medium text-on-surface truncate">{d.name}</p>
+                      {d.notes && <p className="text-xs text-outline truncate">{d.notes}</p>}
                     </div>
                     {d.url && (
                       <a
                         href={d.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-xs text-forest hover:underline shrink-0 border border-forest/30 px-2.5 py-1 rounded-lg hover:bg-forest/5 transition-colors"
+                        className="text-xs text-primary hover:underline shrink-0 border border-primary/30 px-2.5 py-1 rounded-xl hover:bg-primary/5 transition-colors"
                       >
                         Open
                       </a>
@@ -648,20 +647,20 @@ function PhotosSection({ project, canEdit, member, onSave, uid }) {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={progress !== null}
-            className="flex items-center gap-1.5 text-xs text-forest border border-forest/30 px-3 py-1.5 rounded-lg hover:bg-forest/5 transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 text-xs text-primary border border-primary/30 px-3 py-1.5 rounded-xl hover:bg-primary/5 transition-colors disabled:opacity-50"
           >
             <Upload size={13} /> Upload Photo
           </button>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="flex items-center gap-1.5 text-xs text-forest hover:underline"
+            className="flex items-center gap-1.5 text-xs text-primary hover:underline"
           >
             + Add Link
           </button>
           {progress !== null && (
             <div className="flex-1 max-w-40">
-              <div className="h-1.5 bg-linen rounded-full overflow-hidden">
-                <div className="h-full bg-forest rounded-full transition-all" style={{ width: `${progress}%` }} />
+              <div className="h-1.5 bg-outline-variant rounded-full overflow-hidden">
+                <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${progress}%` }} />
               </div>
             </div>
           )}
@@ -672,39 +671,39 @@ function PhotosSection({ project, canEdit, member, onSave, uid }) {
       )}
 
       {canEdit && showForm && (
-        <div className="bg-white rounded-xl border border-linen p-4 space-y-3 mb-4">
-          <p className="text-xs font-semibold text-ink">Add Progress Photo by URL</p>
+        <div className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl p-4 space-y-3 mb-4">
+          <p className="text-xs font-semibold text-on-surface">Add Progress Photo by URL</p>
           <div>
-            <label className="text-xs text-mist mb-1 block">Photo URL (required)</label>
+            <label className="text-xs text-outline mb-1 block">Photo URL (required)</label>
             <input
               type="url"
               value={newUrl}
               onChange={(e) => setNewUrl(e.target.value)}
               placeholder="https://photos.google.com/… or any public image URL"
-              className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
+              className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/40"
             />
           </div>
           <div>
-            <label className="text-xs text-mist mb-1 block">Caption (optional)</label>
+            <label className="text-xs text-outline mb-1 block">Caption (optional)</label>
             <input
               type="text"
               value={newCaption}
               onChange={(e) => setNewCaption(e.target.value)}
               placeholder="e.g. Framing complete, north wall"
-              className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
+              className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/40"
             />
           </div>
           <div className="flex gap-2">
             <button
               onClick={addPhoto}
               disabled={!newUrl.trim()}
-              className="text-sm bg-forest text-white px-4 py-1.5 rounded-lg hover:bg-deep transition-colors disabled:opacity-40"
+              className="text-sm bg-primary text-on-primary px-4 py-1.5 rounded-xl hover:bg-primary-dim transition-colors disabled:opacity-40"
             >
               Add Photo
             </button>
             <button
               onClick={() => { setShowForm(false); setNewUrl(''); setNewCaption(''); }}
-              className="text-sm text-mist hover:text-ink px-3"
+              className="text-sm text-outline hover:text-on-surface px-3"
             >
               Cancel
             </button>
@@ -713,31 +712,31 @@ function PhotosSection({ project, canEdit, member, onSave, uid }) {
       )}
 
       {allPhotos.length === 0 ? (
-        <p className="text-sm text-mist">No progress photos shared yet.</p>
+        <p className="text-sm text-outline">No progress photos shared yet.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {allPhotos.map((p, i) => (
             <div
               key={p.id ?? i}
-              className="bg-white rounded-xl border border-linen p-4 flex items-start gap-3 group"
+              className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl p-4 flex items-start gap-3 group"
             >
               <a href={p.url} target="_blank" rel="noreferrer" className="shrink-0 mt-0.5">
-                <Image size={20} className="text-forest hover:text-deep transition-colors" />
+                <Image size={20} className="text-primary hover:text-primary-dim transition-colors" />
               </a>
               <div className="flex-1 min-w-0">
                 <a
                   href={p.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-sm font-medium text-ink hover:text-forest transition-colors truncate block"
+                  className="text-sm font-medium text-on-surface hover:text-primary transition-colors truncate block"
                 >
                   {p.caption || `Photo ${i + 1}`}
                 </a>
                 {p.milestoneName && (
-                  <p className="text-xs text-mist truncate">{p.milestoneName}</p>
+                  <p className="text-xs text-outline truncate">{p.milestoneName}</p>
                 )}
                 {p.addedBy && (
-                  <p className="text-xs text-sage mt-0.5">
+                  <p className="text-xs text-on-surface-variant mt-0.5">
                     Added by {p.addedBy.name} · {fmtDate(p.addedBy.at)}
                   </p>
                 )}
@@ -745,7 +744,7 @@ function PhotosSection({ project, canEdit, member, onSave, uid }) {
               {canEdit && p.source === 'team' && (
                 <button
                   onClick={() => removeTeamPhoto(p.id)}
-                  className="shrink-0 text-mist hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 text-xs"
+                  className="shrink-0 text-outline hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 text-xs"
                   title="Remove photo"
                 >
                   ✕
@@ -754,7 +753,7 @@ function PhotosSection({ project, canEdit, member, onSave, uid }) {
               {canEdit && p.source === 'uploaded-doc' && (
                 <button
                   onClick={() => removeUploadedPhoto(p.id, p.storagePath)}
-                  className="shrink-0 text-mist hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 text-xs"
+                  className="shrink-0 text-outline hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 text-xs"
                   title="Delete photo"
                 >
                   ✕
@@ -776,10 +775,10 @@ const TYPE_STYLES_PORTAL = {
   Call:           'bg-green-50 text-green-600 border-green-200',
   Email:          'bg-amber-50 text-amber-600 border-amber-200',
   'Site Visit':   'bg-purple-50 text-purple-600 border-purple-200',
-  Other:          'bg-linen text-mist border-linen',
+  Other:          'bg-outline-variant text-outline border-outline-variant',
   // owner-created types
   Decision:       'bg-blue-100 text-blue-700 border-blue-200',
-  Communication:  'bg-linen text-mist border-linen',
+  Communication:  'bg-outline-variant text-outline border-outline-variant',
   Agreement:      'bg-green-100 text-green-700 border-green-200',
   Issue:          'bg-red-100 text-red-600 border-red-200',
   'Change Request': 'bg-amber-100 text-amber-700 border-amber-200',
@@ -895,35 +894,35 @@ function MessagesSection({ project, canEdit, member, onSave }) {
       {/* Communication Log */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-ink">Communication Log</h2>
+          <h2 className="text-sm font-semibold text-on-surface">Communication Log</h2>
           {canEdit && (
             <button
               onClick={() => setShowLogForm(!showLogForm)}
-              className="text-xs text-forest hover:underline"
+              className="text-xs text-primary hover:underline"
             >
               + Add Entry
             </button>
           )}
         </div>
         {canEdit && showLogForm && (
-          <div className="bg-white rounded-xl border border-linen p-4 mb-3 space-y-3">
+          <div className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl p-4 mb-3 space-y-3">
             <input
               type="text"
               value={newLogTitle}
               onChange={(e) => setNewLogTitle(e.target.value)}
               placeholder="Title / subject…"
-              className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
+              className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/40"
             />
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-xs text-mist mb-1 block">Date</label>
+                <label className="text-xs text-outline mb-1 block">Date</label>
                 <input type="date" value={newLogDate} onChange={(e) => setNewLogDate(e.target.value)}
-                  className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 focus:outline-none focus:border-forest" />
+                  className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 focus:outline-none focus:border-primary" />
               </div>
               <div>
-                <label className="text-xs text-mist mb-1 block">Type</label>
+                <label className="text-xs text-outline mb-1 block">Type</label>
                 <select value={newLogType} onChange={(e) => setNewLogType(e.target.value)}
-                  className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:border-forest">
+                  className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface-container-lowest focus:outline-none focus:border-primary">
                   {LOG_TYPES_PORTAL.map((t) => <option key={t}>{t}</option>)}
                 </select>
               </div>
@@ -933,55 +932,55 @@ function MessagesSection({ project, canEdit, member, onSave }) {
               value={newLogParties}
               onChange={(e) => setNewLogParties(e.target.value)}
               placeholder="Parties involved…"
-              className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
+              className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/40"
             />
             <textarea
               value={newLogDesc}
               onChange={(e) => setNewLogDesc(e.target.value)}
               placeholder="Description…"
               rows={2}
-              className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40 resize-none"
+              className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/40 resize-none"
             />
             <div className="flex gap-2">
               <button
                 onClick={addLogEntry}
                 disabled={!newLogTitle.trim()}
-                className="text-sm bg-forest text-white px-4 py-1.5 rounded-lg hover:bg-deep transition-colors disabled:opacity-40"
+                className="text-sm bg-primary text-on-primary px-4 py-1.5 rounded-xl hover:bg-primary-dim transition-colors disabled:opacity-40"
               >
                 Save Entry
               </button>
-              <button onClick={() => setShowLogForm(false)} className="text-sm text-mist hover:text-ink px-3">
+              <button onClick={() => setShowLogForm(false)} className="text-sm text-outline hover:text-on-surface px-3">
                 Cancel
               </button>
             </div>
           </div>
         )}
         {sortedEntries.length === 0 ? (
-          <p className="text-sm text-mist">No log entries yet.</p>
+          <p className="text-sm text-outline">No log entries yet.</p>
         ) : (
           <div className="space-y-2">
             {sortedEntries.map((entry) => {
-              const typeStyle = TYPE_STYLES_PORTAL[entry.type] ?? 'bg-linen text-mist border-linen';
+              const typeStyle = TYPE_STYLES_PORTAL[entry.type] ?? 'bg-outline-variant text-outline border-outline-variant';
               return (
-                <div key={entry.id} className="bg-white rounded-xl border border-linen p-4">
+                <div key={entry.id} className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl p-4">
                   <div className="flex items-start gap-2 flex-wrap mb-1">
-                    <span className="text-sm font-medium text-ink">{entry.title}</span>
+                    <span className="text-sm font-medium text-on-surface">{entry.title}</span>
                     <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${typeStyle}`}>{entry.type}</span>
                   </div>
                   {(entry.date || entry.parties) && (
-                    <p className="text-xs text-mist mt-0.5">
+                    <p className="text-xs text-outline mt-0.5">
                       {fmtDate(entry.date)}{entry.parties ? ` · ${entry.parties}` : ''}
                     </p>
                   )}
-                  {entry.description && <p className="text-xs text-sage mt-1">{entry.description}</p>}
+                  {entry.description && <p className="text-xs text-on-surface-variant mt-1">{entry.description}</p>}
                   {entry.addedBy && (
-                    <p className="text-xs text-sage mt-1">Added by {entry.addedBy.name} · {fmtDate(entry.addedBy.at)}</p>
+                    <p className="text-xs text-on-surface-variant mt-1">Added by {entry.addedBy.name} · {fmtDate(entry.addedBy.at)}</p>
                   )}
                   {(entry.teamNotes ?? []).length > 0 && (
                     <div className="mt-2 space-y-1">
                       {(entry.teamNotes ?? []).map((n) => (
-                        <div key={n.id} className="pl-3 border-l-2 border-linen text-xs text-mist">
-                          <span className="font-medium text-ink">{n.by}:</span> {n.text}
+                        <div key={n.id} className="pl-3 border-l-2 border-outline-variant text-xs text-outline">
+                          <span className="font-medium text-on-surface">{n.by}:</span> {n.text}
                         </div>
                       ))}
                     </div>
@@ -995,19 +994,19 @@ function MessagesSection({ project, canEdit, member, onSave }) {
                             onChange={(e) => setNoteText(e.target.value)}
                             placeholder="Add a note…"
                             rows={2}
-                            className="flex-1 text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40 resize-none"
+                            className="flex-1 text-sm border border-outline-variant rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/40 resize-none"
                           />
                           <div className="flex flex-col gap-1">
                             <button
                               onClick={() => addNote(entry.id)}
                               disabled={!noteText.trim()}
-                              className="text-xs bg-forest text-white px-3 py-1.5 rounded-lg hover:bg-deep disabled:opacity-40"
+                              className="text-xs bg-primary text-on-primary px-3 py-1.5 rounded-xl hover:bg-primary-dim disabled:opacity-40"
                             >
                               Save
                             </button>
                             <button
                               onClick={() => { setAddingNoteTo(null); setNoteText(''); }}
-                              className="text-xs text-mist hover:text-ink px-2"
+                              className="text-xs text-outline hover:text-on-surface px-2"
                             >
                               Cancel
                             </button>
@@ -1016,7 +1015,7 @@ function MessagesSection({ project, canEdit, member, onSave }) {
                       ) : (
                         <button
                           onClick={() => { setAddingNoteTo(entry.id); setNoteText(''); }}
-                          className="text-xs text-forest hover:underline"
+                          className="text-xs text-primary hover:underline"
                         >
                           + Add note
                         </button>
@@ -1033,78 +1032,78 @@ function MessagesSection({ project, canEdit, member, onSave }) {
       {/* To-Dos */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-ink">To-Dos</h2>
+          <h2 className="text-sm font-semibold text-on-surface">To-Dos</h2>
           {canEdit && (
             <button
               onClick={() => setShowTodoForm(!showTodoForm)}
-              className="text-xs text-forest hover:underline"
+              className="text-xs text-primary hover:underline"
             >
               + Add To-Do
             </button>
           )}
         </div>
         {canEdit && showTodoForm && (
-          <div className="bg-white rounded-xl border border-linen p-4 mb-3 space-y-3">
+          <div className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl p-4 mb-3 space-y-3">
             <input
               type="text"
               value={newTodoText}
               onChange={(e) => setNewTodoText(e.target.value)}
               placeholder="To-do item…"
-              className="w-full text-sm border border-linen rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-forest/40"
+              className="w-full text-sm border border-outline-variant rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/40"
             />
             <div>
-              <label className="text-xs text-mist mb-1 block">Due Date (optional)</label>
+              <label className="text-xs text-outline mb-1 block">Due Date (optional)</label>
               <input type="date" value={newTodoDue} onChange={(e) => setNewTodoDue(e.target.value)}
-                className="text-sm border border-linen rounded-lg px-3 py-1.5 focus:outline-none focus:border-forest" />
+                className="text-sm border border-outline-variant rounded-xl px-3 py-1.5 focus:outline-none focus:border-primary" />
             </div>
             <div className="flex gap-2">
               <button
                 onClick={addTodo}
                 disabled={!newTodoText.trim()}
-                className="text-sm bg-forest text-white px-4 py-1.5 rounded-lg hover:bg-deep transition-colors disabled:opacity-40"
+                className="text-sm bg-primary text-on-primary px-4 py-1.5 rounded-xl hover:bg-primary-dim transition-colors disabled:opacity-40"
               >
                 Add
               </button>
-              <button onClick={() => setShowTodoForm(false)} className="text-sm text-mist hover:text-ink px-3">
+              <button onClick={() => setShowTodoForm(false)} className="text-sm text-outline hover:text-on-surface px-3">
                 Cancel
               </button>
             </div>
           </div>
         )}
         {todos.length === 0 ? (
-          <p className="text-sm text-mist">No to-dos yet.</p>
+          <p className="text-sm text-outline">No to-dos yet.</p>
         ) : (
           <div className="space-y-2">
             {todos.map((todo) => (
               <div
                 key={todo.id}
-                className={`bg-white rounded-xl border p-4 flex items-start gap-3 ${todo.done ? 'border-forest/20 bg-forest/5' : 'border-linen'}`}
+                className={`bg-surface-container-lowest rounded-3xl border p-4 flex items-start gap-3 ${todo.done ? 'border-primary/20 bg-primary/5' : 'shadow-md border-outline-variant/10'}`}
               >
                 {canEdit ? (
                   <input
                     type="checkbox"
                     checked={!!todo.done}
                     onChange={() => toggleTodo(todo.id)}
-                    className="accent-forest shrink-0 mt-0.5"
+                    className="accent-primary shrink-0 mt-0.5"
                   />
                 ) : (
-                  <span className={`text-xs shrink-0 mt-0.5 ${todo.done ? 'text-forest' : 'text-mist'}`}>
+                  <span className={`text-xs shrink-0 mt-0.5 ${todo.done ? 'text-primary' : 'text-outline'}`}>
                     {todo.done ? '✓' : '○'}
                   </span>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm ${todo.done ? 'line-through text-mist' : 'text-ink font-medium'}`}>
+                  <p className={`text-sm ${todo.done ? 'line-through text-outline' : 'text-on-surface font-medium'}`}>
                     {todo.text}
                   </p>
                   <div className="flex items-center gap-2 flex-wrap mt-0.5">
                     {todo.dueDate && (
-                      <span className="text-xs text-mist">Due {fmtDate(todo.dueDate)}</span>
+                      <span className="text-xs text-outline">Due {fmtDate(todo.dueDate)}</span>
                     )}
                     {todo.completedBy && (
-                      <span className="text-xs text-sage">Completed by {todo.completedBy.name}</span>
+                      <span className="text-xs text-on-surface-variant">Completed by {todo.completedBy.name}</span>
                     )}
                     {todo.createdBy && !todo.done && (
-                      <span className="text-xs text-sage">Added by {todo.createdBy.name}</span>
+                      <span className="text-xs text-on-surface-variant">Added by {todo.createdBy.name}</span>
                     )}
                   </div>
                 </div>
@@ -1121,21 +1120,21 @@ function MessagesSection({ project, canEdit, member, onSave }) {
 
 function ContactsSection({ project }) {
   const team = (project?.team ?? []).filter((m) => m.name);
-  if (team.length === 0) return <p className="text-sm text-mist">No team contacts listed.</p>;
+  if (team.length === 0) return <p className="text-sm text-outline">No team contacts listed.</p>;
 
   return (
     <div className="space-y-2">
       {team.map((m) => (
-        <div key={m.id} className="bg-white rounded-xl border border-linen p-4">
+        <div key={m.id} className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl p-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-forest/10 flex items-center justify-center shrink-0">
-              <span className="text-sm font-bold text-forest">
+            <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <span className="text-sm font-bold text-primary">
                 {(m.name || '?')[0].toUpperCase()}
               </span>
             </div>
             <div>
-              <p className="text-sm font-medium text-ink">{m.name}</p>
-              <p className="text-xs text-mist">{m.role}</p>
+              <p className="text-sm font-medium text-on-surface">{m.name}</p>
+              <p className="text-xs text-outline">{m.role}</p>
             </div>
           </div>
         </div>
@@ -1240,7 +1239,7 @@ export default function SharedPortal({ token, tokenStore }) {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center text-sm text-mist">
+      <div className="min-h-screen bg-surface flex items-center justify-center text-sm text-outline">
         Loading…
       </div>
     );
@@ -1280,9 +1279,9 @@ export default function SharedPortal({ token, tokenStore }) {
     (project?.properties ?? []).find((p) => p.address)?.address || 'Build Project';
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-surface">
       {/* Banner */}
-      <div className="bg-forest text-white px-4 py-2.5 text-center text-xs">
+      <div className="bg-primary text-on-primary px-4 py-2.5 text-center text-xs">
         <strong>{canEditAny ? 'Shared project view' : 'Read-only view'}</strong> shared by the project owner ·{' '}
         <a href="/" className="underline hover:no-underline">
           Create your own planning account
@@ -1296,25 +1295,23 @@ export default function SharedPortal({ token, tokenStore }) {
         )}
 
         {/* Project header */}
-        <div className="bg-white rounded-2xl border border-linen p-5 mb-6 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-forest/10 flex items-center justify-center shrink-0">
-            <MapPin size={22} className="text-forest" />
+        <div className="bg-surface-container-lowest rounded-3xl shadow-md border border-outline-variant/10 p-5 mb-6 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <MapPin size={22} className="text-primary" />
           </div>
           <div className="flex-1 min-w-0">
             <h1
-              className="text-lg font-bold text-ink truncate"
-              style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}
+              className="text-lg font-bold text-on-surface font-heading truncate"
             >
               {projectAddress}
             </h1>
-            <p className="text-sm text-mist">
+            <p className="text-sm text-outline">
               {member.role} View
               {member.name ? ` · ${member.name}` : ''}
             </p>
           </div>
           <div
-            className="text-xs font-semibold text-ink shrink-0 hidden sm:block"
-            style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}
+            className="text-xs font-semibold text-on-surface font-heading shrink-0 hidden sm:block"
           >
             Waymark Build
           </div>
@@ -1322,9 +1319,9 @@ export default function SharedPortal({ token, tokenStore }) {
 
         {/* No permissions */}
         {visibleSections.length === 0 && (
-          <div className="text-center py-12 text-mist">
+          <div className="text-center py-12 text-outline">
             <div className="text-4xl mb-3">🔒</div>
-            <p className="font-medium text-ink">Nothing shared yet</p>
+            <p className="font-medium text-on-surface">Nothing shared yet</p>
             <p className="text-sm mt-1">The project owner hasn't enabled any sections for your view.</p>
           </div>
         )}
@@ -1332,13 +1329,13 @@ export default function SharedPortal({ token, tokenStore }) {
         {visibleSections.length > 0 && (
           <>
             {/* Tabs */}
-            <div className="flex gap-1 mb-6 bg-linen/50 p-1 rounded-xl overflow-x-auto">
+            <div className="flex gap-1 mb-6 bg-outline-variant/50 p-1 rounded-xl overflow-x-auto">
               {visibleSections.map((s) => (
                 <button
                   key={s.id}
                   onClick={() => setTab(s.id)}
-                  className={`flex-1 text-xs font-medium px-3 py-2 rounded-lg transition-colors whitespace-nowrap ${
-                    tab === s.id ? 'bg-white text-ink shadow-sm' : 'text-mist hover:text-ink'
+                  className={`flex-1 text-xs font-medium px-3 py-2 rounded-xl transition-colors whitespace-nowrap ${
+                    tab === s.id ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-outline hover:text-on-surface'
                   }`}
                 >
                   {s.emoji} {s.label}
@@ -1366,16 +1363,16 @@ export default function SharedPortal({ token, tokenStore }) {
           {tokenStore && tokenStore.tokens.length > 0 && (
             <a
               href="/portal"
-              className="inline-flex items-center gap-1 text-xs text-forest font-medium hover:underline"
+              className="inline-flex items-center gap-1 text-xs text-primary font-medium hover:underline"
             >
               <LayoutGrid size={12} /> View All Projects
             </a>
           )}
-          <p className="text-xs text-mist">
-            <a href="/portal/auth" className="text-forest hover:underline">Sign in to sync across devices</a>
+          <p className="text-xs text-outline">
+            <a href="/portal/auth" className="text-primary hover:underline">Sign in to sync across devices</a>
             {' '}·{' '}
             Powered by{' '}
-            <a href="/" className="text-forest hover:underline">Waymark Build Planning App</a>
+            <a href="/" className="text-primary hover:underline">Waymark Build Planning App</a>
             {' '}· <a href="https://www.lifebuiltinkentucky.com" className="hover:underline">lifebuiltinkentucky.com</a>
           </p>
         </div>

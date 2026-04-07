@@ -21,10 +21,10 @@ export default function LandEvaluationTab({
           <button
             key={opt.id}
             onClick={() => onSetType(opt.id)}
-            className={`text-sm font-medium px-3 py-2.5 rounded-lg border transition-all text-left leading-snug ${
+            className={`text-sm font-medium px-3 py-2.5 rounded-xl border transition-all text-left leading-snug ${
               activeType === opt.id
-                ? 'bg-forest text-white border-forest'
-                : 'bg-white text-ink border-linen hover:border-forest/40 hover:bg-cream/50'
+                ? 'bg-primary text-on-primary border-primary'
+                : 'bg-surface-container-lowest text-on-surface border-outline-variant hover:border-primary/40 hover:bg-surface/50'
             }`}
           >
             {opt.label}
@@ -33,7 +33,7 @@ export default function LandEvaluationTab({
       </div>
 
       {/* Land type description */}
-      <p className="text-xs text-mist leading-snug">{typeData.desc}</p>
+      <p className="text-xs text-outline leading-snug">{typeData.desc}</p>
 
       {/* Sections — key on activeType forces remount when type changes */}
       <SectionedChecklistTab

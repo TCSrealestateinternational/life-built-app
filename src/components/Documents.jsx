@@ -24,7 +24,7 @@ function guessExt(url, name) {
 function LinkIcon({ url, name }) {
   const ext = guessExt(url, name);
   const Icon = TYPE_ICONS[ext] ?? File;
-  return <Icon size={17} className="text-mist shrink-0" />;
+  return <Icon size={17} className="text-outline shrink-0" />;
 }
 
 function formatSize(bytes) {
@@ -55,7 +55,7 @@ function DocRow({ doc, onUpdate, onRemove }) {
   const isUpload = doc.source === 'upload';
 
   return (
-    <div className="bg-white border border-linen rounded-xl overflow-hidden">
+    <div className="shadow-md border border-outline-variant/10 rounded-3xl overflow-hidden bg-surface-container-lowest">
       <div className="flex items-center gap-3 px-4 py-3">
         <LinkIcon url={doc.url} name={doc.name} />
         <div className="flex-1 min-w-0">
@@ -64,19 +64,19 @@ function DocRow({ doc, onUpdate, onRemove }) {
             value={doc.name}
             onChange={(e) => onUpdate({ name: e.target.value })}
             placeholder="Document name…"
-            className="w-full text-sm font-medium bg-transparent border-b border-transparent hover:border-linen focus:border-forest focus:outline-none py-0.5 text-ink"
+            className="w-full text-sm font-medium bg-transparent border-b border-transparent hover:border-outline-variant focus:border-primary focus:outline-none py-0.5 text-on-surface"
           />
           <div className="flex items-center gap-2 mt-1 flex-wrap">
             <select
               value={doc.category}
               onChange={(e) => onUpdate({ category: e.target.value })}
-              className="text-xs border border-linen rounded px-1.5 py-0.5 bg-cream text-mist focus:outline-none focus:ring-1 focus:ring-forest/40"
+              className="text-xs border border-outline-variant rounded px-1.5 py-0.5 bg-surface text-outline focus:outline-none focus:ring-1 focus:ring-primary/40"
             >
               {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
             </select>
-            {doc.addedAt && <span className="text-xs text-mist">{formatDate(doc.addedAt)}</span>}
+            {doc.addedAt && <span className="text-xs text-outline">{formatDate(doc.addedAt)}</span>}
             {isUpload && doc.size && (
-              <span className="text-xs text-mist">{formatSize(doc.size)}</span>
+              <span className="text-xs text-outline">{formatSize(doc.size)}</span>
             )}
           </div>
         </div>
@@ -86,7 +86,7 @@ function DocRow({ doc, onUpdate, onRemove }) {
               href={doc.url}
               target="_blank"
               rel="noreferrer"
-              className="text-mist hover:text-forest transition-colors p-1"
+              className="text-outline hover:text-primary transition-colors p-1"
               title="Open"
             >
               <ExternalLink size={15} />
@@ -95,7 +95,7 @@ function DocRow({ doc, onUpdate, onRemove }) {
           {!isUpload && (
             <button
               onClick={() => setExpanded(!expanded)}
-              className="text-mist hover:text-ink transition-colors p-1"
+              className="text-outline hover:text-on-surface transition-colors p-1"
               title="Edit details"
             >
               {expanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
@@ -112,30 +112,30 @@ function DocRow({ doc, onUpdate, onRemove }) {
       </div>
 
       {!isUpload && expanded && (
-        <div className="px-4 pb-4 border-t border-linen space-y-2.5 pt-3">
+        <div className="px-4 pb-4 border-t border-outline-variant space-y-2.5 pt-3">
           <div>
-            <label className="text-xs font-medium text-mist mb-1 block">Link (Google Drive, Dropbox, etc.)</label>
+            <label className="text-xs font-medium text-outline mb-1 block">Link (Google Drive, Dropbox, etc.)</label>
             <input
               type="url"
               value={doc.url}
               onChange={(e) => onUpdate({ url: e.target.value })}
               placeholder="Paste a share link…"
-              className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+              className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
             />
             {!doc.url && (
-              <p className="text-xs text-mist mt-1">
+              <p className="text-xs text-outline mt-1">
                 Upload your file to Google Drive or Dropbox, set sharing to "Anyone with link can view," then paste the link here.
               </p>
             )}
           </div>
           <div>
-            <label className="text-xs font-medium text-mist mb-1 block">Notes</label>
+            <label className="text-xs font-medium text-outline mb-1 block">Notes</label>
             <input
               type="text"
               value={doc.notes}
               onChange={(e) => onUpdate({ notes: e.target.value })}
               placeholder="e.g. Revised 3/10, Sheet A2, approved by inspector…"
-              className="w-full text-sm border border-linen rounded-lg px-3 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+              className="w-full text-sm border border-outline-variant rounded-xl px-3 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
             />
           </div>
         </div>
@@ -151,7 +151,7 @@ function PhotosGrid({ docs, onRemove }) {
 
   if (photos.length === 0) {
     return (
-      <div className="text-center py-12 text-mist">
+      <div className="text-center py-12 text-outline">
         <div className="text-4xl mb-3">📷</div>
         <p className="font-medium">No photos yet</p>
         <p className="text-sm mt-1">Upload images or videos to see them here.</p>
@@ -162,7 +162,7 @@ function PhotosGrid({ docs, onRemove }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
       {photos.map((doc) => (
-        <div key={doc.id} className="relative group rounded-xl overflow-hidden bg-linen aspect-square">
+        <div key={doc.id} className="relative group rounded-3xl overflow-hidden bg-outline-variant aspect-square">
           {doc.type.startsWith('image/') ? (
             <img
               src={doc.url}
@@ -183,13 +183,13 @@ function PhotosGrid({ docs, onRemove }) {
               href={doc.url}
               target="_blank"
               rel="noreferrer"
-              className="text-white text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1.5 rounded-lg transition-colors"
+              className="text-white text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1.5 rounded-xl transition-colors"
             >
               Open
             </a>
             <button
               onClick={() => onRemove(doc.id)}
-              className="text-white text-xs bg-red-500/70 hover:bg-red-600/80 px-2.5 py-1.5 rounded-lg transition-colors"
+              className="text-white text-xs bg-red-500/70 hover:bg-red-600/80 px-2.5 py-1.5 rounded-xl transition-colors"
             >
               Delete
             </button>
@@ -276,7 +276,7 @@ export default function Documents({ project, updateProject, uid }) {
 
   return (
     <div
-      className={`p-6 max-w-3xl mx-auto ${isDragging ? 'ring-2 ring-forest ring-inset rounded-2xl' : ''}`}
+      className={`p-6 max-w-3xl mx-auto ${isDragging ? 'ring-2 ring-primary ring-inset rounded-3xl' : ''}`}
       onDrop={onDrop}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
@@ -292,10 +292,10 @@ export default function Documents({ project, updateProject, uid }) {
 
       <div className="flex items-start justify-between mb-4 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+          <h1 className="text-2xl font-bold text-on-surface font-heading">
             Documents
           </h1>
-          <p className="text-sage text-sm mt-0.5">
+          <p className="text-on-surface-variant text-sm mt-0.5">
             Blueprints, permits, contracts, photos, and anything else for your build.
           </p>
         </div>
@@ -303,14 +303,14 @@ export default function Documents({ project, updateProject, uid }) {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={progress !== null}
-            className="flex items-center gap-1.5 border border-forest text-forest text-sm px-3 py-2 rounded-lg hover:bg-forest/5 transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 border border-primary text-primary text-sm px-3 py-2 rounded-xl hover:bg-primary/5 transition-colors disabled:opacity-50"
           >
             <Upload size={14} /> Upload File
           </button>
           <button
             onClick={addDoc}
             disabled={progress !== null}
-            className="flex items-center gap-1.5 bg-forest text-white text-sm px-4 py-2 rounded-lg hover:bg-deep transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 bg-primary text-on-primary text-sm px-4 py-2 rounded-xl hover:bg-primary-dim transition-colors disabled:opacity-50"
           >
             <Plus size={15} /> Add Link
           </button>
@@ -320,13 +320,13 @@ export default function Documents({ project, updateProject, uid }) {
       {/* Upload progress bar */}
       {progress !== null && (
         <div className="mb-4">
-          <div className="flex items-center justify-between text-xs text-mist mb-1">
+          <div className="flex items-center justify-between text-xs text-outline mb-1">
             <span>Uploading…</span>
             <span>{progress}%</span>
           </div>
-          <div className="h-2 bg-linen rounded-full overflow-hidden">
+          <div className="h-2 bg-outline-variant rounded-full overflow-hidden">
             <div
-              className="h-full bg-forest rounded-full transition-all duration-200"
+              className="h-full bg-primary rounded-full transition-all duration-200"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -335,7 +335,7 @@ export default function Documents({ project, updateProject, uid }) {
 
       {/* Upload error */}
       {uploadError && (
-        <div className="mb-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600 flex items-center justify-between">
+        <div className="mb-4 bg-red-50 border border-red-200 rounded-3xl px-4 py-3 text-sm text-red-600 flex items-center justify-between">
           <span>{uploadError}</span>
           <button onClick={() => setUploadError('')} className="text-red-400 hover:text-red-600 ml-2">✕</button>
         </div>
@@ -343,25 +343,25 @@ export default function Documents({ project, updateProject, uid }) {
 
       {/* Drag hint */}
       {isDragging && (
-        <div className="mb-4 bg-forest/10 border-2 border-dashed border-forest/40 rounded-xl px-4 py-6 text-center text-sm text-forest font-medium">
+        <div className="mb-4 bg-primary/10 border-2 border-dashed border-primary/40 rounded-3xl px-4 py-6 text-center text-sm text-primary font-medium">
           Drop to upload
         </div>
       )}
 
       {/* Tab bar */}
-      <div className="flex gap-1 mb-4 bg-linen/50 p-1 rounded-xl w-fit">
+      <div className="flex gap-1 mb-4 bg-outline-variant/50 p-1 rounded-xl w-fit">
         <button
           onClick={() => setActiveTab('documents')}
-          className={`text-xs font-medium px-4 py-1.5 rounded-lg transition-colors ${
-            activeTab === 'documents' ? 'bg-white text-ink shadow-sm' : 'text-mist hover:text-ink'
+          className={`text-xs font-medium px-4 py-1.5 rounded-xl transition-colors ${
+            activeTab === 'documents' ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-outline hover:text-on-surface'
           }`}
         >
           Documents
         </button>
         <button
           onClick={() => setActiveTab('photos')}
-          className={`text-xs font-medium px-4 py-1.5 rounded-lg transition-colors ${
-            activeTab === 'photos' ? 'bg-white text-ink shadow-sm' : 'text-mist hover:text-ink'
+          className={`text-xs font-medium px-4 py-1.5 rounded-xl transition-colors ${
+            activeTab === 'photos' ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-outline hover:text-on-surface'
           }`}
         >
           Photos
@@ -373,9 +373,9 @@ export default function Documents({ project, updateProject, uid }) {
         <>
           {/* How it works — shown only when empty and no uploads */}
           {docs.length === 0 && (
-            <div className="bg-forest/5 border border-forest/20 rounded-xl p-4 mb-6 text-sm text-ink space-y-1">
-              <p className="font-medium text-forest">Two ways to add files</p>
-              <ul className="list-disc pl-4 space-y-1 text-mist">
+            <div className="bg-primary/5 border border-primary/20 rounded-3xl p-6 mb-6 text-sm text-on-surface space-y-1">
+              <p className="font-medium text-primary">Two ways to add files</p>
+              <ul className="list-disc pl-4 space-y-1 text-outline">
                 <li>Click <strong>Upload File</strong> to upload directly from your device</li>
                 <li>Click <strong>Add Link</strong> to paste a Google Drive or Dropbox link</li>
               </ul>
@@ -391,8 +391,8 @@ export default function Documents({ project, updateProject, uid }) {
                   onClick={() => setFilter(f)}
                   className={`text-xs px-3 py-1 rounded-full border transition-colors ${
                     filter === f
-                      ? 'bg-forest text-white border-forest'
-                      : 'border-linen text-sage hover:border-forest hover:text-forest'
+                      ? 'bg-primary text-on-primary border-primary'
+                      : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
                   }`}
                 >
                   {f}
@@ -403,7 +403,7 @@ export default function Documents({ project, updateProject, uid }) {
 
           {/* Document list */}
           {docs.length === 0 ? (
-            <div className="text-center py-12 text-mist">
+            <div className="text-center py-12 text-outline">
               <div className="text-4xl mb-3">📁</div>
               <p className="font-medium">No documents yet</p>
               <p className="text-sm mt-1">Upload a file or add a link to get started.</p>

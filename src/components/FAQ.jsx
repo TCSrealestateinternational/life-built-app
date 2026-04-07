@@ -184,18 +184,18 @@ const FAQ_DATA = [
 function FAQItem({ q, a }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-b border-linen last:border-0">
+    <div className="border-b border-outline-variant last:border-0">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-start justify-between gap-3 px-4 py-3 text-left hover:bg-cream/50 transition-colors"
+        className="w-full flex items-start justify-between gap-3 px-4 py-3 text-left hover:bg-surface/50 transition-colors"
       >
-        <span className={`text-sm leading-snug ${open ? 'text-forest font-medium' : 'text-ink'}`}>{q}</span>
+        <span className={`text-sm leading-snug ${open ? 'text-primary font-medium' : 'text-on-surface'}`}>{q}</span>
         {open
-          ? <ChevronUp size={15} className="text-mist shrink-0 mt-0.5" />
-          : <ChevronDown size={15} className="text-mist shrink-0 mt-0.5" />}
+          ? <ChevronUp size={15} className="text-outline shrink-0 mt-0.5" />
+          : <ChevronDown size={15} className="text-outline shrink-0 mt-0.5" />}
       </button>
       {open && (
-        <div className="px-4 pb-4 text-sm text-mist leading-relaxed border-t border-linen bg-cream/30">
+        <div className="px-4 pb-4 text-sm text-outline leading-relaxed border-t border-outline-variant bg-surface/30">
           <p className="pt-3">{a}</p>
         </div>
       )}
@@ -208,26 +208,26 @@ export default function FAQ() {
 
   return (
     <div className="mb-5">
-      <p className="text-xs font-semibold text-mist uppercase tracking-wider px-1 mb-2">Help & FAQ</p>
+      <p className="text-xs font-semibold text-outline uppercase tracking-wider px-1 mb-2">Help & FAQ</p>
       <div className="space-y-2">
         {FAQ_DATA.map((section) => {
           const isOpen = openCategory === section.category;
           return (
-            <div key={section.category} className="bg-white rounded-xl border border-linen overflow-hidden">
+            <div key={section.category} className="shadow-md border border-outline-variant/10 rounded-3xl overflow-hidden">
               <button
                 onClick={() => setOpenCategory(isOpen ? null : section.category)}
-                className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-cream/50 transition-colors"
+                className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-surface/50 transition-colors"
               >
-                <span className="text-sm font-medium text-ink">{section.category}</span>
+                <span className="text-sm font-medium text-on-surface">{section.category}</span>
                 <span className="flex items-center gap-2">
-                  <span className="text-xs text-mist">{section.questions.length} questions</span>
+                  <span className="text-xs text-outline">{section.questions.length} questions</span>
                   {isOpen
-                    ? <ChevronUp size={15} className="text-mist" />
-                    : <ChevronDown size={15} className="text-mist" />}
+                    ? <ChevronUp size={15} className="text-outline" />
+                    : <ChevronDown size={15} className="text-outline" />}
                 </span>
               </button>
               {isOpen && (
-                <div className="border-t border-linen">
+                <div className="border-t border-outline-variant">
                   {section.questions.map((item) => (
                     <FAQItem key={item.q} q={item.q} a={item.a} />
                   ))}

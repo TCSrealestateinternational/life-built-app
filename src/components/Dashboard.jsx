@@ -29,15 +29,15 @@ function normalizeMilestone(m) {
 const CARD_LIMIT = 4;
 
 const ALL_CARD_DEFS = [
-  { id: 'properties',   sectionId: 'properties',   icon: MapPin,        label: 'Properties',    color: 'bg-forest'     },
-  { id: 'budget',       sectionId: 'budget',        icon: DollarSign,    label: 'Budget',        color: 'bg-deep'       },
-  { id: 'timeline',     sectionId: 'timeline',      icon: Calendar,      label: 'Timeline',      color: 'bg-sage'       },
-  { id: 'checklists',   sectionId: 'checklists',    icon: CheckSquare,   label: 'Checklists',    color: 'bg-mist'       },
-  { id: 'changeorders', sectionId: 'changeorders',  icon: ClipboardList, label: 'Change Orders', color: 'bg-amber-600'  },
-  { id: 'payments',     sectionId: 'payments',      icon: CreditCard,    label: 'Payments',      color: 'bg-blue-600'   },
-  { id: 'todos',        sectionId: 'commslog',      icon: Bell,          label: 'To-Dos',        color: 'bg-red-500'    },
-  { id: 'lienwaiver',   sectionId: 'lienwaiver',    icon: Shield,        label: 'Lien Waivers',  color: 'bg-purple-600' },
-  { id: 'team',         sectionId: 'team',          icon: Users,         label: 'Team',          color: 'bg-ink'        },
+  { id: 'properties',   sectionId: 'properties',   icon: MapPin,        label: 'Properties',    color: 'bg-primary'          },
+  { id: 'budget',       sectionId: 'budget',        icon: DollarSign,    label: 'Budget',        color: 'bg-primary-dim'      },
+  { id: 'timeline',     sectionId: 'timeline',      icon: Calendar,      label: 'Timeline',      color: 'bg-tertiary'         },
+  { id: 'checklists',   sectionId: 'checklists',    icon: CheckSquare,   label: 'Checklists',    color: 'bg-outline'          },
+  { id: 'changeorders', sectionId: 'changeorders',  icon: ClipboardList, label: 'Change Orders', color: 'bg-amber-600'        },
+  { id: 'payments',     sectionId: 'payments',      icon: CreditCard,    label: 'Payments',      color: 'bg-blue-600'         },
+  { id: 'todos',        sectionId: 'commslog',      icon: Bell,          label: 'To-Dos',        color: 'bg-red-500'          },
+  { id: 'lienwaiver',   sectionId: 'lienwaiver',    icon: Shield,        label: 'Lien Waivers',  color: 'bg-purple-600'       },
+  { id: 'team',         sectionId: 'team',          icon: Users,         label: 'Team',          color: 'bg-on-surface'       },
 ];
 
 const WIDGET_DEFS = [
@@ -113,7 +113,6 @@ export default function Dashboard({ project, user, onSection, updateProject }) {
   const [customizing, setCustomizing] = useState(false);
   if (!project) return null;
 
-  // Derived data for widgets that remain in the component
   const checklistEntries = Object.entries(project.checklists ?? {}).filter(
     ([k]) => k !== 'punchList' && k !== 'punchListCustom'
   );
@@ -130,7 +129,6 @@ export default function Dashboard({ project, user, onSection, updateProject }) {
 
   const criticalTodos = (project.todos ?? []).filter((t) => t.critical && !t.done);
 
-  // Prefs with fallback
   const prefs = {
     statCards: project.dashboardPrefs?.statCards ?? DEFAULT_PREFS.statCards,
     widgets: { ...DEFAULT_PREFS.widgets, ...(project.dashboardPrefs?.widgets ?? {}) },
@@ -150,37 +148,34 @@ export default function Dashboard({ project, user, onSection, updateProject }) {
       {/* Header row */}
       <div className="flex items-start justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+          <h1 className="text-2xl font-extrabold font-heading text-on-surface">
             Your Planning Dashboard
           </h1>
-          <p className="text-sage text-sm mt-1">
+          <p className="text-on-surface-variant text-sm mt-1">
             Welcome back{user?.email ? `, ${user.email.split('@')[0]}` : ''}. Here's where your project stands.
           </p>
         </div>
 
         <div className="flex items-center gap-2 shrink-0 mt-1">
-          {/* Customize button */}
           <button
             onClick={() => { setCustomizing(!customizing); setBellOpen(false); }}
             title="Customize Dashboard"
             className={`p-2 rounded-xl border transition-colors ${
-              customizing ? 'bg-forest text-white border-forest' : 'border-linen text-mist hover:bg-linen/60 hover:text-ink'
+              customizing ? 'bg-primary text-on-primary border-primary' : 'border-outline-variant text-outline hover:bg-surface-container hover:text-on-surface'
             }`}
           >
             <Settings size={18} />
           </button>
 
-          {/* Critical bell */}
           <button
             onClick={() => { setBellOpen(!bellOpen); setCustomizing(false); }}
             title="Critical To-Dos"
-            className="relative p-2 rounded-xl border transition-colors hover:bg-red-50"
-            style={{ borderColor: criticalTodos.length > 0 ? '#fca5a5' : '#d8d2c8' }}
+            className={`relative p-2 rounded-xl border transition-colors hover:bg-red-50 ${criticalTodos.length > 0 ? 'border-red-300' : 'border-outline-variant'}`}
           >
             <Bell
               size={18}
               fill={criticalTodos.length > 0 ? '#ef4444' : 'none'}
-              className={criticalTodos.length > 0 ? 'text-red-500' : 'text-mist'}
+              className={criticalTodos.length > 0 ? 'text-red-500' : 'text-outline'}
             />
             {criticalTodos.length > 0 && (
               <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center leading-none">
@@ -193,31 +188,31 @@ export default function Dashboard({ project, user, onSection, updateProject }) {
 
       {/* Bell panel */}
       {bellOpen && (
-        <div className="bg-white border border-red-200 rounded-xl p-4 mb-6 shadow-sm">
+        <div className="bg-surface-container-lowest border border-red-200 rounded-3xl p-4 mb-6 shadow-md">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Bell size={15} fill="#ef4444" className="text-red-500" />
-              <span className="font-semibold text-sm text-ink">Critical To-Dos</span>
+              <span className="font-semibold text-sm text-on-surface">Critical To-Dos</span>
             </div>
-            <button onClick={() => setBellOpen(false)} className="text-mist hover:text-ink transition-colors">
+            <button onClick={() => setBellOpen(false)} className="text-outline hover:text-on-surface transition-colors">
               <X size={15} />
             </button>
           </div>
           {criticalTodos.length === 0 ? (
-            <p className="text-sm text-mist text-center py-3">No critical to-dos right now. 🎉</p>
+            <p className="text-sm text-outline text-center py-3">No critical to-dos right now. 🎉</p>
           ) : (
             <div className="space-y-2">
               {criticalTodos.map((todo) => {
                 const overdue = todo.dueDate && todo.dueDate < TODAY;
                 return (
-                  <div key={todo.id} className="flex items-start gap-3 bg-red-50 border border-red-100 rounded-lg px-3 py-2.5">
+                  <div key={todo.id} className="flex items-start gap-3 bg-red-50 border border-red-100 rounded-xl px-3 py-2.5">
                     <Bell size={13} fill="#ef4444" className="text-red-500 shrink-0 mt-0.5" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-ink">{todo.text || <em className="text-mist">Untitled</em>}</p>
+                      <p className="text-sm font-medium text-on-surface">{todo.text || <em className="text-outline">Untitled</em>}</p>
                       <div className="flex flex-wrap gap-2 mt-0.5 text-xs">
-                        {todo.assignedTo && <span className="text-mist">{todo.assignedTo}</span>}
+                        {todo.assignedTo && <span className="text-outline">{todo.assignedTo}</span>}
                         {todo.dueDate && (
-                          <span className={overdue ? 'text-red-600 font-semibold' : 'text-mist'}>
+                          <span className={overdue ? 'text-red-600 font-semibold' : 'text-outline'}>
                             {overdue ? '⚠ Overdue · ' : 'Due '}{formatDate(todo.dueDate)}
                           </span>
                         )}
@@ -228,7 +223,7 @@ export default function Dashboard({ project, user, onSection, updateProject }) {
               })}
               <button
                 onClick={() => { setBellOpen(false); onSection('commslog'); }}
-                className="w-full text-xs text-center text-forest hover:underline pt-1"
+                className="w-full text-xs text-center text-primary hover:underline pt-1"
               >
                 Go to To-Dos →
               </button>
@@ -239,22 +234,21 @@ export default function Dashboard({ project, user, onSection, updateProject }) {
 
       {/* Customize panel */}
       {customizing && (
-        <div className="bg-white border border-linen rounded-xl p-5 mb-6 shadow-sm">
+        <div className="bg-surface-container-lowest rounded-3xl p-5 mb-6 shadow-md border border-outline-variant/10">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              <Settings size={15} className="text-forest" />
-              <span className="font-semibold text-sm text-ink">Customize Dashboard</span>
+              <Settings size={15} className="text-primary" />
+              <span className="font-semibold text-sm text-on-surface">Customize Dashboard</span>
             </div>
-            <button onClick={() => setCustomizing(false)} className="text-mist hover:text-ink transition-colors">
+            <button onClick={() => setCustomizing(false)} className="text-outline hover:text-on-surface transition-colors">
               <X size={15} />
             </button>
           </div>
 
-          {/* Stat card picker */}
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-semibold text-mist uppercase tracking-wider">Top Stats — pick 4</p>
-              <span className={`text-xs font-medium ${prefs.statCards.length === CARD_LIMIT ? 'text-forest' : 'text-amber-600'}`}>
+              <p className="text-xs font-semibold text-outline uppercase tracking-wider">Top Stats — pick 4</p>
+              <span className={`text-xs font-medium ${prefs.statCards.length === CARD_LIMIT ? 'text-primary' : 'text-amber-600'}`}>
                 {prefs.statCards.length}/{CARD_LIMIT} selected
               </span>
             </div>
@@ -274,42 +268,41 @@ export default function Dashboard({ project, user, onSection, updateProject }) {
                         : [...prefs.statCards, id];
                       savePrefs({ ...prefs, statCards: next });
                     }}
-                    className={`flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-left transition-all ${
+                    className={`flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition-all ${
                       isSelected
-                        ? 'border-forest bg-forest/5 text-ink'
+                        ? 'border-primary bg-primary-container/30 text-on-surface'
                         : isDisabled
-                        ? 'border-linen bg-linen/40 text-mist/50 cursor-not-allowed'
-                        : 'border-linen text-mist hover:border-forest/40 hover:text-ink'
+                        ? 'border-outline-variant bg-outline-variant/20 text-outline/50 cursor-not-allowed'
+                        : 'border-outline-variant text-outline hover:border-primary/40 hover:text-on-surface'
                     }`}
                   >
-                    <div className={`p-1 rounded-md ${isSelected ? color : 'bg-linen'} transition-colors shrink-0`}>
-                      <Icon size={13} className={isSelected ? 'text-white' : 'text-mist'} />
+                    <div className={`p-1 rounded-lg ${isSelected ? color : 'bg-outline-variant'} transition-colors shrink-0`}>
+                      <Icon size={13} className={isSelected ? 'text-white' : 'text-outline'} />
                     </div>
                     <span className="text-xs font-medium flex-1">{label}</span>
-                    {isSelected && <Check size={12} className="text-forest shrink-0" />}
+                    {isSelected && <Check size={12} className="text-primary shrink-0" />}
                   </button>
                 );
               })}
             </div>
           </div>
 
-          <div className="border-t border-linen mb-5" />
+          <div className="border-t border-outline-variant mb-5" />
 
-          {/* Widget toggles */}
           <div className="mb-5">
-            <p className="text-xs font-semibold text-mist uppercase tracking-wider mb-3">Sections</p>
+            <p className="text-xs font-semibold text-outline uppercase tracking-wider mb-3">Sections</p>
             <div className="space-y-3">
               {WIDGET_DEFS.map(({ id, label, desc }) => {
                 const isOn = prefs.widgets[id] ?? true;
                 return (
                   <div key={id} className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-sm text-ink font-medium">{label}</p>
-                      <p className="text-xs text-mist">{desc}</p>
+                      <p className="text-sm text-on-surface font-medium">{label}</p>
+                      <p className="text-xs text-outline">{desc}</p>
                     </div>
                     <button
                       onClick={() => savePrefs({ ...prefs, widgets: { ...prefs.widgets, [id]: !isOn } })}
-                      className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${isOn ? 'bg-forest' : 'bg-linen'}`}
+                      className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${isOn ? 'bg-primary' : 'bg-outline-variant'}`}
                       role="switch"
                       aria-checked={isOn}
                     >
@@ -323,7 +316,7 @@ export default function Dashboard({ project, user, onSection, updateProject }) {
 
           <button
             onClick={() => setCustomizing(false)}
-            className="w-full bg-forest text-white text-sm py-2 rounded-lg hover:bg-deep transition-colors font-medium"
+            className="w-full bg-primary text-on-primary text-sm py-2 rounded-xl hover:bg-primary-dim transition-colors font-medium"
           >
             Done
           </button>
@@ -336,59 +329,61 @@ export default function Dashboard({ project, user, onSection, updateProject }) {
           <button
             key={id}
             onClick={() => onSection(sectionId)}
-            className="bg-white rounded-xl border border-linen p-4 text-left hover:shadow-md transition-shadow group"
+            className="bg-surface-container-lowest rounded-3xl shadow-md p-6 text-left hover:shadow-lg transition-shadow group relative overflow-hidden"
           >
-            <div className={`inline-flex p-2 rounded-lg ${color} text-white mb-3`}>
+            {/* Watermark icon */}
+            <Icon size={72} className="absolute -bottom-3 -right-3 text-outline-variant/10" strokeWidth={1} />
+            <div className={`inline-flex p-2 rounded-xl ${color} text-white mb-3 relative z-10`}>
               <Icon size={18} />
             </div>
-            <div className="text-xl font-bold text-ink group-hover:text-forest transition-colors">{value}</div>
-            <div className="text-xs text-sage mt-0.5">{label} · {sub}</div>
+            <div className="text-xl font-bold text-on-surface group-hover:text-primary transition-colors relative z-10">{value}</div>
+            <div className="text-xs text-on-surface-variant mt-0.5 relative z-10">{label} · {sub}</div>
           </button>
         ))}
       </div>
 
       {/* Timeline widget */}
       {prefs.widgets.timelineWidget && (
-        <div className="bg-white rounded-xl border border-linen p-5 mb-6">
+        <div className="bg-surface-container-lowest rounded-3xl shadow-md p-6 mb-6 border border-outline-variant/10">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-ink">Timeline Progress</h2>
-            <button onClick={() => onSection('timeline')} className="text-xs text-forest hover:underline flex items-center gap-1">
+            <h2 className="text-sm font-semibold font-heading text-on-surface">Timeline Progress</h2>
+            <button onClick={() => onSection('timeline')} className="text-xs text-primary hover:underline flex items-center gap-1">
               View Timeline <ArrowRight size={11} />
             </button>
           </div>
 
           {totalMilestones === 0 ? (
             <div className="text-center py-4">
-              <p className="text-xs text-mist mb-2">No milestones added yet.</p>
-              <button onClick={() => onSection('timeline')} className="text-xs text-forest hover:underline">
+              <p className="text-xs text-outline mb-2">No milestones added yet.</p>
+              <button onClick={() => onSection('timeline')} className="text-xs text-primary hover:underline">
                 Set up your build timeline →
               </button>
             </div>
           ) : (
             <>
               <div className="flex items-center gap-3 mb-4">
-                <div className="flex-1 h-2 bg-linen rounded-full overflow-hidden">
-                  <div className="h-full bg-forest rounded-full transition-all duration-500" style={{ width: `${timelinePct}%` }} />
+                <div className="flex-1 h-2 bg-outline-variant rounded-full overflow-hidden">
+                  <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${timelinePct}%` }} />
                 </div>
-                <span className="text-xs text-mist shrink-0 w-16 text-right">{completedMilestones}/{totalMilestones} done</span>
+                <span className="text-xs text-outline shrink-0 w-16 text-right">{completedMilestones}/{totalMilestones} done</span>
               </div>
 
               {currentPhase && (
                 <div className="mb-3">
-                  <p className="text-xs font-semibold text-mist uppercase tracking-wider mb-1.5">Current Phase</p>
-                  <div className="flex items-center gap-3 bg-forest/5 border border-forest/20 rounded-lg px-3 py-2.5">
-                    <div className="w-2 h-2 rounded-full bg-forest shrink-0 animate-pulse" />
+                  <p className="text-xs font-semibold text-outline uppercase tracking-wider mb-1.5">Current Phase</p>
+                  <div className="flex items-center gap-3 bg-primary-container/30 border border-primary/20 rounded-xl px-3 py-2.5">
+                    <div className="w-2 h-2 rounded-full bg-primary shrink-0 animate-pulse" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-ink truncate">{currentPhase.title}</p>
+                      <p className="text-sm font-medium text-on-surface truncate">{currentPhase.title}</p>
                       {(currentPhase.start || currentPhase.end) && (
-                        <p className="text-xs text-mist">
+                        <p className="text-xs text-outline">
                           {fmtDate(currentPhase.start)}
                           {currentPhase.end && currentPhase.end !== currentPhase.start ? ` → ${fmtDate(currentPhase.end)}` : ''}
                         </p>
                       )}
                     </div>
                     {typeof currentPhase.progress === 'number' && currentPhase.progress > 0 && (
-                      <span className="text-xs text-forest font-medium shrink-0">{currentPhase.progress}%</span>
+                      <span className="text-xs text-primary font-medium shrink-0">{currentPhase.progress}%</span>
                     )}
                   </div>
                 </div>
@@ -396,13 +391,13 @@ export default function Dashboard({ project, user, onSection, updateProject }) {
 
               {upcoming.length > 0 && (
                 <div>
-                  <p className="text-xs font-semibold text-mist uppercase tracking-wider mb-1.5">Up Next</p>
+                  <p className="text-xs font-semibold text-outline uppercase tracking-wider mb-1.5">Up Next</p>
                   <div className="space-y-1.5">
                     {upcoming.map((m) => (
-                      <div key={m.id} className="flex items-center gap-3 px-3 py-2 rounded-lg border border-linen">
-                        <div className="w-1.5 h-1.5 rounded-full bg-linen shrink-0" />
-                        <p className="text-sm text-ink flex-1 truncate">{m.title}</p>
-                        {m.start && <span className="text-xs text-mist shrink-0">{fmtDate(m.start)}</span>}
+                      <div key={m.id} className="flex items-center gap-3 px-3 py-2 rounded-xl border border-outline-variant">
+                        <div className="w-1.5 h-1.5 rounded-full bg-outline-variant shrink-0" />
+                        <p className="text-sm text-on-surface flex-1 truncate">{m.title}</p>
+                        {m.start && <span className="text-xs text-outline shrink-0">{fmtDate(m.start)}</span>}
                       </div>
                     ))}
                   </div>
@@ -411,7 +406,7 @@ export default function Dashboard({ project, user, onSection, updateProject }) {
 
               {!currentPhase && upcoming.length === 0 && completedMilestones > 0 && (
                 <div className="text-center py-2">
-                  <p className="text-sm text-forest font-medium">🎉 All milestones complete!</p>
+                  <p className="text-sm text-primary font-medium">🎉 All milestones complete!</p>
                 </div>
               )}
             </>
@@ -422,7 +417,7 @@ export default function Dashboard({ project, user, onSection, updateProject }) {
       {/* Quick nav */}
       {prefs.widgets.quickNav && (
         <>
-          <h2 className="text-sm font-semibold text-mist uppercase tracking-wider mb-3">Jump To</h2>
+          <h2 className="text-sm font-semibold text-outline uppercase tracking-wider mb-3">Jump To</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
               { id: 'design',     icon: Palette,    label: 'Home Design',  desc: 'Room-by-room wish list'      },
@@ -432,12 +427,12 @@ export default function Dashboard({ project, user, onSection, updateProject }) {
               <button
                 key={id}
                 onClick={() => onSection(id)}
-                className="flex items-start gap-3 bg-white rounded-xl border border-linen p-4 text-left hover:shadow-md transition-shadow"
+                className="flex items-start gap-3 bg-surface-container-lowest rounded-3xl shadow-md p-5 text-left hover:shadow-lg transition-shadow border border-outline-variant/10"
               >
-                <Icon size={20} className="text-forest mt-0.5 shrink-0" />
+                <Icon size={20} className="text-primary mt-0.5 shrink-0" />
                 <div>
-                  <div className="text-sm font-semibold text-ink">{label}</div>
-                  <div className="text-xs text-mist">{desc}</div>
+                  <div className="text-sm font-semibold text-on-surface">{label}</div>
+                  <div className="text-xs text-outline">{desc}</div>
                 </div>
               </button>
             ))}
@@ -447,15 +442,15 @@ export default function Dashboard({ project, user, onSection, updateProject }) {
 
       {/* Checklist progress */}
       {prefs.widgets.checklistProgress && totalChecks > 0 && (
-        <div className="mt-6 bg-white rounded-xl border border-linen p-5">
+        <div className="mt-6 bg-surface-container-lowest rounded-3xl shadow-md p-6 border border-outline-variant/10">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-semibold text-ink">Checklist Progress</span>
-            <span className="text-sm text-sage">{Math.round((completedChecks / totalChecks) * 100)}%</span>
+            <span className="text-sm font-semibold font-heading text-on-surface">Checklist Progress</span>
+            <span className="text-sm text-on-surface-variant">{Math.round((completedChecks / totalChecks) * 100)}%</span>
           </div>
-          <div className="h-2 bg-linen rounded-full overflow-hidden">
-            <div className="h-full bg-forest rounded-full transition-all duration-500" style={{ width: `${(completedChecks / totalChecks) * 100}%` }} />
+          <div className="h-2 bg-outline-variant rounded-full overflow-hidden">
+            <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${(completedChecks / totalChecks) * 100}%` }} />
           </div>
-          <p className="text-xs text-mist mt-2">{completedChecks} of {totalChecks} checklist items complete</p>
+          <p className="text-xs text-outline mt-2">{completedChecks} of {totalChecks} checklist items complete</p>
         </div>
       )}
     </div>

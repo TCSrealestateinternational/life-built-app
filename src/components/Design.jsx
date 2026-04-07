@@ -23,14 +23,14 @@ function DesignItem({ item, onUpdate, onRemove }) {
   const displayValue = safe.selected || safe.custom;
 
   return (
-    <div className={`border rounded-lg overflow-hidden ${safe.done ? 'border-forest/20 bg-forest/5' : 'border-linen bg-white'}`}>
+    <div className={`border rounded-xl overflow-hidden ${safe.done ? 'border-primary/20 bg-primary/5' : 'border-outline-variant bg-surface-container-lowest'}`}>
       <div className="flex items-start gap-2 p-3">
         {/* Checkbox */}
         <input
           type="checkbox"
           checked={safe.done}
           onChange={(e) => onUpdate({ done: e.target.checked })}
-          className="accent-forest mt-1 shrink-0"
+          className="accent-primary mt-1 shrink-0"
         />
 
         <div className="flex-1 min-w-0">
@@ -40,10 +40,10 @@ function DesignItem({ item, onUpdate, onRemove }) {
               type="text"
               value={safe.text}
               onChange={(e) => onUpdate({ text: e.target.value })}
-              className={`flex-1 text-sm font-medium bg-transparent border-b border-transparent hover:border-linen focus:border-forest focus:outline-none py-0.5 ${safe.done ? 'line-through text-mist' : 'text-ink'}`}
+              className={`flex-1 text-sm font-medium bg-transparent border-b border-transparent hover:border-outline-variant focus:border-primary focus:outline-none py-0.5 ${safe.done ? 'line-through text-outline' : 'text-on-surface'}`}
             />
             {displayValue && (
-              <span className="text-xs bg-forest/10 text-forest px-2 py-0.5 rounded-full shrink-0">
+              <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full shrink-0">
                 {displayValue}
               </span>
             )}
@@ -58,8 +58,8 @@ function DesignItem({ item, onUpdate, onRemove }) {
                   onClick={() => onUpdate({ selected: safe.selected === opt ? '' : opt, custom: '' })}
                   className={`text-xs px-2.5 py-0.5 rounded-full border transition-colors ${
                     safe.selected === opt
-                      ? 'bg-forest text-white border-forest'
-                      : 'border-linen text-mist hover:border-sage hover:text-ink'
+                      ? 'bg-primary text-on-primary border-primary'
+                      : 'border-outline-variant text-outline hover:border-on-surface-variant hover:text-on-surface'
                   }`}
                 >
                   {opt}
@@ -74,13 +74,13 @@ function DesignItem({ item, onUpdate, onRemove }) {
             value={safe.custom}
             onChange={(e) => onUpdate({ custom: e.target.value, selected: '' })}
             placeholder={safe.options.length > 0 ? 'Or type a custom value…' : 'Your selection…'}
-            className="mt-1.5 w-full text-xs bg-cream border border-linen rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-forest/40 text-ink placeholder:text-mist"
+            className="mt-1.5 w-full text-xs bg-surface border border-outline-variant rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary/40 text-on-surface placeholder:text-outline"
           />
 
           {/* Details toggle */}
           <button
             onClick={() => setDetailsOpen(!detailsOpen)}
-            className={`flex items-center gap-1 text-xs mt-2 transition-colors ${hasDetails ? 'text-forest' : 'text-mist hover:text-forest'}`}
+            className={`flex items-center gap-1 text-xs mt-2 transition-colors ${hasDetails ? 'text-primary' : 'text-outline hover:text-primary'}`}
           >
             <FileText size={11} />
             {detailsOpen ? 'Hide details' : hasDetails ? 'View details ●' : 'Add photo / link / notes'}
@@ -88,10 +88,10 @@ function DesignItem({ item, onUpdate, onRemove }) {
 
           {/* Details panel */}
           {detailsOpen && (
-            <div className="mt-2 pt-2 border-t border-linen space-y-3">
+            <div className="mt-2 pt-2 border-t border-outline-variant space-y-3">
               {/* Photo URL */}
               <div>
-                <label className="flex items-center gap-1 text-xs font-medium text-ink mb-1">
+                <label className="flex items-center gap-1 text-xs font-medium text-on-surface mb-1">
                   <Image size={11} /> Inspiration Photo URL
                 </label>
                 <input
@@ -99,7 +99,7 @@ function DesignItem({ item, onUpdate, onRemove }) {
                   value={safe.photo}
                   onChange={(e) => onUpdate({ photo: e.target.value })}
                   placeholder="Paste image URL from Pinterest, Houzz, etc."
-                  className="w-full text-xs border border-linen rounded px-2 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                  className="w-full text-xs border border-outline-variant rounded px-2 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
                 />
                 {safe.photo && (
                   <img
@@ -113,7 +113,7 @@ function DesignItem({ item, onUpdate, onRemove }) {
 
               {/* Link */}
               <div>
-                <label className="flex items-center gap-1 text-xs font-medium text-ink mb-1">
+                <label className="flex items-center gap-1 text-xs font-medium text-on-surface mb-1">
                   <Link2 size={11} /> Product / Reference Link
                 </label>
                 <div className="flex gap-1">
@@ -122,14 +122,14 @@ function DesignItem({ item, onUpdate, onRemove }) {
                     value={safe.link}
                     onChange={(e) => onUpdate({ link: e.target.value })}
                     placeholder="Paste a product or inspiration link"
-                    className="flex-1 text-xs border border-linen rounded px-2 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40"
+                    className="flex-1 text-xs border border-outline-variant rounded px-2 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40"
                   />
                   {safe.link && (
                     <a
                       href={safe.link}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-xs text-forest border border-linen rounded px-2 py-1.5 hover:bg-cream shrink-0"
+                      className="text-xs text-primary border border-outline-variant rounded px-2 py-1.5 hover:bg-surface shrink-0"
                     >
                       Open
                     </a>
@@ -139,7 +139,7 @@ function DesignItem({ item, onUpdate, onRemove }) {
 
               {/* Notes */}
               <div>
-                <label className="flex items-center gap-1 text-xs font-medium text-ink mb-1">
+                <label className="flex items-center gap-1 text-xs font-medium text-on-surface mb-1">
                   <FileText size={11} /> Notes
                 </label>
                 <textarea
@@ -147,7 +147,7 @@ function DesignItem({ item, onUpdate, onRemove }) {
                   onChange={(e) => onUpdate({ notes: e.target.value })}
                   placeholder="Colors, dimensions, model numbers, preferences…"
                   rows={2}
-                  className="w-full text-xs border border-linen rounded px-2 py-1.5 bg-cream focus:outline-none focus:ring-1 focus:ring-forest/40 resize-none"
+                  className="w-full text-xs border border-outline-variant rounded px-2 py-1.5 bg-surface focus:outline-none focus:ring-1 focus:ring-primary/40 resize-none"
                 />
               </div>
             </div>
@@ -230,10 +230,10 @@ export default function Design({ project, updateProject }) {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-ink" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+        <h1 className="text-2xl font-bold text-on-surface font-heading">
           Home Design
         </h1>
-        <p className="text-sage text-sm mt-0.5">
+        <p className="text-on-surface-variant text-sm mt-0.5">
           Room-by-room selections — pick options, add inspiration photos, links, and notes.
         </p>
       </div>
@@ -246,15 +246,15 @@ export default function Design({ project, updateProject }) {
           const hasPresets = !!ROOM_DEFAULTS[room];
 
           return (
-            <div key={room} className="bg-white rounded-xl border border-linen overflow-hidden">
+            <div key={room} className="shadow-md border border-outline-variant/10 bg-surface-container-lowest rounded-3xl overflow-hidden">
               {/* Room header */}
               <div
-                className="flex items-center gap-3 p-4 cursor-pointer hover:bg-cream/50 transition-colors"
+                className="flex items-center gap-3 p-6 cursor-pointer hover:bg-surface/50 transition-colors"
                 onClick={() => setExpandedRoom(expandedRoom === room ? null : room)}
               >
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium text-ink">{room}</div>
-                  <div className="text-xs text-mist mt-0.5">
+                  <div className="font-medium text-on-surface">{room}</div>
+                  <div className="text-xs text-outline mt-0.5">
                     {items.length === 0 ? 'No items yet' : `${doneCount} of ${items.length} decided`}
                   </div>
                 </div>
@@ -266,18 +266,18 @@ export default function Design({ project, updateProject }) {
                     <Trash2 size={15} />
                   </button>
                   {expandedRoom === room
-                    ? <ChevronUp size={16} className="text-mist" />
-                    : <ChevronDown size={16} className="text-mist" />}
+                    ? <ChevronUp size={16} className="text-outline" />
+                    : <ChevronDown size={16} className="text-outline" />}
                 </div>
               </div>
 
               {/* Room body */}
               {expandedRoom === room && (
-                <div className="border-t border-linen p-4">
+                <div className="border-t border-outline-variant p-6">
                   {/* Basement toggle */}
                   {room === 'Basement' && (
                     <div className="mb-4">
-                      <p className="text-xs text-mist mb-2 font-medium">What type of basement are you planning?</p>
+                      <p className="text-xs text-outline mb-2 font-medium">What type of basement are you planning?</p>
                       <div className="grid grid-cols-2 gap-2">
                         {[
                           { key: 'unfinished', label: '🏗️ Unfinished', desc: 'Utilities, storage, rough-in' },
@@ -286,30 +286,30 @@ export default function Design({ project, updateProject }) {
                           <button
                             key={key}
                             onClick={() => handleBasementMode(key)}
-                            className={`p-3 rounded-lg border text-left transition-colors ${
+                            className={`p-3 rounded-xl border text-left transition-colors ${
                               design[room]?.mode === key
-                                ? 'border-forest bg-forest/10'
-                                : 'border-linen hover:border-sage'
+                                ? 'border-primary bg-primary/10'
+                                : 'border-outline-variant hover:border-on-surface-variant'
                             }`}
                           >
-                            <div className={`text-sm font-medium ${design[room]?.mode === key ? 'text-forest' : 'text-ink'}`}>{label}</div>
-                            <div className="text-xs text-mist mt-0.5">{desc}</div>
+                            <div className={`text-sm font-medium ${design[room]?.mode === key ? 'text-primary' : 'text-on-surface'}`}>{label}</div>
+                            <div className="text-xs text-outline mt-0.5">{desc}</div>
                           </button>
                         ))}
                       </div>
                       {!design[room]?.mode && (
-                        <p className="text-xs text-mist text-center mt-2">Select a type above to load items</p>
+                        <p className="text-xs text-outline text-center mt-2">Select a type above to load items</p>
                       )}
                     </div>
                   )}
 
                   {/* Load defaults banner */}
                   {hasPresets && items.length === 0 && room !== 'Basement' && (
-                    <div className="mb-4 flex items-center justify-between bg-forest/5 border border-forest/20 rounded-lg px-3 py-2.5">
-                      <span className="text-xs text-forest">Standard items are available for this room</span>
+                    <div className="mb-4 flex items-center justify-between bg-primary/5 border border-primary/20 rounded-xl px-3 py-2.5">
+                      <span className="text-xs text-primary">Standard items are available for this room</span>
                       <button
                         onClick={() => loadDefaults(room)}
-                        className="text-xs bg-forest text-white px-3 py-1.5 rounded-lg hover:bg-deep transition-colors ml-3 shrink-0"
+                        className="text-xs bg-primary text-on-primary px-3 py-1.5 rounded-xl hover:bg-primary-dim transition-colors ml-3 shrink-0"
                       >
                         Load items
                       </button>
@@ -332,14 +332,14 @@ export default function Design({ project, updateProject }) {
                   <div className="flex items-center gap-4 mt-3">
                     <button
                       onClick={() => addItem(room)}
-                      className="flex items-center gap-1 text-xs text-forest hover:underline"
+                      className="flex items-center gap-1 text-xs text-primary hover:underline"
                     >
                       <Plus size={13} /> Add custom item
                     </button>
                     {hasPresets && items.length > 0 && room !== 'Basement' && (
                       <button
                         onClick={() => loadDefaults(room)}
-                        className="text-xs text-mist hover:text-forest transition-colors"
+                        className="text-xs text-outline hover:text-primary transition-colors"
                       >
                         + Reload standard items
                       </button>
@@ -353,8 +353,8 @@ export default function Design({ project, updateProject }) {
       </div>
 
       {/* Customize section */}
-      <div className="bg-white rounded-xl border border-linen p-4">
-        <h2 className="text-sm font-semibold text-ink mb-3">Customize</h2>
+      <div className="shadow-md border border-outline-variant/10 bg-surface-container-lowest rounded-3xl p-6">
+        <h2 className="text-sm font-semibold text-on-surface mb-3">Customize</h2>
         <div className="flex gap-2 mb-3">
           <input
             type="text"
@@ -362,11 +362,11 @@ export default function Design({ project, updateProject }) {
             onChange={(e) => setNewRoom(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && addRoom(newRoom)}
             placeholder="Add a custom room or space…"
-            className="flex-1 border border-linen rounded-lg px-3 py-2 text-sm bg-cream focus:outline-none focus:ring-2 focus:ring-forest/40"
+            className="flex-1 border border-outline-variant rounded-xl px-3 py-2 text-sm bg-surface focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
           <button
             onClick={() => addRoom(newRoom)}
-            className="bg-forest text-white text-sm px-4 py-2 rounded-lg hover:bg-deep transition-colors"
+            className="bg-primary text-on-primary text-sm px-4 py-2 rounded-xl hover:bg-primary-dim transition-colors"
           >
             Add
           </button>
@@ -377,7 +377,7 @@ export default function Design({ project, updateProject }) {
               <button
                 key={r}
                 onClick={() => addRoom(r)}
-                className="text-xs text-forest border border-forest/30 px-2.5 py-1 rounded-full hover:bg-forest hover:text-white transition-colors"
+                className="text-xs text-primary border border-primary/30 px-2.5 py-1 rounded-full hover:bg-primary hover:text-on-primary transition-colors"
               >
                 + {r}
               </button>
