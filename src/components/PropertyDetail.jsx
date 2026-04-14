@@ -4,6 +4,7 @@ import {
   X, ChevronDown, ChevronUp, Globe, School, Car, Droplets, ImagePlus,
 } from 'lucide-react';
 import { STATUS, geocodeAddress, osmEmbedUrl } from '../data/propertyData';
+import NeighborhoodData from './buyer/NeighborhoodData';
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -761,6 +762,16 @@ export default function PropertyDetail({ property: p, uid: _uid, onChange, onBac
               rows={4}
               placeholder="Walmart 8 min, hospital 20 min, quiet road, good cell signal…"
               className="w-full border border-outline-variant rounded-xl px-3 py-2 text-sm bg-surface focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none"
+            />
+          </div>
+
+          {/* Neighborhood data from APIs */}
+          <div className="bg-surface-container-lowest shadow-md border border-outline-variant/10 rounded-3xl p-4">
+            <NeighborhoodData
+              address={p.address}
+              lat={p.lat}
+              lon={p.lon}
+              commuteDestination={p.commuteDestination}
             />
           </div>
         </div>
