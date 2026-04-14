@@ -2,20 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import {
   Footprints, Bus, Bike, Shield, Car, School, ExternalLink, RefreshCw,
-  MapPin, Star, Loader2,
 } from 'lucide-react';
-
-// ─── Nearby Places categories ───────────────────────────────────────────────
-
-const PLACE_CATEGORIES = [
-  { label: 'Grocery', type: 'grocery_store' },
-  { label: 'Hospital', type: 'hospital' },
-  { label: 'Restaurant', type: 'restaurant' },
-  { label: 'Gas Station', type: 'gas_station' },
-  { label: 'Pharmacy', type: 'pharmacy' },
-  { label: 'Gym', type: 'gym' },
-  { label: 'Bank', type: 'bank' },
-];
 
 // ─── Score card ──────────────────────────────────────────────────────────────
 
@@ -43,11 +30,6 @@ export default function NeighborhoodData({
   const [commuteData, setCommuteData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-
-  // Nearby Places — keyed by category type
-  const [nearbyResults, setNearbyResults] = useState({});   // { grocery_store: [...] }
-  const [nearbyLoading, setNearbyLoading] = useState({});    // { grocery_store: true }
-  const [nearbyErrors, setNearbyErrors] = useState({});      // { grocery_store: 'msg' }
 
   const fetchData = useCallback(async () => {
     if (!address || lat == null || lon == null) return;
@@ -110,38 +92,9 @@ export default function NeighborhoodData({
     setLoading(false);
   }, [address, lat, lon, commuteDestination]);
 
-  // Toggle a nearby-places category chip
-  const toggleCategory = useCallback(async (type) => {
-    // If already loaded, remove it (toggle off)
-    if (nearbyResults[type]) {
-      setNearbyResults((prev) => { const next = { ...prev }; delete next[type]; return next; });
-      setNearbyErrors((prev) => { const next = { ...prev }; delete next[type]; return next; });
-      return;
-    }
-
-    if (lat == null || lon == null) return;
-
-    setNearbyLoading((prev) => ({ ...prev, [type]: true }));
-    setNearbyErrors((prev) => { const next = { ...prev }; delete next[type]; return next; });
-
-    try {
-      const fns = getFunctions();
-      const result = await httpsCallable(fns, 'getNearbyPlaces')({ lat, lon, type });
-      setNearbyResults((prev) => ({ ...prev, [type]: result.data.places }));
-    } catch (err) {
-      setNearbyErrors((prev) => ({ ...prev, [type]: err.message }));
-    } finally {
-      setNearbyLoading((prev) => { const next = { ...prev }; delete next[type]; return next; });
-    }
-  }, [lat, lon, nearbyResults]);
-
   // Auto-fetch when inputs change
   useEffect(() => {
     fetchData();
-    // Clear nearby results when address changes
-    setNearbyResults({});
-    setNearbyLoading({});
-    setNearbyErrors({});
   }, [fetchData]);
 
   // ── Nothing to show yet ────────────────────────────────────────────────────
@@ -299,69 +252,6 @@ export default function NeighborhoodData({
         </a>
       </div>
 
-      {/* Nearby Places */}
-      <div>
-        <h4 className="text-xs font-medium text-on-surface mb-2">Nearby Places</h4>
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          {PLACE_CATEGORIES.map(({ label, type }) => {
-            const active = !!nearbyResults[type];
-            const busy = !!nearbyLoading[type];
-            return (
-              <button
-                key={type}
-                onClick={() => toggleCategory(type)}
-                disabled={busy}
-                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
-                  active
-                    ? 'bg-primary text-on-primary'
-                    : 'bg-surface text-outline hover:text-on-surface'
-                } disabled:opacity-50`}
-              >
-                {busy && <Loader2 size={11} className="animate-spin" />}
-                {label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Results for each active category */}
-        {PLACE_CATEGORIES.map(({ label, type }) => {
-          const places = nearbyResults[type];
-          const error = nearbyErrors[type];
-          if (!places && !error) return null;
-          return (
-            <div key={type} className="mb-3">
-              <p className="text-xs font-medium text-outline mb-1">{label}</p>
-              {error ? (
-                <p className="text-xs text-outline">Could not load {label.toLowerCase()} results</p>
-              ) : places.length === 0 ? (
-                <p className="text-xs text-outline italic">No {label.toLowerCase()} found nearby</p>
-              ) : (
-                <ul className="space-y-1.5">
-                  {places.map((p, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs">
-                      <MapPin size={12} className="text-outline shrink-0 mt-0.5" />
-                      <div className="min-w-0">
-                        <span className="font-medium text-on-surface">{p.name}</span>
-                        {p.rating != null && (
-                          <span className="inline-flex items-center gap-0.5 ml-1.5 text-amber-500">
-                            <Star size={10} fill="currentColor" />
-                            {p.rating}
-                          </span>
-                        )}
-                        {p.address && (
-                          <p className="text-outline truncate">{p.address}</p>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
       {/* Attribution */}
       <p className="text-xs text-outline/60 leading-relaxed">
         Walk Score&reg; data from{' '}
@@ -373,8 +263,7 @@ export default function NeighborhoodData({
         >
           walkscore.com
         </a>
-        . Crime data from FBI UCR. Commute via Google Routes. Nearby places via
-        Google.
+        . Crime data from FBI UCR. Commute via Google Routes.
       </p>
     </div>
   );

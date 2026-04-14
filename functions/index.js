@@ -6,12 +6,10 @@ const Stripe = require('stripe');
 const { getWalkScore } = require('./walkscore');
 const { getCrimeData } = require('./crimedata');
 const { getCommuteTime } = require('./commute');
-const { getNearbyPlaces } = require('./nearby');
 
 exports.getWalkScore = getWalkScore;
 exports.getCrimeData = getCrimeData;
 exports.getCommuteTime = getCommuteTime;
-exports.getNearbyPlaces = getNearbyPlaces;
 
 admin.initializeApp();
 const db = admin.firestore();
