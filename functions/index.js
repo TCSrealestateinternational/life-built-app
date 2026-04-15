@@ -2,15 +2,6 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const Stripe = require('stripe');
 
-// Neighborhood data APIs
-const { getWalkScore } = require('./walkscore');
-const { getCrimeData } = require('./crimedata');
-const { getCommuteTime } = require('./commute');
-
-exports.getWalkScore = getWalkScore;
-exports.getCrimeData = getCrimeData;
-exports.getCommuteTime = getCommuteTime;
-
 admin.initializeApp();
 const db = admin.firestore();
 
@@ -25,7 +16,6 @@ exports.grandfatherAllUsers = functions.https.onRequest(async (req, res) => {
 
   const TEMP_EMAIL = 'jackyloveskentucky@gmail.com';
   const TEMP_UNTIL = new Date('2026-12-31T23:59:59Z');
-  const PERMANENT_EMAILS = ['crobinson20052002@gmail.com'];
 
   let allUsers = [];
   let nextPageToken;
@@ -38,14 +28,7 @@ exports.grandfatherAllUsers = functions.https.onRequest(async (req, res) => {
   const results = [];
   for (const user of allUsers) {
     const ref = db.doc(`users/${user.uid}/subscription/data`);
-    if (PERMANENT_EMAILS.includes(user.email?.toLowerCase())) {
-      await ref.set({
-        grandfathered: true,
-        note: 'Permanent free access — grandfathered by owner',
-        stamped_at: admin.firestore.FieldValue.serverTimestamp(),
-      }, { merge: true });
-      results.push(`[forever-explicit] ${user.email}`);
-    } else if (user.email === TEMP_EMAIL) {
+    if (user.email === TEMP_EMAIL) {
       await ref.set({
         grandfathered_until: admin.firestore.Timestamp.fromDate(TEMP_UNTIL),
         grandfathered: false,
@@ -64,24 +47,6 @@ exports.grandfatherAllUsers = functions.https.onRequest(async (req, res) => {
   }
 
   res.json({ stamped: results.length, users: results });
-});
-
-// ---------------------------------------------------------------------------
-// onUserCreated — auto-stamp grandfathered users on signup
-// ---------------------------------------------------------------------------
-const GRANDFATHERED_EMAILS = ['crobinson20052002@gmail.com'];
-
-exports.onUserCreated = functions.auth.user().onCreate(async (user) => {
-  const email = user.email?.toLowerCase();
-  if (!email) return;
-
-  if (GRANDFATHERED_EMAILS.includes(email)) {
-    await db.doc(`users/${user.uid}/subscription/data`).set({
-      grandfathered: true,
-      note: 'Permanent free access — grandfathered by owner',
-      stamped_at: admin.firestore.FieldValue.serverTimestamp(),
-    }, { merge: true });
-  }
 });
 
 // ---------------------------------------------------------------------------
